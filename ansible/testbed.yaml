@@ -6101,3 +6101,33 @@
   comment: Beijing Lab
   ptf_extra_mgmt_ip:
     - 172.16.188.173/17
+
+- conf-name: str4-w6940-cpo-1
+  group-name: vms71-4
+  topo: ft2-64
+  ptf_image_name: docker-ptf
+  ptf: vms71-4
+  ptf_ip: 10.64.246.116/25
+  ptf_ipv6: 2a01:111:e210:b000::a40:f674/121
+  server: server_71
+  vm_base: VM41120
+  dut:
+  - str4-w6940-1
+  inv_name: str4
+  auto_recover: 'True'
+  comment: dashuaizhang
+
+- conf-name: str4-w6940-cpo-2
+  group-name: vms71-5
+  topo: ft2-64
+  ptf_image_name: docker-ptf
+  ptf: vms71-5
+  ptf_ip: 10.64.246.117/25
+  ptf_ipv6: 2a01:111:e210:b000::a40:f675/121
+  server: server_71
+  vm_base: VM41190
+  dut:
+  - str4-w6940-2
+  inv_name: str4
+  auto_recover: 'True'
+  comment: dashuaizhang
