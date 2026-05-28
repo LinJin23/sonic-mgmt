@@ -942,5 +942,13 @@
         "email": "dashuaizhang@microsoft.com",
         "new_platform": "Yes",
         "tag": "Yes"
+    },
+    {
+        "hwsku": "nvidia-bluefield",
+        "topo": "t1",
+        "owner": "Vasundhara Volam",
+        "email": "vvolam@microsoft.com",
+        "new_platform": "Yes",
+        "tag": "Yes"
     }
 ]
