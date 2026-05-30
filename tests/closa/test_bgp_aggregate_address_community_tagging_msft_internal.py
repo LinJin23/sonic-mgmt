@@ -41,7 +41,6 @@ Groups:
     7. Upstream Device Behavior Verification (TC 7.1-7.5)
 """
 
-import json as json_lib
 import logging
 import time
 from collections import namedtuple
@@ -50,9 +49,9 @@ import pytest
 from natsort import natsorted
 
 # ---- Reuse from existing test modules (mssonic/internal branch) ----
-from bgp_bbr_helpers import config_bbr_by_gcu, get_bbr_default_state, is_bbr_enabled
+from tests.closa.bgp_bbr_helpers_msft_internal import config_bbr_by_gcu, get_bbr_default_state, is_bbr_enabled
 
-from bgp_aggregate_helpers import (
+from tests.closa.bgp_aggregate_prefix_list_helpers_msft_internal import (
     BGP_AGGREGATE_ADDRESS,
     PLACEHOLDER_PREFIX,
     dump_db,
@@ -69,9 +68,14 @@ from tests.common.gcu_utils import (
 )
 from tests.common.helpers.assertions import pytest_assert
 from tests.common.helpers.bgp_routing import inject_routes, verify_route_on_neighbors
+# Community helpers (closa wrapper holds the actual definitions).
+from tests.closa.bgp_community_helpers_msft_internal import (  # noqa: F401
+    get_route_communities,
+    check_communities_on_neighbors,
+    verify_route_communities,
+)
 from tests.common.utilities import wait_until
 from tests.common.devices.eos import EosHost
-from tests.common.devices.sonic import SonicHost
 from tests.common.config_reload import config_reload as do_config_reload
 
 import ptf.testutils as testutils
@@ -324,110 +328,9 @@ def safe_remove_aggregate(duthost, prefix):
 # ===========================================================================
 # HELPERS — Community verification
 # ===========================================================================
-
-def get_route_communities(host, prefix):
-    """Extract the set of BGP community strings attached to a prefix on a neighbor.
-
-    Supports EosHost (Arista vEOS) and SonicHost (FRR/vtysh).
-
-    Args:
-        host: neighbor host object (EosHost or SonicHost)
-        prefix: route prefix string, e.g. "10.100.0.0/16"
-
-    Returns:
-        set of community strings, e.g. {"8075:8801"} or {"8075:9120", "no-advertise"}.
-        Returns empty set if route not found or on any error.
-
-    EOS JSON path:
-        vrfs.default.bgpRouteEntries.<prefix>.bgpRoutePaths[*]
-            .routeDetail.communityList
-
-    FRR JSON path (vtysh):
-        paths[*].community.list[*].string
-    """
-    communities = set()
-    try:
-        if isinstance(host, EosHost):
-            route_data = host.get_route(prefix)
-            entries = route_data.get("vrfs", {}).get("default", {}).get("bgpRouteEntries", {})
-            for path_info in entries.get(prefix, {}).get("bgpRoutePaths", []):
-                detail = path_info.get("routeDetail", {})
-                for comm in detail.get("communityList", []):
-                    communities.add(comm)
-        elif isinstance(host, SonicHost):
-            cmd = "vtysh -c 'show ip bgp {} json'".format(prefix)
-            output = host.shell(cmd, module_ignore_errors=True)["stdout"]
-            data = json_lib.loads(output) if output.strip() else {}
-            for path_info in data.get("paths", []):
-                comm_data = path_info.get("community", {})
-                for comm_entry in comm_data.get("list", []):
-                    comm_str = comm_entry.get("string", "")
-                    if comm_str:
-                        communities.add(comm_str)
-        else:
-            logger.warning("get_route_communities: unsupported host type %s", type(host))
-    except Exception as e:
-        logger.debug("get_route_communities(%s, %s) failed: %s", getattr(host, 'hostname', host), prefix, e)
-    return communities
-
-
-def check_communities_on_neighbors(nbrhosts, neighbor_list, prefix,
-                                   expected, unexpected):
-    """Polling target for wait_until. Returns True when ALL neighbors match.
-
-    Args:
-        nbrhosts: dict of neighbor host info (nbrhosts[name]["host"])
-        neighbor_list: list of neighbor names to check
-        prefix: route prefix to inspect
-        expected: set of community strings that MUST be present
-        unexpected: set of community strings that MUST be absent
-
-    Returns:
-        True when all neighbors have expected communities and lack unexpected ones.
-    """
-    for nbr_name in neighbor_list:
-        host = nbrhosts[nbr_name]["host"]
-        actual = get_route_communities(host, prefix)
-        if not expected.issubset(actual):
-            logger.info("check_communities: %s on %s missing %s (has %s)",
-                        prefix, nbr_name, expected - actual, actual)
-            return False
-        if unexpected and unexpected.intersection(actual):
-            logger.info("check_communities: %s on %s has unwanted %s",
-                        prefix, nbr_name, unexpected.intersection(actual))
-            return False
-    return True
-
-
-def verify_route_communities(nbrhosts, neighbor_list, prefix,
-                             expected_communities=None, unexpected_communities=None,
-                             timeout=BGP_CONVERGE_TIMEOUT):
-    """Assert that a route on ALL specified neighbors carries expected communities
-    and does NOT carry unexpected communities. Polls until convergence or timeout.
-
-    Either or both of expected/unexpected may be provided.  When only
-    unexpected is given this replaces the former verify_no_communities helper.
-
-    Args:
-        nbrhosts: dict of neighbor host info
-        neighbor_list: list of neighbor names to check
-        prefix: route prefix to verify
-        expected_communities: set/list of community strings that MUST be present (optional)
-        unexpected_communities: set/list of community strings that MUST be absent (optional)
-        timeout: max seconds to wait for convergence
-    """
-    expected = set(expected_communities or [])
-    unexpected = set(unexpected_communities or [])
-
-    ok = wait_until(timeout, BGP_CONVERGE_POLL_INTERVAL, 0,
-                    check_communities_on_neighbors,
-                    nbrhosts, neighbor_list, prefix, expected, unexpected)
-    pytest_assert(
-        ok,
-        "Community check FAILED on {} for prefix {} after {}s. "
-        "Expected present: {}, Expected absent: {}".format(
-            neighbor_list, prefix, timeout, expected, unexpected)
-    )
+# The actual implementations of get_route_communities / check_communities_on_neighbors /
+# verify_route_communities now live in tests/common/helpers/bgp_routing.py and are
+# imported at the top of this file for backward compatibility.
 
 
 def get_ptf_ports_by_neighbor_suffix(mg_facts, suffix):
