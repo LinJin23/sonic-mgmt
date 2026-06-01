@@ -44,6 +44,10 @@ svcstr-nh5010-fanout-7,10.206.144.96/24,NH-5010-F-O64,FanoutLeafSonic,
 svcstr-8101-fanout-01,10.206.144.94/24,Cisco-8101-O32,FanoutLeafSonic,
 svcstr-7280r4-ut2-1,10.206.144.46/24,Arista-7280R4K-32QF-32DF,DevSonic,
 svcstr-7280r4-ut2-2,10.206.144.47/24,Arista-7280R4K-32QF-32DF,DevSonic,
+svcstr-7280r4-ut2-3,10.206.144.50/24,Arista-7280R4K-32QF-32DF,DevSonic,
+svcstr-7280r4-ut2-4,10.206.144.51/24,Arista-7280R4K-32QF-32DF,DevSonic,
+svcstr-7280r4-fanout-3,10.206.144.52/24,Arista-7280R4K-32QF-32DF,FanoutLeaf,
+svcstr-7280r4-fanout-4,10.206.144.53/24,Arista-7280R4K-32QF-32DF,FanoutLeaf,
 svcstr-z9332f-05,10.206.144.65/24,DellEMC-Z9332f-O32,FanoutLeafSonic,
 svcstr-7060x6-64pe-1,10.206.144.66/24,Arista-7060X6-64PE-O128S2,DevSonic,
 svcstr-7808-sup-1,10.206.144.49/24,Arista-7808R3A-FM,DevSonic,
@@ -58,6 +62,8 @@ svcstr-server-7,10.206.144.44/24,TestServ,Server,
 svcstr-server-8,10.206.144.90/24,TestServ,Server,
 svcstr-server-9,10.206.144.97/24,TestServ,Server,
 svcstr-server-10,10.206.144.101/24,TestServ,Server,
+svcstr-server-11,10.206.144.102/24,TestServ,Server,
+svcstr-server-12,10.206.144.112/24,TestServ,Server,
 console-5,10.206.144.5,Cisco,ConsoleServer,ssh
 console-6,10.206.144.246,Sonic,ConsoleServer,
 pdu-16,10.206.144.16,Sentry4,Pdu,snmp
@@ -70,3 +76,5 @@ pdu-138,10.206.144.138,Sentry4,Pdu,snmp
 pdu-139,10.206.144.139,Sentry4,Pdu,snmp
 pdu-140,10.206.144.110,Sentry4,Pdu,snmp
 pdu-141,10.206.144.111,Sentry4,Pdu,snmp
+pdu-16,10.206.144.16,Sentry4,Pdu,snmp
+pdu-127,10.206.144.127,Sentry4,Pdu,snmp

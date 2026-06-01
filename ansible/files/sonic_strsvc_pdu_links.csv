@@ -103,3 +103,15 @@ pdu-117,36,svcstr-server-9,PSU1
 pdu-118,36,svcstr-server-9,PSU2
 pdu-16,40,svcstr-server-10,PSU1
 pdu-127,40,svcstr-server-10,PSU2
+pdu-16,26,svcstr-7280r4-ut2-3,PSU1
+pdu-127,26,svcstr-7280r4-ut2-3,PSU2
+pdu-16,27,svcstr-7280r4-fanout-3,PSU1
+pdu-127,27,svcstr-7280r4-fanout-3,PSU2
+pdu-140,29,svcstr-7280r4-ut2-4,PSU1
+pdu-141,29,svcstr-7280r4-ut2-4,PSU2
+pdu-140,30,svcstr-7280r4-fanout-4,PSU1
+pdu-141,30,svcstr-7280r4-fanout-4,PSU2
+pdu-16,40,svcstr-server-12,PSU1
+pdu-127,40,svcstr-server-12,PSU2
+pdu-140,31,svcstr-server-11,PSU1
+pdu-141,31,svcstr-server-11,PSU2

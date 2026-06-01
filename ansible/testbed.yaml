@@ -5603,6 +5603,36 @@
   auto_recover: 'False'
   comment: yatishkoul
 
+- conf-name: vmsvc-ut2-7280r4-3
+  group-name: svc12-1
+  topo: t2_single_node_max_64p_v2
+  ptf_image_name: docker-ptf
+  ptf: svc12-1
+  ptf_ip: 10.206.144.113/24
+  ptf_ipv6: 2a01:111:e205:100::ace:9071/64
+  server: server_svc_12
+  vm_base: VM30352
+  dut:
+  - svcstr-7280r4-ut2-3
+  inv_name: strsvc
+  auto_recover: 'False'
+  comment: yatishkoul
+
+- conf-name: vmsvc-ut2-7280r4-4
+  group-name: svc11-1
+  topo: t2_single_node_max_64p_v2
+  ptf_image_name: docker-ptf
+  ptf: svc11-1
+  ptf_ip: 10.206.144.114/24
+  ptf_ipv6: 2a01:111:e205:100::ace:9072/64
+  server: server_svc_11
+  vm_base: VM30416
+  dut:
+  - svcstr-7280r4-ut2-4
+  inv_name: strsvc
+  auto_recover: 'False'
+  comment: yatishkoul
+
 - conf-name: vmsvc-ut2-nh5010-2
   group-name: svc8-1
   topo: t2_single_node_max_64p

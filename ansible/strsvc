@@ -59,6 +59,10 @@ all:
         svc10-1:
           ansible_host: 10.206.144.104
           ansible_hostv6: 2a01:111:e205:100::ace:9068
+        svc12-1:
+          ansible_host: 10.206.144.113
+        svc11-1:
+          ansible_host: 10.206.144.114
     pdu:
       hosts:
         pdu-16:
@@ -84,6 +88,18 @@ all:
           protocol: snmp
         pdu-139:
           ansible_host: 10.206.144.139
+          protocol: snmp
+        pdu-140:
+          ansible_host: 10.206.144.110
+          protocol: snmp
+        pdu-141:
+          ansible_host: 10.206.144.111
+          protocol: snmp
+        pdu-16:
+          ansible_host: 10.206.144.16
+          protocol: snmp
+        pdu-127:
+          ansible_host: 10.206.144.127
           protocol: snmp
 
 fanout:
@@ -167,6 +183,12 @@ fanout:
       os: sonic
       ansible_host: 10.206.144.96
       ansible_hostv6: 2a01:111:e205:100::ace:9060
+    svcstr-7280r4-fanout-3:
+      ansible_host: 10.206.144.52
+      ansible_hostv6:
+    svcstr-7280r4-fanout-4:
+      ansible_host: 10.206.144.53
+      ansible_hostv6:
 
 sonic:
   vars:
@@ -566,6 +588,12 @@ server:
       ansible_hostv6: 2a01:111:e205:100::ace:9061
     svcstr-server-10:
       ansible_host: 10.206.144.101
+    svcstr-server-12:
+      ansible_host: 10.206.144.112
+      ansible_hostv6:
+    svcstr-server-11:
+      ansible_host: 10.206.144.102
+      ansible_hostv6:
 
 sonic_cisco_lc_400G:
   vars:
@@ -1116,6 +1144,52 @@ sonic_arista_7280r4_400G:
         "0x21": "Arista-7280R4K-32QF-32DF"
         "0x22": ""
         "0x23": ""
+        "0x24": ""
+        "0x26": ""
+        "0x28": ""
+        "0x2B": ""
+        "0x2D": ""
+        "0x2F": ""
+        "0xFD": ""
+        "0xFE": ""
+
+    svcstr-7280r4-ut2-3:
+      hwsku: Arista-7280R4K-32QF-32DF
+      sonic_hwsku: Arista-7280R4K-32QF-32DF
+      sonic_hw_platform: Arista-7280R4K-32QF-32DF
+      switchids: [0]
+      serial: JPN2530P1ZV
+      base_mac:
+      ansible_host: 10.206.144.50
+      ansible_hostv6:
+      model: 'Arista-7280R4K-32QF-32DF'
+      syseeprom_info:
+        "0x21": "Arista-7280R4K-32QF-32DF"
+        "0x22": ""
+        "0x23": "JPN2530P1ZV"
+        "0x24": ""
+        "0x26": ""
+        "0x28": ""
+        "0x2B": ""
+        "0x2D": ""
+        "0x2F": ""
+        "0xFD": ""
+        "0xFE": ""
+
+    svcstr-7280r4-ut2-4:
+      hwsku: Arista-7280R4K-32QF-32DF
+      sonic_hwsku: Arista-7280R4K-32QF-32DF
+      sonic_hw_platform: Arista-7280R4K-32QF-32DF
+      switchids: [0]
+      serial: JPN2530P20K
+      base_mac:
+      ansible_host: 10.206.144.51
+      ansible_hostv6:
+      model: 'Arista-7280R4K-32QF-32DF'
+      syseeprom_info:
+        "0x21": "Arista-7280R4K-32QF-32DF"
+        "0x22": ""
+        "0x23": "JPN2530P20K"
         "0x24": ""
         "0x26": ""
         "0x28": ""
