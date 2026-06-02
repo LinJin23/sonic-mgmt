@@ -1,8 +1,10 @@
 {
     "vendor_names": {
-        "PINEWAVE": "PINEWAVE"
+        "PINEWAVE": "PINEWAVE",
+        "FINISAR CORP": "FINISAR_CORP"
     },
     "part_numbers": {
-        "T-OH8CNT-NMT": "T-OH8CNT-NMT"
+        "T-OH8CNT-NMT": "T-OH8CNT-NMT",
+        "FCBR425QE2C02-MS": "FCBR425QE2C02-MS"
     }
 }

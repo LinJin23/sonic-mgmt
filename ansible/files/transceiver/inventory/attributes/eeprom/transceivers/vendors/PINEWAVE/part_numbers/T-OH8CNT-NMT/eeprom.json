@@ -1,0 +1,10 @@
+{
+    "is_non_dac_and_cmis": true,
+    "sff8024_identifier": 25,
+    "cmis_revision": "5.2",
+    "platform_hwsku_overrides": {
+        "x86_64-nvidia_sn5640-r0+Mellanox-SN5640-C512S2": {
+            "sfputil_eeprom_dump_time": 2
+        }
+    }
+}
