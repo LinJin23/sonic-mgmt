@@ -83,6 +83,9 @@ validators:
       - str4-acs-serv-65          # conflicts with ptf1-3
       - str5-acs-serv-65          # conflicts with ptf1-3
       - str5-acs-serv-110         # conflicts with str3-7280r4-ut2-2
+      - str43-0101-0400-07c0      # conflicts with console-241 (first is in str, second is in str4 - both are the same console server)
+      - str5-acs-serv-110         # conflicts with str3-7280r4-ut2-2
+      - str-7280r4-ut2-5           # conflicts with str-7260cx3-acs-1 (IPv6)
       # E2004 inconsistent IP devices
       - str2-8800-lc2-2           # inconsistent IPs between sources
       - str2-8800-lc1-3           # inconsistent IPs between sources
@@ -300,6 +303,7 @@ validators:
       - str5-nh5010-ut2-4         # IPv4/IPv6 mismatch
       - str5-nh5010-ut2-5         # IPv4/IPv6 mismatch
       - str-nh5010-ut2-2          # IPv4/IPv6 mismatch
+      - str-7280r4-ut2-5           # IPv4/IPv6 mismatch
 
 - name: vlan
   enabled: true

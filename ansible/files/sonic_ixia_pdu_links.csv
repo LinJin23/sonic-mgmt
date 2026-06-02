@@ -59,3 +59,5 @@ pdu-126,21,str-nh5010-ut2-2,PSU1
 pdu-127,21,str-nh5010-ut2-2,PSU2
 pdu-90,5,str3-8101-04,PSU1,
 pdu-91,5,str3-8101-04,PSU2,
+pdu-127,44,str-7280r4-ut2-5,PSU1
+pdu-127,45,str-7280r4-ut2-5,PSU2
