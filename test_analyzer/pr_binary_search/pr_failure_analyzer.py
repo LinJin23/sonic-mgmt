@@ -41,7 +41,7 @@ CHECKER_TYPE_CASE_EXPR = '''case(
     TestPlanName matches regex ("kvmtest-t0-2vlans_"), "t0-2vlans_checker",
     TestPlanName matches regex ("kvmtest-t1-lag_"), "t1_checker",
     TestPlanName matches regex ("kvmtest-multi-asic-t1_"), "t1-multi-asic_checker",
-    TestPlanName matches regex ("kvmtest-dualtor-t0_"), "dualtor_checker",
+    TestPlanName matches regex ("kvmtest-dualtor(-t0)?_"), "dualtor_checker",
     TestPlanName matches regex ("kvmtest-dpu_"), "dpu_checker",
     TestPlanName matches regex ("kvmtest-t2_"), "t2_checker",
     "other")'''
