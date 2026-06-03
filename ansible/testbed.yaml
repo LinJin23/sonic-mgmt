@@ -2309,7 +2309,7 @@
 
 - conf-name: vms95-t0-sn5640-3
   group-name: vms95-1
-  topo: t0-isolated-d256u256s2
+  topo: t0-isolated-d32u32s2
   ptf_image_name: docker-ptf
   ptf: vms95-1
   ptf_ip: 10.64.247.176/25
