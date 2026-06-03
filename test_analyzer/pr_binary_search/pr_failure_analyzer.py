@@ -80,6 +80,36 @@ def isoformat_kusto(dtobj: dt.datetime) -> str:
     return dtobj.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+def _parse_kusto_datetime(value):
+    """Parse a Kusto datetime cell (string or datetime).  Returns aware UTC datetime or None."""
+    if value is None or value == "":
+        return None
+    if isinstance(value, dt.datetime):
+        return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+    s = str(value)
+    # Accept both "Z" and "+00:00", and strip sub-microsecond precision Kusto sometimes returns.
+    s = s.replace("Z", "+00:00")
+    if "." in s:
+        head, tail = s.split(".", 1)
+        # tail like "1234567+00:00" -> trim to 6 digits of fractional seconds
+        if "+" in tail:
+            frac, tz = tail.split("+", 1)
+            tail = frac[:6] + "+" + tz
+        elif "-" in tail:
+            frac, tz = tail.split("-", 1)
+            tail = frac[:6] + "-" + tz
+        else:
+            tail = tail[:6]
+        s = head + "." + tail
+    try:
+        parsed = dt.datetime.fromisoformat(s)
+    except ValueError:
+        return None
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
 def execute_kusto_query_rows(kusto, query, query_name):
     try:
         return kusto.execute_query(DATABASE, query).primary_results[0].to_dict()['data']
@@ -464,10 +494,24 @@ def find_last_good_time_before_first_bad(kusto, row, trigger_type, first_bad_tim
 
 def get_failure_details(kusto, failure_details, all_failure_entries, failures, trigger_type,
                         query_start, query_end, max_search_range_days=None):
+    # Widen the per-test history window so the daily-success-rate scan can locate
+    # the actual regression boundary (first day SuccessRate < PREVIOUS_SUCCESS_THRESHOLD)
+    # even when the parent lookback (LOOKBACK_DAYS) is short.  Without this, a 1-day
+    # lookback collapses history_rows to a single day, forcing first_bad_time to
+    # snap to that day; combined with last_good_time found via a 14-day fallback
+    # scan, this produces an over-wide commit window that buries the real
+    # transition inside an already-bad region.
+    history_lookback_days = max(
+        max_search_range_days if max_search_range_days is not None else LAST_GOOD_MAX_LOOKBACK_DAYS,
+        1,
+    )
+    history_query_start = query_end - timedelta(days=history_lookback_days)
+    history_start_str = isoformat_kusto(history_query_start)
+    query_end_str = isoformat_kusto(query_end)
     for row in failures:
         query_time_range = f'''
         let test_plans = TestPlans
-        | where EndTime between (datetime({isoformat_kusto(query_start)}) .. datetime({isoformat_kusto(query_end)}))
+        | where EndTime between (datetime({history_start_str}) .. datetime({query_end_str}))
         | where TriggerType == "{trigger_type}"
         | where SourceRepo == "{row['SourceRepo']}"
         | where TestBranch == "{row['Branch']}"
@@ -477,7 +521,7 @@ def get_failure_details(kusto, failure_details, all_failure_entries, failures, t
         test_plans
         | join kind=inner (
             V2TestCases
-            | where EndTime between (datetime({isoformat_kusto(query_start)}) .. datetime({isoformat_kusto(query_end)}))
+            | where EndTime between (datetime({history_start_str}) .. datetime({query_end_str}))
             | where Result in ("success", "failure", "error")
             | extend TestCase = extract("^(.+?)(\\\\[|$)", 1, TestCase)
             | where FilePath == "{row['FilePath']}"
@@ -490,11 +534,13 @@ def get_failure_details(kusto, failure_details, all_failure_entries, failures, t
             Success = countif(Result == "success"),
             Failure = countif(Result == "failure"),
             Error = countif(Result == "error"),
-            Total = count()
+            Total = count(),
+            LatestSuccessEndTime = maxif(EndTime1, Result == "success"),
+            EarliestFailEndTime = minif(EndTime1, Result in ("failure", "error"))
             by Day
         | where Total > 0
         | extend SuccessRate = todouble(Success) / todouble(Success + Failure + Error)
-        | project Day, SuccessRate
+        | project Day, SuccessRate, LatestSuccessEndTime, EarliestFailEndTime
         | order by Day asc
         '''
         history_rows = execute_kusto_query_rows(kusto, query_time_range, "get_failure_details.query_time_range")
@@ -517,9 +563,13 @@ def get_failure_details(kusto, failure_details, all_failure_entries, failures, t
             continue
 
         first_bad_time = None
+        first_bad_day = None
         for item in history_rows:
             if float(item["SuccessRate"]) < float(PREVIOUS_SUCCESS_THRESHOLD):
-                first_bad_time = dt.datetime.strptime(item["Day"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                first_bad_day = dt.datetime.strptime(item["Day"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
+                # Prefer the precise EndTime of the first failing run on this day; fall back
+                # to day-start (00:00 UTC) if the timestamp is missing.
+                first_bad_time = _parse_kusto_datetime(item.get("EarliestFailEndTime")) or first_bad_day
                 break
         if not first_bad_time:
             logger.info(f"No first bad point found for {row['TestCase']}, skipping.")
@@ -586,13 +636,22 @@ def get_failure_details(kusto, failure_details, all_failure_entries, failures, t
             all_failure_entries.append(dict(detail))
             continue
 
+        # Walk history_rows up to (and INCLUDING) the first_bad_day so we can pick up
+        # successful runs that happened earlier the same day before the regression hit
+        # (mid-day transitions).  Always use the precise LatestSuccessEndTime instead
+        # of the day boundary to avoid an unnecessary 24h slack on the lower bound.
         last_good_time = None
         for item in history_rows:
             run_day = dt.datetime.strptime(item["Day"], "%Y-%m-%d").replace(tzinfo=timezone.utc)
-            if run_day >= first_bad_time:
+            if first_bad_day is not None and run_day > first_bad_day:
                 break
-            if float(item["SuccessRate"]) >= float(PREVIOUS_SUCCESS_THRESHOLD):
-                last_good_time = run_day
+            if int(item.get("Success", 0)) <= 0:
+                continue
+            candidate = _parse_kusto_datetime(item.get("LatestSuccessEndTime")) or run_day
+            if first_bad_time is not None and candidate >= first_bad_time:
+                continue
+            if last_good_time is None or candidate > last_good_time:
+                last_good_time = candidate
 
         if not last_good_time:
             last_good_time = find_last_good_time_before_first_bad(
