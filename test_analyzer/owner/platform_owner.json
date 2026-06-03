@@ -153,7 +153,7 @@
     },
     {
         "hwsku": "Arista-7260CX3-C64",
-        "topo": "tgen",
+        "topo": "tgen-t0-3-32",
         "owner": "Shawn Dashuai Zhang",
         "email": "dashuaizhang@microsoft.com",
         "new_platform": "No",
