@@ -1,0 +1,417 @@
+all:
+  children:
+    docker_registry:
+      hosts:
+        acs-devrepo.corp.microsoft.com:
+    strtk5a:
+      children:
+        sonic:
+        fanout:
+        server:
+        pdu:
+    ptf:
+      vars:
+        ansible_ssh_user: root
+        ansible_ssh_pass: root
+      hosts:
+        tk5a-101:
+          ansible_host: 172.16.201.11
+          ansible_hostv6: 2603:10e2:0140:3000::800b
+        tk5a-102:
+          ansible_host: 172.16.201.12
+          ansible_hostv6: 2603:10e2:0140:3000::800c
+        tk5a-103:
+          ansible_host: 172.16.201.13
+          ansible_hostv6: 2603:10e2:0140:3000::800d
+        tk5a-104:
+          ansible_host: 172.16.201.14
+          ansible_hostv6: 2603:10e2:0140:3000::800e
+        tk5a-105:
+          ansible_host: 172.16.201.15
+          ansible_hostv6: 2603:10e2:0140:3000::800f
+        tk5a-106:
+          ansible_host: 172.16.201.16
+          ansible_hostv6: 2603:10e2:0140:3000::8010
+        tk5a-107:
+          ansible_host: 172.16.201.17
+          ansible_hostv6: 2603:10e2:0140:3000::8011
+        tk5a-108:
+          ansible_host: 172.16.201.18
+          ansible_hostv6: 2603:10e2:0140:3000::8012
+        tk5a-109:
+          ansible_host: 172.16.201.19
+          ansible_hostv6: 2603:10e2:0140:3000::8013
+        tk5a-110:
+          ansible_host: 172.16.201.20
+          ansible_hostv6: 2603:10e2:0140:3000::8014
+        tk5a-111:
+          ansible_host: 172.16.201.21
+          ansible_hostv6: 2603:10e2:0140:3000::8015
+        tk5a-112:
+          ansible_host: 172.16.201.22
+          ansible_hostv6: 2603:10e2:0140:3000::8016
+        tk5a-113:
+          ansible_host: 172.16.201.23
+          ansible_hostv6: 2603:10e2:0140:3000::8017
+        tk5a-201:
+          ansible_host: 172.16.218.11
+          ansible_hostv6: 2603:10e2:0140:3000::910a
+        tk5a-202:
+          ansible_host: 172.16.218.12
+          ansible_hostv6: 2603:10e2:0140:3000::910b
+        tk5a-203:
+          ansible_host: 172.16.218.13
+          ansible_hostv6: 2603:10e2:0140:3000::910c
+
+    pdu:
+      hosts:
+        STRTK5-0300-PDU-01P9:
+          ansible_host: 10.213.192.195
+          protocol: snmp
+        STRTK5-0300-PDU-01P10:
+          ansible_host: 10.213.192.196
+          protocol: snmp
+        STRTK5-0300-PDU-01P11:
+          ansible_host: 10.213.192.197
+          protocol: snmp
+        STRTK5-0300-PDU-01P12:
+          ansible_host: 10.213.192.198
+          protocol: snmp
+        STRTK5-0300-PDU-01P13:
+          ansible_host: 10.213.192.199
+          protocol: snmp
+        STRTK5-0300-PDU-01P14:
+          ansible_host: 10.213.192.200
+          protocol: snmp
+        STRTK5-0300-PDU-01P15:
+          ansible_host: 10.213.192.201
+          protocol: snmp
+        STRTK5-0300-PDU-01P16:
+          ansible_host: 10.213.192.202
+          protocol: snmp
+
+fanout:
+  hosts:
+    strtk5a-7260cx3-root:
+      ansible_host: 10.213.192.103
+      ansible_hostv6: 2603:10e2:140:3000::227
+    strtk5a-7260cx3-fan-01:
+      ansible_host: 10.213.192.93
+      ansible_hostv6: 2603:10e2:140:3000::217
+    strtk5a-7260cx3-fan-02:
+      ansible_host: 10.213.192.94
+      ansible_hostv6: 2603:10e2:140:3000::218
+    strtk5a-7260cx3-fan-03:
+      ansible_host: 10.213.192.95
+      ansible_hostv6: 2603:10e2:140:3000::219
+    strtk5a-7260cx3-fan-04:
+      ansible_host: 10.213.192.96
+      ansible_hostv6: 2603:10e2:140:3000::21a
+    strtk5a-7260cx3-fan-05:
+      ansible_host: 10.213.192.97
+      ansible_hostv6: 2603:10e2:140:3000::21b
+    strtk5a-7260cx3-fan-06:
+      ansible_host: 10.213.192.98
+      ansible_hostv6: 2603:10e2:140:3000::21c
+    strtk5a-7260cx3-fan-07:
+      ansible_host: 10.213.192.84
+      ansible_hostv6: 2603:10e2:140:3000::21d
+    strtk5a-7260cx3-fan-08:
+      ansible_host: 10.213.192.85
+      ansible_hostv6: 2603:10e2:140:3000::21e
+    strtk5a-7260cx3-fan-09:
+      ansible_host: 10.213.192.86
+      ansible_hostv6: 2603:10e2:140:3000::21f
+    strtk5a-7260cx3-fan-10:
+      ansible_host: 10.213.192.87
+      ansible_hostv6: 2603:10e2:140:3000::220
+    strtk5a-7260cx3-fan-11:
+      ansible_host: 10.213.192.88
+      ansible_hostv6: 2603:10e2:140:3000::221
+    strtk5a-7260cx3-fan-12:
+      ansible_host: 10.213.192.99
+      ansible_hostv6: 2603:10e2:140:3000::222
+    strtk5a-7260cx3-fan-13:
+      ansible_host: 10.213.192.100
+      ansible_hostv6: 2603:10e2:140:3000::223
+    strtk5a-7260cx3-fan-14:
+      ansible_host: 10.213.192.101
+      ansible_hostv6: 2603:10e2:140:3000::224
+    strtk5a-7260cx3-fan-15:
+      ansible_host: 10.213.192.89
+      ansible_hostv6: 2603:10e2:140:3000::225
+    strtk5a-7260cx3-fan-16:
+      ansible_host: 10.213.192.102
+      ansible_hostv6: 2603:10e2:140:3000::226
+    strtk5a-7260cx3-fan-17:
+      ansible_host: 10.213.192.171
+      ansible_hostv6: 2603:10e2:140:3000::26b
+    strtk5a-7260cx3-fan-18:
+      ansible_host: 10.213.192.172
+      ansible_hostv6: 2603:10e2:140:3000::26c
+    strtk5a-7050c-fan-01:
+      ansible_host: 10.213.192.164
+      ansible_hostv6: 2603:10e2:140:3000::269
+      os: sonic
+    strtk5a-7050c-fan-02:
+      ansible_host: 10.213.192.165
+      ansible_hostv6: 2603:10e2:140:3000::26a
+      os: sonic
+
+sonic:
+  vars:
+    mgmt_subnet_mask_length: 26
+    mgmt_subnet_v6_mask_length: 122
+  children:
+    sonic_arista_7050:
+    sonic_arista_QX:
+    sonic_arista64_100:
+
+sonic_arista_7050:
+  vars:
+    iface_speed: 100000
+    msft_an_enabled: True
+    mgmt_subnet_mask_length: 26
+  hosts:
+    strtk5a-7050cx3-01:
+      ansible_host: 10.213.192.66
+      ansible_hostv6: 2603:10e2:140:3000::202
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: JPN2426P0BL
+      base_mac: 68:8b:f4:88:56:74
+
+    strtk5a-7050cx3-02:
+      ansible_host: 10.213.192.67
+      ansible_hostv6: 2603:10e2:140:3000::203
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: JPN2426P0BH
+      base_mac: 68:8b:f4:88:39:10
+
+    strtk5a-7050cx3-03:
+      ansible_host: 10.213.192.68
+      ansible_hostv6: 2603:10e2:140:3000::204
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: JPN2426P0AY
+      base_mac: 68:8b:f4:88:55:6c
+
+    strtk5a-7050cx3-04:
+      ansible_host: 10.213.192.69
+      ansible_hostv6: 2603:10e2:140:3000::205
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: JPA2424P0WP
+      base_mac: 68:8b:f4:87:85:1c
+
+    strtk5a-7050cx3-05:
+      ansible_host: 10.213.192.70
+      ansible_hostv6: 2603:10e2:140:3000::206
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: JPN2426P0BJ
+      base_mac: 68:8b:f4:88:60:c4
+
+    strtk5a-7050cx3-06:
+      ansible_host: 10.213.192.71
+      ansible_hostv6: 2603:10e2:140:3000::207
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: JPN2426P0AC
+      base_mac: 68:8b:f4:88:55:f0
+
+    strtk5a-7050cx3-07:
+      ansible_host: 10.213.192.72
+      ansible_hostv6: 2603:10e2:140:3000::208
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: HBG24470J21
+      base_mac: 54:0f:2c:48:2b:8c
+
+    strtk5a-7050cx3-08:
+      ansible_host: 10.213.192.73
+      ansible_hostv6: 2603:10e2:140:3000::209
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: HBG24470JKX
+      base_mac: 54:0f:2c:50:20:44
+
+    strtk5a-7050cx3-09:
+      ansible_host: 10.213.192.74
+      ansible_hostv6: 2603:10e2:140:3000::20a
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: HBG24470JBJ
+      base_mac: 54:0f:2c:4e:02:dc
+
+    strtk5a-7050cx3-10:
+      ansible_host: 10.213.192.75
+      ansible_hostv6: 2603:10e2:140:3000::20b
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: HBG24470JAP
+      base_mac: 54:0f:2c:4d:a9:a8
+
+    strtk5a-7050cx3-11:
+      ansible_host: 10.213.192.76
+      ansible_hostv6: 2603:10e2:140:3000::20c
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: HBG24470J3Q
+      base_mac: 54:0f:2c:49:41:fc
+
+    strtk5a-7050cx3-12:
+      ansible_host: 10.213.192.77
+      ansible_hostv6: 2603:10e2:140:3000::20d
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S
+      serial: HBG24470J2K
+      base_mac: 54:0f:2c:48:56:dc
+
+    strtk5a-7050-03:
+      ansible_host: 10.213.192.104
+      ansible_hostv6: 2603:10e2:140:3000::228
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S-SSD
+      serial: JPW20280924
+      base_mac: d4:af:f7:4d:a5:4c
+
+    strtk5a-7050-04:
+      ansible_host: 10.213.192.105
+      ansible_hostv6: 2603:10e2:140:3000::229
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S-SSD
+      serial: JPW20281034
+      base_mac: d4:af:f7:4d:a8:64
+
+    strtk5a-7050-05:
+      ansible_host: 10.213.192.160
+      ansible_hostv6: 2603:10e2:140:3000::265
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S-SSD
+      serial: JPE20437840
+      base_mac: 94:8e:d3:04:eb:28
+
+    strtk5a-7050-06:
+      ansible_host: 10.213.192.161
+      ansible_hostv6: 2603:10e2:140:3000::266
+      hwsku: Arista-7050CX3-32S-C32
+      model: DCS-7050CX3-32S-SSD
+      serial: JPE20432360
+      base_mac: d4:af:f7:cb:c8:ec
+
+    strtk5a-7050c-01:
+      ansible_host: 10.213.192.162
+      ansible_hostv6: 2603:10e2:140:3000::267
+      hwsku: Arista-7050CX3-32C-C32
+      model: DCS-7050CX3-32C
+      serial: HBG24350071
+      base_mac: 68:bf:6c:ad:ca:b0
+
+    strtk5a-7050c-02:
+      ansible_host: 10.213.192.163
+      ansible_hostv6: 2603:10e2:140:3000::268
+      hwsku: Arista-7050CX3-32C-C32
+      model: DCS-7050CX3-32C
+      serial: HBG24350096
+      base_mac: 54:0f:2c:40:f2:00
+
+sonic_arista_QX:
+  vars:
+    iface_speed: 40000
+  hosts:
+    strtk5a-7050qx-01:
+      ansible_host: 10.213.192.166
+      ansible_hostv6: 2603:10e2:140:3000::260
+      hwsku: Arista-7050-QX-32S
+      model: DCS-7050QX-32S
+      serial: JPE20224213
+      base_mac: c0:d6:82:ef:0f:0f
+
+sonic_arista64_100:
+  vars:
+    iface_speed: 100000
+    msft_an_enabled: False
+  hosts:
+    strtk5a-7260cx3-01:
+      ansible_host: 10.213.192.78
+      ansible_hostv6: 2603:10e2:140:3000::20e
+      hwsku: Arista-7260CX3-D108C8
+      model: DCS-7260CX3-64
+      serial: JPA2329P0G2
+      base_mac: cc:1a:a3:a8:a0:94
+
+    strtk5a-7260cx3-02:
+      ansible_host: 10.213.192.79
+      ansible_hostv6: 2603:10e2:140:3000::20f
+      hwsku: Arista-7260CX3-D108C8
+      model: DCS-7260CX3-64
+      serial: JPA2329P0AR
+      base_mac: cc:1a:a3:a8:88:34
+
+    strtk5a-7260cx3-03:
+      ansible_host: 10.213.192.80
+      ansible_hostv6: 2603:10e2:140:3000::210
+      hwsku: Arista-7260CX3-D108C8
+      model: DCS-7260CX3-64
+      serial: JPA2328P0VU
+      base_mac: cc:1a:a3:a7:1a:94
+
+    strtk5a-7260cx3-04:
+      ansible_host: 10.213.192.81
+      ansible_hostv6: 2603:10e2:140:3000::211
+      hwsku: Arista-7260CX3-D108C8
+      model: DCS-7260CX3-64
+      serial: JPA2327P17W
+      base_mac: cc:1a:a3:a6:a1:b8
+
+    strtk5a-7260cx3-05:
+      ansible_host: 10.213.192.82
+      ansible_hostv6: 2603:10e2:140:3000::212
+      hwsku: Arista-7260CX3-D108C8
+      model: DCS-7260CX3-64
+      serial: JPA2325P1L8
+      base_mac: cc:1a:a3:a1:14:dc
+
+    strtk5a-7260cx3-06:
+      ansible_host: 10.213.192.90
+      ansible_hostv6: 2603:10e2:140:3000::213
+      hwsku: Arista-7260CX3-C64
+      model: DCS-7260CX3-64
+      serial: JPA2322P1SJ
+      base_mac: cc:1a:a3:9b:a2:68
+
+    strtk5a-7260cx3-07:
+      ansible_host: 10.213.192.91
+      ansible_hostv6: 2603:10e2:140:3000::214
+      hwsku: Arista-7260CX3-C64
+      model: DCS-7260CX3-64
+      serial: JPA2321P3Y1
+      base_mac: cc:1a:a3:3d:cc:74
+
+    strtk5a-7260cx3-08:
+      ansible_host: 10.213.192.92
+      ansible_hostv6: 2603:10e2:140:3000::215
+      hwsku: Arista-7260CX3-C64
+      model: DCS-7260CX3-64
+      serial: JPA2334P38K
+      base_mac: e4:78:76:a4:d1:ee
+
+    strtk5a-7260cx3-09:
+      ansible_host: 10.213.192.83
+      ansible_hostv6: 2603:10e2:140:3000::216
+      hwsku: Arista-7260CX3-D108C8
+      model: DCS-7260CX3-64
+      serial: JPA2334P35T
+      base_mac: e4:78:76:a4:7b:9a
+
+server:
+  hosts:
+    strtk5a-serv-01:
+      ansible_host: 10.213.192.173
+      ansible_hostv6: 2603:10e2:140:3000::26d
+
+    strtk5a-serv-02:
+      ansible_host: 10.213.192.174
+      ansible_hostv6: 2603:10e2:140:3000::270

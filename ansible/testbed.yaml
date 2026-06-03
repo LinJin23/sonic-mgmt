@@ -6176,3 +6176,250 @@
   inv_name: str4
   auto_recover: 'True'
   comment: dashuaizhang
+
+- conf-name: tbtk5a-t0-7050cx3-1
+  group-name: tk5a-101
+  topo: t0
+  ptf_image_name: docker-ptf
+  ptf: tk5a-101
+  ptf_ip: 172.16.201.11/18
+  ptf_ipv6: 2603:10e2:0140:3000::800b/114
+  server: server_tk5a_1
+  vm_base: VM49000
+  dut:
+  - strtk5a-7050cx3-01
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7050cx3-1
+
+- conf-name: tbtk5a-t0-7050cx3-2
+  group-name: tk5a-102
+  topo: t0
+  ptf_image_name: docker-ptf
+  ptf: tk5a-102
+  ptf_ip: 172.16.201.12/18
+  ptf_ipv6: 2603:10e2:0140:3000::800c/114
+  server: server_tk5a_1
+  vm_base: VM49004
+  dut:
+  - strtk5a-7050cx3-02
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7050cx3-2
+
+- conf-name: tbtk5a-t1-7050cx3-3
+  group-name: tk5a-103
+  topo: t1-lag
+  ptf_image_name: docker-ptf
+  ptf: tk5a-103
+  ptf_ip: 172.16.201.13/18
+  ptf_ipv6: 2603:10e2:0140:3000::800d/114
+  server: server_tk5a_1
+  vm_base: VM49008
+  dut:
+  - strtk5a-7050cx3-03
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t1-7050cx3-3
+
+- conf-name: tbtk5a-dual-7050-1
+  group-name: tk5a-104
+  topo: dualtor
+  ptf_image_name: docker-ptf
+  ptf: tk5a-104
+  ptf_ip: 172.16.201.14/18
+  ptf_ipv6: 2603:10e2:0140:3000::800e/114
+  server: server_tk5a_1
+  vm_base: VM49032
+  dut:
+  - strtk5a-7050cx3-04
+  - strtk5a-7050cx3-05
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-dual-7050-1
+
+- conf-name: tbtk5a-dual-7050-2
+  group-name: tk5a-105
+  topo: dualtor
+  ptf_image_name: docker-ptf
+  ptf: tk5a-105
+  ptf_ip: 172.16.201.15/18
+  ptf_ipv6: 2603:10e2:0140:3000::800f/114
+  server: server_tk5a_1
+  vm_base: VM49036
+  dut:
+  - strtk5a-7050cx3-06
+  - strtk5a-7050cx3-07
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-dual-7050-2
+
+- conf-name: tbtk5a-dual-7050-3
+  group-name: tk5a-106
+  topo: dualtor
+  ptf_image_name: docker-ptf
+  ptf: tk5a-106
+  ptf_ip: 172.16.201.16/18
+  ptf_ipv6: 2603:10e2:0140:3000::8010/114
+  server: server_tk5a_1
+  vm_base: VM49040
+  dut:
+  - strtk5a-7050cx3-08
+  - strtk5a-7050cx3-09
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-dual-7050-3
+
+- conf-name: tbtk5a-t0-7050-12
+  group-name: tk5a-107
+  topo: t0
+  ptf_image_name: docker-ptf
+  ptf: tk5a-107
+  ptf_ip: 172.16.201.17/18
+  ptf_ipv6: 2603:10e2:0140:3000::8011/114
+  server: server_tk5a_1
+  vm_base: VM49044
+  dut:
+  - strtk5a-7050cx3-10
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7050-12
+
+- conf-name: tbtk5a-t0-7050-13
+  group-name: tk5a-108
+  topo: t0
+  ptf_image_name: docker-ptf
+  ptf: tk5a-108
+  ptf_ip: 172.16.201.18/18
+  ptf_ipv6: 2603:10e2:0140:3000::8012/114
+  server: server_tk5a_1
+  vm_base: VM49048
+  dut:
+  - strtk5a-7050cx3-11
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7050-13
+
+- conf-name: tbtk5a-t0-7050-14
+  group-name: tk5a-109
+  topo: t0
+  ptf_image_name: docker-ptf
+  ptf: tk5a-109
+  ptf_ip: 172.16.201.19/18
+  ptf_ipv6: 2603:10e2:0140:3000::8013/114
+  server: server_tk5a_1
+  vm_base: VM49052
+  dut:
+  - strtk5a-7050cx3-12
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7050-14
+
+- conf-name: tbtk5a-t0-7050qx-2
+  group-name: tk5a-110
+  topo: t0
+  ptf_image_name: docker-ptf
+  ptf: tk5a-110
+  ptf_ip: 172.16.201.20/18
+  ptf_ipv6: 2603:10e2:0140:3000::8014/114
+  server: server_tk5a_1
+  vm_base: VM49056
+  dut:
+  - strtk5a-7050qx-01
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7050qx-2
+
+- conf-name: tbtk5a-t0-7260-3
+  group-name: tk5a-111
+  topo: t0-116
+  ptf_image_name: docker-ptf
+  ptf: tk5a-111
+  ptf_ip: 172.16.201.21/18
+  ptf_ipv6: 2603:10e2:0140:3000::8015/114
+  server: server_tk5a_1
+  vm_base: VM49060
+  dut:
+  - strtk5a-7260cx3-01
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7260-3
+
+- conf-name: tbtk5a-dual-7260-1
+  group-name: tk5a-112
+  topo: dualtor-120
+  ptf_image_name: docker-ptf
+  ptf: tk5a-112
+  ptf_ip: 172.16.201.22/18
+  ptf_ipv6: 2603:10e2:0140:3000::8016/114
+  server: server_tk5a_1
+  vm_base: VM49064
+  dut:
+  - strtk5a-7260cx3-02
+  - strtk5a-7260cx3-03
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-dual-7260-1
+
+- conf-name: tbtk5a-dual-7260-2
+  group-name: tk5a-113
+  topo: dualtor-120
+  ptf_image_name: docker-ptf
+  ptf: tk5a-113
+  ptf_ip: 172.16.201.23/18
+  ptf_ipv6: 2603:10e2:0140:3000::8017/114
+  server: server_tk5a_1
+  vm_base: VM49068
+  dut:
+  - strtk5a-7260cx3-04
+  - strtk5a-7260cx3-05
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-dual-7260-2
+
+- conf-name: tbtk5a-t1-7260-14
+  group-name: tk5a-201
+  topo: t1-64-lag
+  ptf_image_name: docker-ptf
+  ptf: tk5a-201
+  ptf_ip: 172.16.218.11/18
+  ptf_ipv6: 2603:10e2:0140:3000::910a/114
+  server: server_tk5a_2
+  vm_base: VM51000
+  dut:
+  - strtk5a-7260cx3-06
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t1-7260-14
+
+- conf-name: tbtk5a-aa-7260-1
+  group-name: tk5a-202
+  topo: dualtor-aa-56
+  ptf_image_name: docker-ptf
+  ptf: tk5a-202
+  ptf_ip: 172.16.218.12/18
+  ptf_ipv6: 2603:10e2:0140:3000::910b/114
+  netns_mgmt_ip: 172.16.218.29/18
+  server: server_tk5a_2
+  vm_base: VM51024
+  dut:
+  - strtk5a-7260cx3-07
+  - strtk5a-7260cx3-08
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-aa-7260-1
+
+- conf-name: tbtk5a-t0-7260-1
+  group-name: tk5a-203
+  topo: t0-116
+  ptf_image_name: docker-ptf
+  ptf: tk5a-203
+  ptf_ip: 172.16.218.13/18
+  ptf_ipv6: 2603:10e2:0140:3000::910c/114
+  server: server_tk5a_2
+  vm_base: VM51028
+  dut:
+  - strtk5a-7260cx3-09
+  inv_name: strtk5a
+  auto_recover: 'True'
+  comment: tbtk5a-t0-7260-1

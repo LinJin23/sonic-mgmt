@@ -26,3 +26,6 @@ nic_simulator_grpc_port:
 
   # On server_bjw2_5
   testbed-bjw2-can-dual-t0-8101c1-3: 50075
+
+  # On strtk5a-serv-02
+  tbtk5a-aa-7260-1: 50075

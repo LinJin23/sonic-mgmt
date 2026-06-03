@@ -303,7 +303,9 @@ validators:
       - str5-nh5010-ut2-4         # IPv4/IPv6 mismatch
       - str5-nh5010-ut2-5         # IPv4/IPv6 mismatch
       - str-nh5010-ut2-2          # IPv4/IPv6 mismatch
-      - str-7280r4-ut2-5           # IPv4/IPv6 mismatch
+      - str-7280r4-ut2-5          # IPv4/IPv6 mismatch
+      - ^strtk5a-.*               # IPv4/IPv6 mismatch
+      - ^tk5a-.*                  # IPv4/IPv6 mismatch
 
 - name: vlan
   enabled: true
