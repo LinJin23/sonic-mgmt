@@ -2020,19 +2020,18 @@
 
 - conf-name: vms74-t0-7060x6-512-10
   group-name: vms74-3
-  topo: t0-isolated-d256u256s2
+  topo: t0-isolated-d32u32s2
   ptf_image_name: docker-ptf
   ptf: vms74-3
   ptf_ip: 10.64.246.102/25
   ptf_ipv6: 2a01:111:e210:b000::a40:f666/121
   server: server_74
-  vm_base: VM74118 # 512VM
+  vm_base: VM74118 # 64VM
   dut:
   - str4-7060x6-512-10
   inv_name: str4
   auto_recover: 'True'
   comment: ptratiya
-  use_converged_peers: true
 
 - conf-name: vms73-t0-7060x6-512-1
   group-name: vms73-4
@@ -2096,19 +2095,18 @@
 
 - conf-name: vms91-t0-7060x6-512-3
   group-name: vms91-1
-  topo: t0-isolated-d256u256s2
+  topo: t0-isolated-d32u32s2
   ptf_image_name: docker-ptf
   ptf: vms91-1
   ptf_ip: 10.64.247.178/25
   ptf_ipv6: 2a01:111:e210:b000::a40:f7b2/121
   server: server_91
-  vm_base: VM91000 # 512VM
+  vm_base: VM91000 # 64VM
   dut:
   - str5-7060x6-512-3
   inv_name: str5
   auto_recover: 'True'
   comment: ptratiya
-  use_converged_peers: true
 
 - conf-name: vms93-t1-7060x6-512-4
   group-name: vms93-5
