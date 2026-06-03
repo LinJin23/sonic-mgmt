@@ -331,6 +331,67 @@ def test_f4_passes_when_too_few_runs():
 
 
 # ---------------------------------------------------------------------------
+# Pretest / posttest infra tests must bypass V2TestCases-driven filters
+# (F2 historical pass-rate, F4 pre-existing failure) because their
+# V2TestCases history is shared across every test plan and topology, so
+# the global pass-rate stays >99 % even when one topology regresses.
+# ---------------------------------------------------------------------------
+
+@pytest.mark.parametrize("file_path", [
+    "test_pretest.py",
+    "test_posttest.py",
+    "subdir/test_pretest.py",
+    "tests/foo/test_posttest.py",
+])
+def test_f2_bypassed_for_infra_tests(file_path):
+    # Even with a 99 % pass rate over 200k runs (which would normally trip F2),
+    # pretest/posttest must not be skipped.
+    client = make_kusto_client({
+        "V2TestCases": [{"TotalRuns": 200000, "Passes": 199000}],
+    })
+    decision = _filter_2_historical_pass_rate(
+        client, "SonicTestData",
+        base_entry(file_path=file_path, testcase="test_features_state",
+                   checker="dualtor_checker"))
+    assert decision.passed is True
+    # Also assert we did not even bother to hit Kusto.
+    client.execute.assert_not_called()
+
+
+@pytest.mark.parametrize("file_path", ["test_pretest.py", "test_posttest.py"])
+def test_f4_bypassed_for_infra_tests(file_path):
+    t_now = now()
+    client = make_kusto_client({"V2TestCases": [{
+        "TotalRuns": 100,
+        "Failures": 100,
+        "OldestFail": t_now - timedelta(days=F4_PREEXISTING_DAYS + 5),
+        "NewestFail": t_now,
+    }]})
+    decision = _filter_4_preexisting_failure(
+        client, "SonicTestData",
+        base_entry(file_path=file_path, testcase="test_features_state",
+                   checker="dualtor_checker"))
+    assert decision.passed is True
+    client.execute.assert_not_called()
+
+
+def test_f0_still_applies_to_infra_tests():
+    # If we ever blocklist a pretest infra test, F0 must still skip it —
+    # only V2TestCases-driven filters bypass.
+    from presearch_filter import STATIC_BLOCKLIST as _BL
+    _BL.add(("test_features_state", "dualtor_checker"))
+    try:
+        decision = _filter_0_static_blocklist(
+            base_entry(file_path="test_pretest.py",
+                       testcase="test_features_state",
+                       checker="dualtor_checker"))
+        assert decision.passed is False
+        assert decision.skipped_by == "F0_STATIC_BLOCKLIST"
+    finally:
+        _BL.discard(("test_features_state", "dualtor_checker"))
+
+
+# ---------------------------------------------------------------------------
 # Fail-open behaviour
 # ---------------------------------------------------------------------------
 

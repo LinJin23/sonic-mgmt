@@ -43,6 +43,7 @@ __all__ = [
     "FilterDecision",
     "STATIC_BLOCKLIST",
     "DEFAULT_ENABLED_FILTERS",
+    "INFRA_TEST_FILES",
     "F1_LOOKBACK_DAYS",
     "F1_REPEAT_BAD_COMMIT_THRESHOLD",
     "F2_LOOKBACK_DAYS",
@@ -55,8 +56,28 @@ __all__ = [
     "F4_MIN_RUNS",
 ]
 
+# Infrastructure test scripts that run as part of every test plan's
+# pretest/posttest phase, not as a per-PR-test invocation.  Their
+# V2TestCases history is dominated by unrelated test plans (one row per
+# test plan, regardless of which PR triggered it), so the pass-rate /
+# fail-rate signals used by F2 and F4 are meaningless for them — a
+# regression that breaks dualtor pretest still leaves global pass rate
+# >99 % because every other topology's pretest still passes.  These
+# tests must therefore bypass V2TestCases-driven filters; F0/F1/F3 still
+# apply as they only consult per-checker bisection history.
+INFRA_TEST_FILES = frozenset({"test_pretest.py", "test_posttest.py"})
+
+
+def _is_infra_test(entry: dict) -> bool:
+    """True iff the entry's file_path is a pretest/posttest infra script."""
+    fp = entry.get("file_path") or ""
+    # Match both bare filename ("test_pretest.py") and any folder-qualified
+    # form ("foo/test_pretest.py") that callers might supply.
+    return fp.split("/")[-1] in INFRA_TEST_FILES
+
+
 # ---------------------------------------------------------------------------
-# Tunables — STATIC_BLOCKLIST lives in presearch_filter_config.py.
+# Tunables — F1/F2/F3/F4 thresholds
 # ---------------------------------------------------------------------------
 
 # F1 — Existing result lookback.  Skip when *either* of the following holds:
@@ -264,6 +285,13 @@ def _filter_2_historical_pass_rate(kusto_client, database: str, entry: dict) -> 
     if not testcase or not file_path:
         return FilterDecision(passed=True)
 
+    # Pretest / posttest scripts run once per test plan across every
+    # topology, so their V2TestCases pass-rate is dominated by unrelated
+    # test plans and stays >99 % even when one topology regresses badly.
+    # Bypass F2 for these — F0/F1/F3 still apply.
+    if _is_infra_test(entry):
+        return FilterDecision(passed=True)
+
     query = f"""
     V2TestCases
     | where UploadTime > ago({F2_LOOKBACK_DAYS}d)
@@ -353,6 +381,12 @@ def _filter_4_preexisting_failure(kusto_client, database: str, entry: dict) -> F
     file_path = entry.get("file_path", "")
     branch = entry.get("branch", "")
     if not testcase or not file_path:
+        return FilterDecision(passed=True)
+
+    # Same reasoning as F2: pretest/posttest scripts share their
+    # V2TestCases history across every test plan, so the per-topology
+    # fail-rate cannot be inferred from it.
+    if _is_infra_test(entry):
         return FilterDecision(passed=True)
 
     query = f"""
