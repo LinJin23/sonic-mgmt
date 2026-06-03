@@ -336,14 +336,14 @@
     {
         "feature": "db_migrator",
         "owner": "Vaibhav Hemant Dixit",
-        "email": "vaibhav.dixit@microsoft.com",
+        "email": "vadixit@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "db_migrator.test_migrate_dns"
                 ],
                 "owner": "Vaibhav Hemant Dixit",
-                "email": "vaibhav.dixit@microsoft.com"
+                "email": "vadixit@microsoft.com"
             }
         ]
     },
