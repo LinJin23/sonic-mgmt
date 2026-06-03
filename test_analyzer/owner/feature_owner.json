@@ -208,6 +208,30 @@
         ]
     },
     {
+        "feature": "closa",
+        "owner": "Shixi Zhang",
+        "email": "shixz@microsoft.com",
+        "scripts": [
+            {
+                "scripts": [
+                    "closa.test_bgp_aggregate_address_t1_tagging_lifecycle_msft_internal",
+                    "closa.test_bgp_aggregate_address_t1_tagging_t0_downstream_msft_internal",
+                    "closa.test_bgp_aggregate_address_t1_tagging_t2_upstream_msft_internal"
+                ],
+                "owner": "Guoqiang Yuan",
+                "email": "guoyuan@microsoft.com"
+            },
+            {
+                "scripts": [
+                    "closa.test_bgp_aggregate_address_community_tagging_msft_internal",
+                    "closa.test_suppress_prefix_list_msft_internal"
+                ],
+                "owner": "Shixi Zhang",
+                "email": "shixz@microsoft.com"
+            }
+        ]
+    },
+    {
         "feature": "configlet",
         "owner": "Vaibhav Hemant Dixit",
         "email": "vadixit@microsoft.com",
