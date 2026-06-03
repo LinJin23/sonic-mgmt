@@ -1162,6 +1162,20 @@
         ]
     },
     {
+        "feature": "nbr_health",
+        "owner": "Ze Gan",
+        "email": "zegan@microsoft.com",
+        "scripts": [
+            {
+                "scripts": [
+                    "test_nbr_health.test_neighbors_health"
+                ],
+                "owner": "Ze Gan",
+                "email": "zegan@microsoft.com"
+            }
+        ]
+    },
+    {
         "feature": "ntp",
         "owner": "Shiyan Wang",
         "email": "shiyanwang@microsoft.com",
