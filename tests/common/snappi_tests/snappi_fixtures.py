@@ -391,8 +391,7 @@ def __portchannel_intf_config(config, port_config_list, duthost, snappi_ports):
         for phy in members:
             # Added fix to select snappi_ports based on peer-device and peer-hostname.
             port_ids = [
-                int(sp['port_id'])
-                for sp in (snappi_ports)
+                i for i, sp in enumerate(snappi_ports)
                 if ((sp['peer_port'] == phy) and (sp['peer_device'] == duthost.hostname))]
 
             if len(port_ids) != 1:
@@ -1498,6 +1497,10 @@ def __intf_config_multidut(config, port_config_list, duthost, snappi_ports, setu
                                                                                 port['peer_port'],
                                                                                 dutIp,
                                                                                 prefix_length))
+            # During GCU-testing-enabled run, the startup config and running-golden-config
+            # only have the minimal RSB configs, which means we need to make sure whatever
+            # interfaces we are using have to be brought up again.
+            duthost.command(f"sudo config interface startup {port['peer_port']}")
         else:
             duthost.command('sudo config interface -n {} ip {} {} {}/{} \n' .format(
                                                                                     port['asic_value'],
@@ -1505,6 +1508,7 @@ def __intf_config_multidut(config, port_config_list, duthost, snappi_ports, setu
                                                                                     port['peer_port'],
                                                                                     dutIp,
                                                                                     prefix_length))
+            duthost.command(f"sudo config interface -n {port['asic_value']} startup {port['peer_port']}")
         if setup:
             gen_data_flow_dest_ip(tgenIp, duthost, port['peer_port'], port['asic_value'], setup)
         if setup is False:
@@ -2577,7 +2581,11 @@ def tgen_port_info(request: pytest.FixtureRequest, snappi_port_selection, get_sn
         if not snappi_ports:
             pytest.skip(f"Unsupported combination for {flatten_skeleton_parameter}")
 
-        return snappi_dut_base_config(duthosts, snappi_ports, snappi_api, setup=True)
+        testbed_config, port_config_list, snappi_ports = snappi_dut_base_config(
+            duthosts, snappi_ports, snappi_api, setup=True)
+        yield (testbed_config, port_config_list, snappi_ports)
+        logger.info('Snappi cleanup after test')
+        setup_dut_ports(False, duthosts, testbed_config, port_config_list, snappi_ports)
 
 
 def flatten_list(lst):
