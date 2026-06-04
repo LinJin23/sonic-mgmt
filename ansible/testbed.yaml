@@ -6145,7 +6145,7 @@
   ptf_extra_mgmt_ip:
     - 172.16.188.173/17
 
-- conf-name: str4-w6940-cpo-1
+- conf-name: vms71-ft2-w6940-1
   group-name: vms71-4
   topo: ft2-64
   ptf_image_name: docker-ptf
@@ -6160,7 +6160,7 @@
   auto_recover: 'True'
   comment: dashuaizhang
 
-- conf-name: str4-w6940-cpo-2
+- conf-name: vms71-ft2-w6940-2
   group-name: vms71-5
   topo: ft2-64
   ptf_image_name: docker-ptf
