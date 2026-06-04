@@ -205,9 +205,36 @@ class TestDynamicParallelBisect:
         b = DynamicParallelBisect(commits, max_parallel=max_parallel)
         return b.find_bad_commit_auto(lambda c: commits.index(c) >= bad_from_index)
 
-    def test_regression_at_first_commit(self):
+    def _bisect_full(self, commits, bad_from_index, max_parallel=3):
+        """Return (bisect_object, result) so callers can inspect inconclusive state."""
+        b = DynamicParallelBisect(commits, max_parallel=max_parallel)
+        result = b.find_bad_commit_auto(lambda c: commits.index(c) >= bad_from_index)
+        return b, result
+
+    def test_all_commits_bad_is_inconclusive_predates_window(self):
+        """When every commit in the window is bad and no known-good lower-bound
+        anchor is observed, the algorithm must NOT blame the oldest commit.
+        The regression most likely predates the search window (e.g. it was
+        introduced in sonic-buildimage or in an older sonic-mgmt commit)."""
         commits = make_commits(7)
-        assert self._bisect(commits, bad_from_index=0) == commits[0]
+        b, result = self._bisect_full(commits, bad_from_index=0)
+        assert result is None, "Must not blame the oldest commit when no good anchor exists"
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
+        assert b.oldest_bad_commit == commits[0], (
+            "oldest_bad_commit should retain the leftmost confirmed-bad commit for diagnostics"
+        )
+        # Search did complete (we processed every reachable round); we just
+        # could not legitimately identify a culprit.
+        assert b.finished is True
+
+    def test_regression_at_first_commit_after_known_good_baseline(self):
+        """When index 0 is a known-good baseline and index 1 introduced the
+        regression, the algorithm must correctly identify commits[1]."""
+        commits = make_commits(7)
+        b, result = self._bisect_full(commits, bad_from_index=1)
+        assert result == commits[1]
+        assert b.inconclusive_reason is None
+        assert b.oldest_bad_commit is None
 
     def test_regression_at_last_commit(self):
         commits = make_commits(7)
@@ -230,29 +257,45 @@ class TestDynamicParallelBisect:
         b = DynamicParallelBisect(commits, max_parallel=3)
         result = b.find_bad_commit_auto(lambda c: False)
         assert result is None
+        assert b.inconclusive_reason is None  # all-good is not "predates_window"
 
-    def test_single_commit_bad(self):
+    def test_single_commit_bad_is_inconclusive(self):
+        """A single commit observed as bad cannot be legitimately blamed
+        without a known-good anchor — the regression could predate it."""
         commits = ["sha_only"]
-        b = DynamicParallelBisect(commits, max_parallel=1)
-        assert b.find_bad_commit_auto(lambda c: True) == "sha_only"
+        # Single-commit edge case can never enter the verification round
+        # (predates-window short-circuits at left==0), so the verify_convergence
+        # contract that requires max_parallel>=2 is irrelevant here.
+        b = DynamicParallelBisect(commits, max_parallel=1, verify_convergence=False)
+        result = b.find_bad_commit_auto(lambda c: True)
+        assert result is None
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
+        assert b.oldest_bad_commit == "sha_only"
 
     def test_single_commit_good(self):
         commits = ["sha_only"]
-        b = DynamicParallelBisect(commits, max_parallel=1)
+        b = DynamicParallelBisect(commits, max_parallel=1, verify_convergence=False)
         assert b.find_bad_commit_auto(lambda c: False) is None
 
-    def test_two_commits_first_bad(self):
+    def test_two_commits_first_bad_is_inconclusive(self):
+        """Both commits bad ⇒ no good anchor ⇒ inconclusive."""
         commits = make_commits(2)
-        assert self._bisect(commits, bad_from_index=0) == commits[0]
+        b, result = self._bisect_full(commits, bad_from_index=0)
+        assert result is None
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
+        assert b.oldest_bad_commit == commits[0]
 
     def test_two_commits_second_bad(self):
         commits = make_commits(2)
         assert self._bisect(commits, bad_from_index=1) == commits[1]
 
     @pytest.mark.parametrize("n,bad_idx", [
-        (8, 0), (8, 3), (8, 7),
+        # bad_idx=0 cases are now exercised by
+        # test_all_commits_bad_is_inconclusive_predates_window instead, since
+        # they have no known-good lower-bound anchor.
+        (8, 3), (8, 7),
         (15, 7), (15, 14),
-        (30, 0), (30, 15), (30, 29),
+        (30, 15), (30, 29),
     ])
     def test_parametric_regression_positions(self, n, bad_idx):
         commits = make_commits(n)
@@ -261,11 +304,20 @@ class TestDynamicParallelBisect:
             f"n={n}, bad_idx={bad_idx}: expected commits[{bad_idx}]={commits[bad_idx]}, got {result}"
         )
 
+    @pytest.mark.parametrize("n", [1, 2, 8, 30])
+    def test_parametric_all_bad_is_inconclusive(self, n):
+        """For any window size, all-bad must produce an inconclusive verdict."""
+        commits = make_commits(n)
+        b, result = self._bisect_full(commits, bad_from_index=0)
+        assert result is None
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
+        assert b.oldest_bad_commit == commits[0]
+
     def test_converges_in_log_n_rounds(self):
-        """Binary search should converge in O(log n) rounds even with parallelism=1."""
+        """Binary search should converge in O(log n) rounds even with parallelism=2."""
         commits = make_commits(64)
         BAD_IDX = 37
-        b = DynamicParallelBisect(commits, max_parallel=1)
+        b = DynamicParallelBisect(commits, max_parallel=2)
         rounds = 0
         while True:
             plan = b.get_next_test_commits()
@@ -281,7 +333,7 @@ class TestDynamicParallelBisect:
         assert rounds <= math.ceil(math.log2(len(commits))) + 2  # +2 for edge rounding
 
     def test_parallel_reduces_rounds(self):
-        """Higher max_parallel should converge in fewer rounds than max_parallel=1."""
+        """Higher max_parallel should converge in fewer rounds than min parallelism (=2)."""
         commits = make_commits(32)
         BAD_IDX = 20
 
@@ -301,7 +353,7 @@ class TestDynamicParallelBisect:
             assert result == commits[BAD_IDX], f"max_parallel={max_parallel} gave wrong result"
             return rounds
 
-        rounds_serial = count_rounds(max_parallel=1)
+        rounds_serial = count_rounds(max_parallel=2)
         rounds_parallel = count_rounds(max_parallel=5)
         assert rounds_parallel <= rounds_serial, (
             f"Parallel ({rounds_parallel} rounds) should not take more rounds than serial ({rounds_serial})"
@@ -328,6 +380,192 @@ class TestDynamicParallelBisect:
         for key in ("finished", "result", "current_round", "current_range",
                     "current_range_commits", "remaining_commits", "max_parallel"):
             assert key in status, f"Missing key: {key}"
+
+
+# ---------------------------------------------------------------------------
+# Convergence verification round
+#
+# When the binary search converges to a candidate bad commit, it must run a
+# final verification round that re-tests the candidate AND its immediate
+# predecessor *together in parallel*.  Only when predecessor=good AND
+# candidate=bad is the verdict accepted.  Anything else (predecessor flipped
+# bad, candidate flipped good) marks the search inconclusive
+# (flaky_verification) so we never blame a commit on flaky evidence.
+# ---------------------------------------------------------------------------
+
+
+def _drive_with_results(b: DynamicParallelBisect, scripted_results):
+    """Run the bisect to completion using a callable that returns
+    {sha: bad?} for each round's planned commits.
+
+    `scripted_results(round_idx, planned_tests)` -> dict
+    """
+    round_idx = 0
+    while True:
+        plan = b.get_next_test_commits()
+        if plan is None:
+            break
+        round_idx += 1
+        results = scripted_results(round_idx, plan["tests"])
+        status = b.submit_test_results(results)
+        if status["finished"]:
+            break
+    return b
+
+
+class TestConvergenceVerification:
+    """The final verification round must re-test (predecessor, candidate)
+    in parallel and only accept the verdict when both agree with the binary
+    search."""
+
+    def test_verify_convergence_rejects_max_parallel_below_2(self):
+        """The verification round always tests two commits in parallel.
+        Constructing with verify_convergence=True and max_parallel < 2 must
+        fail loudly so callers don't violate their own concurrency budget."""
+        with pytest.raises(ValueError):
+            DynamicParallelBisect(make_commits(4), max_parallel=1,
+                                  verify_convergence=True)
+
+    def test_verify_convergence_off_allows_max_parallel_1(self):
+        """Opting out of verification preserves the legacy contract."""
+        b = DynamicParallelBisect(make_commits(4), max_parallel=1,
+                                  verify_convergence=False)
+        assert b.max_parallel == 1
+
+    def test_verification_round_is_scheduled_after_convergence(self):
+        """When the search would finalize on commits[k] with k>0, it must
+        first emit one extra round whose `tests` are exactly the
+        (predecessor, candidate) pair, with `verification=True`."""
+        commits = make_commits(8)
+        BAD_IDX = 3
+        b = DynamicParallelBisect(commits, max_parallel=3)
+        plans = []
+        while True:
+            plan = b.get_next_test_commits()
+            if plan is None:
+                break
+            plans.append(plan)
+            results = {c: (commits.index(c) >= BAD_IDX) for c in plan["tests"]}
+            status = b.submit_test_results(results)
+            if status["finished"]:
+                break
+        # Last plan must be the verification round.
+        assert plans[-1].get("verification") is True
+        assert plans[-1]["tests"] == [commits[BAD_IDX - 1], commits[BAD_IDX]]
+        assert plans[-1]["final"] is True
+        assert b.result == commits[BAD_IDX]
+
+    def test_verification_confirms_when_predecessor_good_and_candidate_bad(self):
+        """The happy path: deterministic checker → verification confirms."""
+        commits = make_commits(15)
+        BAD_IDX = 9
+        b = DynamicParallelBisect(commits, max_parallel=3)
+        result = b.find_bad_commit_auto(lambda c: commits.index(c) >= BAD_IDX)
+        assert result == commits[BAD_IDX]
+        # Verification round results recorded for diagnostics.
+        assert b.verification_round_no is not None
+        assert b.verification_results == {
+            commits[BAD_IDX - 1]: False,
+            commits[BAD_IDX]: True,
+        }
+        assert b.inconclusive_reason is None
+
+    def test_verification_rejects_when_predecessor_also_bad(self):
+        """If the predecessor re-tests bad in the verification round (i.e. the
+        earlier 'good' result was flaky), refuse to blame the candidate."""
+        commits = make_commits(8)
+        BAD_IDX = 3
+
+        # Drive the bisect so all earlier rounds report deterministic results,
+        # but the verification round flips the predecessor to bad.
+        round_results = []
+
+        def scripted(round_idx, tests):
+            # Detect the verification round: it is exactly the
+            # (predecessor, candidate) pair after convergence.  We rely on the
+            # bisect emitting `verification=True` in the plan, so peek at it
+            # via the searcher's state.
+            if b._verify_state == DynamicParallelBisect._VERIFY_QUEUED:
+                # Both come back bad → flaky_verification.
+                out = {c: True for c in tests}
+            else:
+                out = {c: (commits.index(c) >= BAD_IDX) for c in tests}
+            round_results.append(out)
+            return out
+
+        b = DynamicParallelBisect(commits, max_parallel=3)
+        _drive_with_results(b, scripted)
+        assert b.result is None
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_FLAKY_VERIFICATION
+        assert b.oldest_bad_commit == commits[BAD_IDX]
+        assert b.finished is True
+
+    def test_verification_rejects_when_candidate_now_good(self):
+        """If the candidate re-tests good (its earlier 'bad' was flaky),
+        refuse to blame it."""
+        commits = make_commits(8)
+        BAD_IDX = 3
+
+        def scripted(round_idx, tests):
+            if b._verify_state == DynamicParallelBisect._VERIFY_QUEUED:
+                # Predecessor good, candidate now good → flaky verdict.
+                return {c: False for c in tests}
+            return {c: (commits.index(c) >= BAD_IDX) for c in tests}
+
+        b = DynamicParallelBisect(commits, max_parallel=3)
+        _drive_with_results(b, scripted)
+        assert b.result is None
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_FLAKY_VERIFICATION
+
+    def test_verification_runs_only_once(self):
+        """The verification round must not infinite-loop: a single extra
+        round is emitted, then the search is terminal regardless of outcome."""
+        commits = make_commits(8)
+        BAD_IDX = 3
+
+        def scripted(round_idx, tests):
+            if b._verify_state == DynamicParallelBisect._VERIFY_QUEUED:
+                return {c: True for c in tests}  # both bad → inconclusive
+            return {c: (commits.index(c) >= BAD_IDX) for c in tests}
+
+        b = DynamicParallelBisect(commits, max_parallel=3)
+        _drive_with_results(b, scripted)
+        assert b.finished is True
+        # No further plan is emitted after verification completes.
+        assert b.get_next_test_commits() is None
+
+    def test_verify_convergence_false_skips_verification_round(self):
+        """`verify_convergence=False` preserves the legacy single-test
+        convergence (used by callers that don't want the extra round)."""
+        commits = make_commits(8)
+        BAD_IDX = 3
+        b = DynamicParallelBisect(commits, max_parallel=3, verify_convergence=False)
+        plans = []
+        while True:
+            plan = b.get_next_test_commits()
+            if plan is None:
+                break
+            plans.append(plan)
+            results = {c: (commits.index(c) >= BAD_IDX) for c in plan["tests"]}
+            status = b.submit_test_results(results)
+            if status["finished"]:
+                break
+        # No plan should be flagged as a verification round.
+        assert all(not p.get("verification") for p in plans)
+        assert b.result == commits[BAD_IDX]
+        assert b.verification_round_no is None
+
+    def test_predates_window_skips_verification(self):
+        """When the window has no known-good anchor (left==0 at convergence),
+        we go straight to INCONCLUSIVE_PREDATES_WINDOW — no verification round
+        is scheduled (there is no in-list predecessor to compare against)."""
+        commits = make_commits(7)
+        b = DynamicParallelBisect(commits, max_parallel=3)
+        result = b.find_bad_commit_auto(lambda c: True)
+        assert result is None
+        assert b.inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
+        assert b.verification_round_no is None
+        assert b.verification_results is None
 
 
 # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
@@ -369,6 +607,107 @@ class TestBinaryPlanHelpers:
 
 
 # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+# Part 2b â€” build_summary_records: Kusto row construction
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+
+from pr_binary_search import build_summary_records  # noqa: E402
+
+
+def _make_summary_input(*, repo="sonic-net/sonic-mgmt", bad_commit=None,
+                        inconclusive_reason=None, oldest_bad_commit=None,
+                        search_outcome="incomplete"):
+    """Synthesize an execute_binary_search-shaped result dict for summary tests."""
+    return {
+        "entry_key_x": {
+            "repo": repo,
+            "bad_commit": bad_commit,
+            "total_rounds": 3,
+            "final_range": [0, 0],
+            "search_completed": True,
+            "search_outcome": search_outcome,
+            "inconclusive_reason": inconclusive_reason,
+            "oldest_bad_commit": oldest_bad_commit,
+            "execution_records": [],
+            "test_plan_records": [],
+            "metadata": {
+                "analyzer_run_id": "analyzer-1",
+                "repo": repo,
+                "branch": "master",
+                "trigger_type": "BaselineTest",
+                "checker": "dualtor_checker",
+                "file_path": "test_pretest.py",
+                "module_path": "test_pretest",
+                "testcase": "test_features_state",
+                "issue_close_analysis": {},
+            },
+        }
+    }
+
+
+class TestBuildSummaryRecordsRootCause:
+    """Guarantee Kusto row contracts for each search outcome.
+
+    revert_handler.py filters `RootCauseType == "bad_commit"` AND
+    `isnotempty(BadCommit)`.  These tests pin that contract so an
+    inconclusive predates-window outcome never gets auto-reverted."""
+
+    def test_bad_commit_outcome_emits_bad_commit_root_cause(self):
+        results = _make_summary_input(
+            bad_commit="abc1234567",
+            search_outcome="found_bad_commit",
+        )
+        [row] = build_summary_records(results, search_run_id="search-1")
+        assert row["RootCauseType"] == "bad_commit"
+        assert row["RootCauseValue"] == "abc1234567"
+        assert row["BadCommit"] == "abc1234567"
+
+    def test_predates_window_outcome_emits_distinct_root_cause(self):
+        """The new inconclusive outcome must NOT look like a bad_commit row."""
+        results = _make_summary_input(
+            bad_commit=None,
+            inconclusive_reason="regression_predates_window",
+            oldest_bad_commit="oldest_sha_xyz",
+            search_outcome="regression_predates_window",
+        )
+        [row] = build_summary_records(results, search_run_id="search-1")
+        assert row["RootCauseType"] == "regression_predates_window"
+        # Deliberately None so auto-revert and dashboards do not treat the
+        # oldest tested bad commit as actionable.
+        assert row["RootCauseValue"] is None
+        assert row["BadCommit"] is None
+        # The diagnostic SHA is preserved in RawSummary for triage.
+        assert row["RawSummary"]["oldest_bad_commit"] == "oldest_sha_xyz"
+
+    def test_flaky_verification_outcome_emits_distinct_root_cause(self):
+        """When the final verification round contradicts the binary-search
+        verdict, the row must NOT look like a bad_commit row.  Operators and
+        auto-revert tooling rely on RootCauseType == 'bad_commit' AND
+        isnotempty(BadCommit), so both must be empty here."""
+        results = _make_summary_input(
+            bad_commit=None,
+            inconclusive_reason="flaky_verification",
+            oldest_bad_commit="candidate_sha",
+            search_outcome="flaky_verification",
+        )
+        [row] = build_summary_records(results, search_run_id="search-1")
+        assert row["RootCauseType"] == "flaky_verification"
+        assert row["RootCauseValue"] is None
+        assert row["BadCommit"] is None
+        assert row["RawSummary"]["oldest_bad_commit"] == "candidate_sha"
+
+    def test_all_good_outcome_emits_unknown_root_cause(self):
+        results = _make_summary_input(
+            bad_commit=None,
+            inconclusive_reason=None,
+            search_outcome="all_good",
+        )
+        [row] = build_summary_records(results, search_run_id="search-1")
+        assert row["RootCauseType"] == "unknown"
+        assert row["RootCauseValue"] is None
+        assert row["BadCommit"] is None
+
+
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
 # Part 3 â€” execute_binary_search: integration with mocked AzDO client
 # â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
 
@@ -391,14 +730,20 @@ class TestExecuteBinarySearch:
         assert result["search_completed"] is True
         assert mock_trigger.call_count > 0  # Some test pipelines were triggered
 
-    def test_finds_regression_at_first_commit(self):
+    def test_all_bad_window_returns_inconclusive_predates_window(self):
+        """When every test in the window fails (no known-good lower-bound
+        anchor), the orchestrator must surface 'regression_predates_window'
+        instead of wrongly blaming the oldest commit."""
         commits = make_commits(7)
         build_cache = make_build_cache(commits)
         test_results = {c: True for c in commits}  # All bad
 
         result, _, _ = run_execute_binary_search(commits, test_results, build_cache)
 
-        assert result["bad_commit"] == commits[0]
+        assert result["bad_commit"] is None
+        assert result["search_outcome"] == "regression_predates_window"
+        assert result["inconclusive_reason"] == "regression_predates_window"
+        assert result["oldest_bad_commit"] == commits[0]
         assert result["search_completed"] is True
 
     def test_finds_regression_at_last_commit(self):
@@ -467,8 +812,11 @@ class TestExecuteBinarySearch:
         unknown_records = [r for r in result["execution_records"] if r.get("Verdict") == "unknown_build_skip_test"]
         assert len(unknown_records) >= 1, "Expected unknown_build_skip_test record"
 
-    def test_all_builds_failed_identifies_first_commit_no_tests_triggered(self):
-        """When every image build failed, no test pipelines run and first commit is flagged."""
+    def test_all_builds_failed_returns_inconclusive_no_tests_triggered(self):
+        """When every image build failed, no test pipelines run; the search
+        must NOT blame the oldest commit because there's no good anchor.
+        Instead, report the inconclusive 'regression_predates_window' outcome
+        so downstream auto-revert ignores it."""
         commits = make_commits(4)
         build_cache = make_build_cache(commits, bad_indices=set(range(len(commits))))
         test_results = {}
@@ -476,8 +824,14 @@ class TestExecuteBinarySearch:
         result, _, mock_trigger = run_execute_binary_search(commits, test_results, build_cache)
 
         assert mock_trigger.call_count == 0, "No test pipelines should fire when all builds failed"
-        # The binary search should converge to the first bad commit
-        assert result["bad_commit"] == commits[0]
+        # With no known-good lower-bound anchor, the leftmost commit cannot
+        # legitimately be blamed — the regression most likely predates the
+        # window (e.g. it's in sonic-buildimage rather than this repo).
+        assert result["bad_commit"] is None
+        assert result["search_outcome"] == "regression_predates_window"
+        assert result["inconclusive_reason"] == "regression_predates_window"
+        assert result["oldest_bad_commit"] == commits[0]
+        assert result["search_completed"] is True
 
     # â”€â”€ MGMT repo (no build cache needed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
 
@@ -502,6 +856,28 @@ class TestExecuteBinarySearch:
             payload = params.to_payload()
             assert "MGMT_COMMIT_HASH" in payload, "MGMT_COMMIT_HASH must be set for mgmt repo"
             assert "KVM_BUILD_ID" not in payload, "KVM_BUILD_ID must not appear for mgmt repo"
+
+    def test_mgmt_repo_all_commits_bad_is_inconclusive(self):
+        """Reproduces the production scenario from ADO build 1129277:
+        sonic-mgmt bisect of a 14-commit window where every commit's test
+        run returns bad. Previously the algorithm wrongly blamed the oldest
+        commit; now it must report 'regression_predates_window' so the
+        operator knows to widen the window or look at sonic-buildimage."""
+        commits = make_commits(14)
+        # Every commit returns bad — mirrors the failure mode of build 1129277.
+        test_results = {c: True for c in commits}
+
+        result, _, _ = run_execute_binary_search(
+            commits, test_results,
+            build_cache=None,
+            repo=self.MGMT_REPO,
+        )
+
+        assert result["bad_commit"] is None
+        assert result["search_outcome"] == "regression_predates_window"
+        assert result["inconclusive_reason"] == "regression_predates_window"
+        assert result["oldest_bad_commit"] == commits[0]
+        assert result["search_completed"] is True
 
     # â”€â”€ batched CI pre-filter scenario â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
 

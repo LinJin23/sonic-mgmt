@@ -521,15 +521,45 @@ def execute_binary_search(client: AzureDevOpsClient, result_json: dict, max_para
             })
         valid_results = {k: v for k, v in round_results.items() if v is not None}
         if not valid_results:
-            logger.error(f"No valid results for round {round_number} in {repo}")
-            break
-        status = searcher.submit_test_results(valid_results)
+            # In a verification round, missing/None verdicts must still be fed
+            # to the search so it can finalize via the
+            # `flaky_verification` branch.  Aborting here would leave the
+            # search "incomplete" and the orchestrator would retry forever.
+            if test_plan.get("verification"):
+                logger.warning(
+                    f"No valid verification results for round {round_number} in {repo}; "
+                    f"submitting empty result set so the search finalizes as flaky_verification"
+                )
+                status = searcher.submit_test_results({})
+            else:
+                logger.error(f"No valid results for round {round_number} in {repo}")
+                break
+        else:
+            status = searcher.submit_test_results(valid_results)
         logger.info(f"Round {round_number} completed for {repo}")
         logger.info(f"Eliminated commits: {status['eliminated_commits']}")
 
         if status['finished']:
             if status['result']:
                 logger.info(f"Found bad commit for {repo}: {status['result']}")
+            elif status.get('inconclusive_reason') == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW:
+                logger.warning(
+                    f"Inconclusive binary search for {repo}: no known-good lower-bound anchor "
+                    f"was observed in the search window. Oldest tested bad commit = "
+                    f"{status.get('oldest_bad_commit')}. The regression most likely predates the "
+                    f"search window (e.g. introduced in sonic-buildimage or in an older "
+                    f"{repo} commit). Consider expanding the commit window or investigating "
+                    f"upstream components before attributing this to a single commit."
+                )
+            elif status.get('inconclusive_reason') == DynamicParallelBisect.INCONCLUSIVE_FLAKY_VERIFICATION:
+                logger.warning(
+                    f"Inconclusive binary search for {repo}: the final verification round "
+                    f"contradicted the binary-search verdict for candidate "
+                    f"{status.get('oldest_bad_commit')}. Verification results = "
+                    f"{status.get('verification_results')}. Refusing to blame this commit on "
+                    f"flaky evidence. Consider re-running the search or investigating test "
+                    f"flakiness for this case."
+                )
             else:
                 logger.info(f"No bad commit found for {repo}")
             break
@@ -537,6 +567,18 @@ def execute_binary_search(client: AzureDevOpsClient, result_json: dict, max_para
     # Return final result
     final_result, range_info = searcher.get_result()
     search_status = searcher.get_search_status()
+    inconclusive_reason = search_status.get('inconclusive_reason')
+    oldest_bad_commit = search_status.get('oldest_bad_commit')
+    if final_result is not None:
+        search_outcome = "found_bad_commit"
+    elif inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW:
+        search_outcome = "regression_predates_window"
+    elif inconclusive_reason == DynamicParallelBisect.INCONCLUSIVE_FLAKY_VERIFICATION:
+        search_outcome = "flaky_verification"
+    elif search_status.get('finished'):
+        search_outcome = "all_good"
+    else:
+        search_outcome = "incomplete"
 
     return {
         'repo': repo,
@@ -545,6 +587,11 @@ def execute_binary_search(client: AzureDevOpsClient, result_json: dict, max_para
         'final_range': range_info,
         'metadata': result_json,
         'search_completed': search_status['finished'],
+        'search_outcome': search_outcome,
+        'inconclusive_reason': inconclusive_reason,
+        'oldest_bad_commit': oldest_bad_commit,
+        'verification_round_no': search_status.get('verification_round_no'),
+        'verification_results': search_status.get('verification_results'),
         'execution_records': execution_records,
         'test_plan_records': test_plan_records,
         'build_cache': build_cache,
@@ -1051,6 +1098,21 @@ def narrow_with_ci_prescreening(
             break
 
     # Determine the narrowed range in the full commit list.
+    ci_search_status = searcher.get_search_status()
+    ci_inconclusive_reason = ci_search_status.get("inconclusive_reason")
+    if ci_inconclusive_reason:
+        # The CI prescreening binary search ended without a verified bad
+        # commit (e.g. flaky_verification or regression_predates_window).  In
+        # that state `(left, right)` may still point at an unverified
+        # candidate, so any narrowing based on it would be unsafe.  Fall back
+        # to the full commit list so the downstream main search can do its
+        # own (verified) narrowing.
+        logger.info(
+            "CI prescreening: inconclusive (%s); not narrowing commit range",
+            ci_inconclusive_reason,
+        )
+        return commits, {}, execution_records, test_plan_records
+
     ci_result, (ci_left, ci_right) = searcher.get_result()
 
     if ci_left > ci_right:
@@ -1077,11 +1139,18 @@ def narrow_with_ci_prescreening(
     right_sha = ci_commit_shas[ci_right]
     full_right = ci_index_lookup[right_sha]
 
-    # Extend left boundary to include the commit after the last known good CI commit.
-    # If ci_left > 0, the commit at ci_left-1 was good, so we start from (that full index + 1).
+    # Include the last known-good CI commit (the anchor) as the leftmost
+    # element of the narrowed list, NOT the commit immediately after it.
+    # Reason: the inner `execute_binary_search` runs over a fresh 0-indexed
+    # list; if its index 0 ever tests bad it would be reported as
+    # `regression_predates_window`, even though the *external* anchor we
+    # already trust as good lives at full-list index `ci_left - 1`.  By
+    # carrying that anchor into the narrowed list we keep `left > 0` once
+    # the inner search confirms it, so a real regression at the first
+    # narrowed commit is reported as `bad_commit` and not silently dropped.
     if ci_left > 0:
         prev_good_sha = ci_commit_shas[ci_left - 1]
-        narrowed_start = ci_index_lookup[prev_good_sha] + 1
+        narrowed_start = ci_index_lookup[prev_good_sha]
     else:
         narrowed_start = 0
 
@@ -1116,14 +1185,46 @@ def build_summary_records(results, search_run_id):
             (issue for issue in issue_close_analysis.get("issues", []) if issue.get("closed_in_window")),
             None,
         )
-        root_cause_type = (
-            "issue_close"
-            if confirmed_issue
-            else ("bad_commit" if result.get("bad_commit") else "unknown")
+        # Inconclusive: every commit in the search window was bad.  We cannot
+        # blame any single commit because the regression most likely predates
+        # the window (e.g. it was introduced in sonic-buildimage or in an
+        # older sonic-mgmt commit).  Surface this as its own RootCauseType so
+        # downstream consumers (revert_handler.py, dashboards) can treat it
+        # distinctly from a confirmed bad_commit and avoid false-positive
+        # auto-reverts of the oldest commit in the window.
+        predates_window = (
+            result.get("inconclusive_reason")
+            == DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
         )
-        root_cause_value = (
-            confirmed_issue.get("url") if confirmed_issue else result.get("bad_commit")
+        # Inconclusive: the final verification round contradicted the
+        # binary-search verdict (e.g. the predecessor also tested bad on
+        # re-test, or the candidate now tested good).  We refuse to blame a
+        # commit on flaky evidence.  Surface this distinctly so dashboards
+        # and auto-revert tooling don't act on it.
+        flaky_verification = (
+            result.get("inconclusive_reason")
+            == DynamicParallelBisect.INCONCLUSIVE_FLAKY_VERIFICATION
         )
+        if confirmed_issue:
+            root_cause_type = "issue_close"
+        elif predates_window:
+            root_cause_type = DynamicParallelBisect.INCONCLUSIVE_PREDATES_WINDOW
+        elif flaky_verification:
+            root_cause_type = DynamicParallelBisect.INCONCLUSIVE_FLAKY_VERIFICATION
+        elif result.get("bad_commit"):
+            root_cause_type = "bad_commit"
+        else:
+            root_cause_type = "unknown"
+        if confirmed_issue:
+            root_cause_value = confirmed_issue.get("url")
+        elif predates_window or flaky_verification:
+            # Deliberately None: we don't want operators or automation to
+            # treat an unconfirmed candidate as actionable.  The candidate
+            # SHA is still available in RawSummary.oldest_bad_commit for
+            # diagnostics.
+            root_cause_value = None
+        else:
+            root_cause_value = result.get("bad_commit")
         issue_url = confirmed_issue.get("url", "") if confirmed_issue else ""
         issue_repo = (
             issue_url.split("/issues/")[0].replace("https://github.com/", "")
@@ -1258,6 +1359,11 @@ def process_failure_entry(
             "final_range": None,
             "metadata": result_json,
             "search_completed": False,
+            "search_outcome": "incomplete",
+            "inconclusive_reason": None,
+            "oldest_bad_commit": None,
+            "verification_round_no": None,
+            "verification_results": None,
             "execution_records": [],
             "test_plan_records": [],
         }

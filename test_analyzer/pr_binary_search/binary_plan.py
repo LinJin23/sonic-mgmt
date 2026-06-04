@@ -43,7 +43,33 @@ def compute_indices(left: int, right: int, f: int) -> List[int]:
 
 
 class DynamicParallelBisect:
-    def __init__(self, commits: List[str], max_parallel: int = 5, bad_commit_checker=None):
+    # Sentinel reasons for an inconclusive search.  Strings are used as-is in
+    # the Kusto `RootCauseType` column, so do not change them lightly.
+    INCONCLUSIVE_PREDATES_WINDOW = "regression_predates_window"
+    # Final verification round disagreed with the binary-search verdict (e.g.
+    # the predecessor re-tested as bad, or the candidate re-tested as good).
+    # We refuse to blame a single commit on flaky/unstable evidence.
+    INCONCLUSIVE_FLAKY_VERIFICATION = "flaky_verification"
+
+    # Internal verification state machine.
+    _VERIFY_NOT_STARTED = "not_started"
+    _VERIFY_QUEUED = "queued"
+    _VERIFY_DONE = "done"
+
+    def __init__(self, commits: List[str], max_parallel: int = 5, bad_commit_checker=None,
+                 verify_convergence: bool = True):
+        if verify_convergence and max_parallel < 2:
+            # The final verification round always tests two commits in parallel
+            # (candidate + immediate predecessor).  We must ensure the configured
+            # concurrency budget can accommodate that pair, otherwise
+            # `next_plan()` would emit a round that violates the caller's
+            # `max_parallel` contract.  Callers that genuinely need
+            # `max_parallel < 2` must opt out of verification explicitly.
+            raise ValueError(
+                "verify_convergence=True requires max_parallel >= 2 "
+                "(verification round tests candidate + predecessor in parallel); "
+                "got max_parallel={}".format(max_parallel)
+            )
         self.commits = commits
         self.N = len(commits)
         self.max_parallel = max_parallel
@@ -52,7 +78,41 @@ class DynamicParallelBisect:
         self.round_no = 0
         self.finished = False
         self.result = None
+        # When the search converges on the leftmost commit of the window
+        # without ever having advanced `left` past index 0, it means we
+        # never observed a known-good lower-bound anchor.  We cannot blame
+        # the leftmost commit in that case: the regression most likely
+        # predates the search window (e.g. it was introduced in
+        # sonic-buildimage or in an older sonic-mgmt commit).  These
+        # attributes are populated by `update()` and consumed by the
+        # orchestrator / Kusto record builder.
+        self.inconclusive_reason: Optional[str] = None
+        self.oldest_bad_commit: Optional[str] = None
         self.bad_commit_checker = bad_commit_checker
+
+        # Final-verification step.  When the binary search would otherwise
+        # finalize on a commit `cid` at `self.left == self.right`, we first
+        # schedule a single extra round that *re-tests `cid` and its
+        # immediate predecessor `commits[self.left - 1]` together in
+        # parallel*.  Only when the verification round says
+        # `predecessor=good AND candidate=bad` do we accept the verdict;
+        # otherwise we mark the search inconclusive (flaky_verification).
+        # This guards against:
+        #   - flaky test results during the binary search (the predecessor
+        #     was tested "good" several rounds earlier in a different infra
+        #     state — flakiness may have flipped since),
+        #   - off-by-one narrowing bugs,
+        #   - incomplete commit lists where the list-predecessor isn't the
+        #     real git parent of the candidate.
+        # When `verify_convergence` is False (e.g. for unit tests of legacy
+        # behaviour) the verification step is skipped.
+        self.verify_convergence = verify_convergence
+        self._verify_state = self._VERIFY_NOT_STARTED
+        self._verify_candidate_idx: Optional[int] = None
+        self._verify_predecessor_idx: Optional[int] = None
+        # Public diagnostics for the orchestrator / Kusto record.
+        self.verification_round_no: Optional[int] = None
+        self.verification_results: Optional[Dict[str, bool]] = None
 
     def update(self, results: Dict[str, bool]):
         """
@@ -60,6 +120,14 @@ class DynamicParallelBisect:
         Update left/right based on parallel test results from this round.
         """
         if self.finished:
+            return
+
+        # If we previously queued a final verification round, this `results`
+        # dict carries the verification answers.  Handle them separately and
+        # do NOT feed them through the normal narrowing logic (which would
+        # otherwise re-narrow `left`/`right` based on a single re-test).
+        if self._verify_state == self._VERIFY_QUEUED:
+            self._handle_verification_results(results)
             return
 
         # Find the leftmost bad commit in this round
@@ -116,9 +184,77 @@ class DynamicParallelBisect:
             cid = self.commits[self.left]
             if cid in results and results.get(cid) is True:
                 # The single remaining commit was tested this round and is bad.
-                self.finished = True
-                self.result = cid
+                # `self.left` is only ever advanced by observing a good commit
+                # that bounds the search from below (see the two branches above).
+                # So `self.left == 0` at convergence is exactly equivalent to
+                # "no known-good lower-bound anchor was ever observed".  In that
+                # case we cannot legitimately blame the leftmost commit — the
+                # regression most likely predates the search window (e.g. it
+                # was introduced in sonic-buildimage or in an older sonic-mgmt
+                # commit).  Report this as inconclusive while keeping the
+                # oldest tested bad commit for operator diagnostics.
+                if self.left == 0:
+                    self.finished = True
+                    self.result = None
+                    self.inconclusive_reason = self.INCONCLUSIVE_PREDATES_WINDOW
+                    self.oldest_bad_commit = cid
+                elif (
+                    self.verify_convergence
+                    and self._verify_state == self._VERIFY_NOT_STARTED
+                ):
+                    # Defer finalization: schedule a verification round that
+                    # re-tests the candidate AND its immediate predecessor
+                    # together in parallel.  Only when the predecessor comes
+                    # back good and the candidate comes back bad do we accept
+                    # the verdict.  See class docstring for rationale.
+                    self._verify_state = self._VERIFY_QUEUED
+                    self._verify_candidate_idx = self.left
+                    self._verify_predecessor_idx = self.left - 1
+                    # Leave `self.finished` False so `next_plan()` schedules
+                    # the verification round.
+                else:
+                    # Verification disabled, or this branch was reached after
+                    # verification already ran (defensive).
+                    self.finished = True
+                    self.result = cid
             # else: leave finished=False so next_plan() schedules it for testing.
+
+    def _handle_verification_results(self, results: Dict[str, bool]):
+        """Finalize the search based on a verification round's test results.
+
+        The verification round always tests exactly two commits in parallel:
+        the candidate at `self._verify_candidate_idx` and its predecessor at
+        `self._verify_predecessor_idx`.  We accept the binary-search verdict
+        if and only if predecessor=good AND candidate=bad.  Any other outcome
+        is reported as `flaky_verification` so downstream consumers do not
+        falsely revert a commit on flaky evidence.
+        """
+        candidate_sha = self.commits[self._verify_candidate_idx]
+        predecessor_sha = self.commits[self._verify_predecessor_idx]
+        candidate_bad = results.get(candidate_sha)
+        predecessor_bad = results.get(predecessor_sha)
+
+        self.verification_round_no = self.round_no
+        self.verification_results = {
+            predecessor_sha: predecessor_bad,
+            candidate_sha: candidate_bad,
+        }
+        self._verify_state = self._VERIFY_DONE
+        self.finished = True
+
+        if candidate_bad is True and predecessor_bad is False:
+            # Verdict confirmed: predecessor is good, candidate is bad.
+            self.result = candidate_sha
+            self.inconclusive_reason = None
+        else:
+            # Any other outcome (predecessor also bad, candidate now good,
+            # missing results) is treated as flaky / unverifiable.  Refuse to
+            # blame a commit on this evidence.
+            self.result = None
+            self.inconclusive_reason = self.INCONCLUSIVE_FLAKY_VERIFICATION
+            # Surface the candidate SHA for diagnostics so operators can see
+            # which commit was tentatively flagged but failed verification.
+            self.oldest_bad_commit = candidate_sha
 
     def next_plan(self) -> Optional[Dict]:
         """Return the next round plan"""
@@ -126,6 +262,21 @@ class DynamicParallelBisect:
             return None
 
         self.round_no += 1
+
+        # If a final verification round was queued by `update()`, schedule it
+        # now.  We test the candidate AND its predecessor together in
+        # parallel so the verdict is grounded in a single, consistent test
+        # environment (guards against cross-round flakiness drift).
+        if self._verify_state == self._VERIFY_QUEUED:
+            cand_idx = self._verify_candidate_idx
+            pred_idx = self._verify_predecessor_idx
+            tests = [self.commits[pred_idx], self.commits[cand_idx]]
+            return {"round": self.round_no,
+                    "tests": tests,
+                    "indices": [pred_idx, cand_idx],
+                    "range": (self.left, self.right),
+                    "final": True,
+                    "verification": True}
 
         # Check if already converged to a single commit â€” return it for testing but
         # do NOT pre-declare finished/result here; let update() decide based on the
@@ -267,7 +418,12 @@ class DynamicParallelBisect:
             'start': self.left,
             'end': self.right,
             'eliminated_commits': eliminated_commits,
-            'round_completed': self.round_no
+            'round_completed': self.round_no,
+            'inconclusive_reason': self.inconclusive_reason,
+            'oldest_bad_commit': self.oldest_bad_commit,
+            'verification_pending': self._verify_state == self._VERIFY_QUEUED,
+            'verification_round_no': self.verification_round_no,
+            'verification_results': self.verification_results,
         }
 
     def get_search_status(self) -> Dict:
@@ -280,5 +436,10 @@ class DynamicParallelBisect:
             'current_range': (self.left, self.right),
             'current_range_commits': self.commits[self.left:self.right + 1] if self.left <= self.right else [],
             'remaining_commits': self.right - self.left + 1 if self.left <= self.right else 0,
-            'max_parallel': self.max_parallel
+            'max_parallel': self.max_parallel,
+            'inconclusive_reason': self.inconclusive_reason,
+            'oldest_bad_commit': self.oldest_bad_commit,
+            'verification_pending': self._verify_state == self._VERIFY_QUEUED,
+            'verification_round_no': self.verification_round_no,
+            'verification_results': self.verification_results,
         }
