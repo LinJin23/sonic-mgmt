@@ -2354,7 +2354,7 @@
 
 - conf-name: vms93-t1-sn5640-1
   group-name: vms93-2
-  topo: t1-isolated-d508u1s2
+  topo: t1-isolated-d56u1-lag
   ptf_image_name: docker-ptf
   ptf: vms93-2
   ptf_ip: 10.64.247.190/25
