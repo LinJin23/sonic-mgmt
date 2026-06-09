@@ -700,6 +700,9 @@ sonic_nexthop_ut2:
       platform_tests/test_reload_config.py::test_reload_configuration_checks:
         timeout: 360
         wait: 60
+    plt_wait_time:
+      everflow:
+        wait: 240
   hosts:
     str5-nh5010-ut2-1:
       hwsku: NH-5010-F-O64
