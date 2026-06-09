@@ -1020,6 +1020,16 @@ decap/test_subnet_decap.py::test_vlan_subnet_decap:
       - "topo_name in ['t1-isolated-d128', 't1-isolated-d32']"
 
 #######################################
+#####       device_ops_agent      #####
+#######################################
+
+device_ops_agent:
+  skip:
+    reason: "grpcurl is only available on 202511 and above images"
+    conditions:
+      - "release not in ['202511', '202605']"
+
+#######################################
 #####         dhcp_relay        #####
 #######################################
 dhcp_relay:
