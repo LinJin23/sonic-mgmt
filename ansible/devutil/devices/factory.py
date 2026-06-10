@@ -75,7 +75,6 @@ def init_localhost(inventories=None, options={}, hostvars={}):
 
     return ah
 
-
 def init_host(inventories, host_pattern, options={}, hostvars={}):
     try:
         return AnsibleHost(inventories, host_pattern, options=options.copy(), hostvars=hostvars.copy())
