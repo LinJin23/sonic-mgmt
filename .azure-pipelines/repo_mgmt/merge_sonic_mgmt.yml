@@ -9,23 +9,23 @@ schedules:
     displayName: Merge Github to sonic-mgmt-int
     branches:
       include:
-        - internal-202605
+        - internal
     always: true
 
 parameters:
   - name: GITHUB_BRANCH
     type: string
-    default: 202605
+    default: master
     displayName: "Github branch name"
 
   - name: LOCAL_BRANCH
     type: string
-    default: internal-202605
+    default: internal
     displayName: "Local branch name of sonic-mgmt-int"
 
   - name: PUSH_BRANCH
     type: string
-    default: internal-202605
+    default: internal-stage
     displayName: "Push to this branch after merge is done"
 
 stages:
