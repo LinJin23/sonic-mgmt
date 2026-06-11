@@ -6235,7 +6235,7 @@
 
 - conf-name: vmstr-ut2-nh5010-5
   group-name: vms96-2
-  topo: t2_single_node_min_nexthop_ut2
+  topo: urh_min_nexthop
   ptf_image_name: docker-ptf
   ptf: vms96-2
   ptf_ip: 10.64.247.162/25
