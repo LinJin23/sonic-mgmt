@@ -5544,7 +5544,7 @@
   ptf_image_name: docker-ptf
   ptf: svc3-2
   ptf_ip: 10.206.144.11/24
-  ptf_ipv6: 2a01:111:e205:100::ace:900b
+  ptf_ipv6: 2a01:111:e205:100::ace:900b/64
   server: server_svc_3
   vm_base: VM30096
   dut:
@@ -6235,7 +6235,7 @@
 
 - conf-name: vmstr-ut2-nh5010-5
   group-name: vms96-2
-  topo: t2_single_node_min_nexthop_ut2
+  topo: urh_min_nexthop
   ptf_image_name: docker-ptf
   ptf: vms96-2
   ptf_ip: 10.64.247.162/25
