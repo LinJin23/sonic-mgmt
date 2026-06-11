@@ -56,6 +56,9 @@ all:
         svc8-1:
           ansible_host: 10.206.144.91
           ansible_hostv6: 2a01:111:e205:100::ace:905b
+        svc9-1:
+          ansible_host: 10.206.144.98
+          ansible_hostv6: 2a01:111:e205:100::ace:9062
         svc10-1:
           ansible_host: 10.206.144.104
           ansible_hostv6: 2a01:111:e205:100::ace:9068
@@ -1071,23 +1074,23 @@ sonic_nexthop_ut2:
       sonic_hwsku: NH-5010-F-O64
       sonic_hw_platform: x86_64-nexthop_5010-r0
       switchids: [0]
-      serial: TBD
-      base_mac: TBD
+      serial: NH-FSJ2535002D
+      base_mac: E8:E4:9D:00:CD:16
       ansible_host: 10.206.144.95
       ansible_hostv6: 2a01:111:e205:100::ace:905f
       model: 'NH-5010-F'
       syseeprom_info:
         "0x21": "NH-5010-F"
-        "0x22": "TBD"
-        "0x23": "TBD"
-        "0x24": "TBD"
+        "0x22": "950-00004-01"
+        "0x23": "NH-FSJ2535002D"
+        "0x24": "E8:E4:9D:00:CD:16"
         "0x26": "0"
         "0x28": "x86_64-nexthop_5010-r0"
         "0x2B": "Nexthop Systems Inc"
         "0x2D": "Nexthop AI"
         "0x2F": "www.nexthop.ai"
-        "0xFD": "TBD"
-        "0xFE": "TBD"
+        "0xFD": "0x00 0x00 0xF6 0x62 0x02 0x4E 0x48 0x32 0x35 0x2D 0x35 0x30"
+        "0xFE": "0xC531CA37"
 
 
 sonic_arista_7280r4_400G:
