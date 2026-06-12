@@ -2272,7 +2272,7 @@
 
 - conf-name: vms77-t1-7060x6-512-11
   group-name: vms77-1
-  topo: t1-isolated-d448u15-lag # 463VM
+  topo: t1-isolated-d56u1-lag #57VM
   ptf_image_name: docker-ptf
   ptf: vms77-1
   ptf_ip: 10.64.246.192/25
@@ -2285,7 +2285,6 @@
   auto_recover: 'True'
   comment: ptratiya
   tb_owner: ptratiya
-  use_converged_peers: true
 
 - conf-name: vms91-t0-7060x6-moby-512-1
   group-name: vms91-4
