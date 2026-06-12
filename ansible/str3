@@ -2704,13 +2704,13 @@ sonic_mlnx_4280_smartswitch:
       mgmt_subnet_mask_length: 24
       hwsku: Mellanox-SN4280-O8C40
       model: MSN4280-WS2RXOS
-      serial: MT2438XZ0C0T
-      base_mac: B0:CF:0E:32:6D:00
+      serial: MT2608XZ09MG
+      base_mac: 28:01:CD:28:26:00
       syseeprom_info:
         "0x21": "SN4280"
         "0x22": "MSN4280-WS2RXOS"
-        "0x23": "MT2438XZ0C0T"
-        "0x24": "B0:CF:0E:32:6D:00"
+        "0x23": "MT2608XZ09MG"
+        "0x24": "28:01:CD:28:26:00"
         "0x26": "16"
         "0x28": "x86_64-nvidia_sn4280-r0"
         "0x2A": "222"
