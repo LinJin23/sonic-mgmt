@@ -2417,7 +2417,7 @@
 
 - conf-name: vms110-t0-sn5640-1
   group-name: vms110-1
-  topo: t0-isolated-d256u256s2 #258VM
+  topo: t0-isolated-d32u32s2
   ptf_image_name: docker-ptf
   ptf: vms110-1
   ptf_ip: 10.64.247.26/26
@@ -2428,8 +2428,8 @@
   - str5-sn5640-6
   inv_name: str5
   auto_recover: 'True'
-  comment: janetcui
-  tb_owner: janetcui
+  comment: kumarsourabh
+  tb_owner: kumarsourabh
 
 - conf-name: vms93-t2-sn5640-2
   group-name: vms93-3
