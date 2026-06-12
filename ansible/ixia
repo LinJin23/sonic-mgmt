@@ -46,9 +46,6 @@ all:
         pdu-92:
           ansible_host: 10.3.154.90
           protocol: snmp
-        pdu-93:
-          ansible_host: 10.3.154.91
-          protocol: snmp
 
 
 sonic:
@@ -107,6 +104,14 @@ pdu:
       snmp_rocommunity: public
     pdu-146:
       ansible_host: 10.3.155.93
+      protocol: snmp
+      snmp_rocommunity: public
+    pdu-111:
+      ansible_host: 10.3.154.112
+      protocol: snmp
+      snmp_rocommunity: public
+    pdu-93:
+      ansible_host: 10.3.154.91
       protocol: snmp
       snmp_rocommunity: public
 
