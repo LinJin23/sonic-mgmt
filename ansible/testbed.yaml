@@ -2431,9 +2431,9 @@
   comment: kumarsourabh
   tb_owner: kumarsourabh
 
-- conf-name: vms93-t2-sn5640-2
+- conf-name: vms93-t1-sn5640-2
   group-name: vms93-3
-  topo: t2-isolated-d128s2
+  topo: t1-isolated-d32u1s2
   ptf_image_name: docker-ptf
   ptf: vms93-3
   ptf_ip: 10.64.247.168/25
