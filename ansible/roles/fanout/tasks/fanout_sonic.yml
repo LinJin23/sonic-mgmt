@@ -105,16 +105,6 @@
     '202505' in fanout_sonic_version['build_version'] and
     not is_cisco_env
 
-- name: deploy SONiC fanout with image version 202511
-  block:
-    - name: deploy SONiC fanout not incremental and not dry_run with 202511 images
-      include_tasks:
-        sonic/fanout_sonic_202511.yml
-      when: dry_run is not defined and incremental is not defined
-  when: >
-    '202511' in fanout_sonic_version['build_version'] and
-    not is_cisco_env
-
 - name: deploy SONiC fanout CISCO minimal (Multi-SKU)
   block:
     - name: deploy SONiC Cisco fanout minimal configuration
@@ -122,3 +112,13 @@
         cisco/fanout_sonic_cisco_minimal.yml
       when: "dry_run is not defined"
   when: is_cisco_env
+
+- name: deploy SONiC fanout with image version 202511
+  block:
+    - name: deploy SONiC fanout not incremental and not dry_run with 202511 images
+      include_tasks:
+        sonic/fanout_sonic_202511.yml
+      when: dry_run is not defined and incremental is not defined
+  when: >
+    '202511' in fanout_sonic_version['build_version']  and
+    not is_cisco_env

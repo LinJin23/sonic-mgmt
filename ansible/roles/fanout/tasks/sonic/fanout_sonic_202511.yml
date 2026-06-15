@@ -176,20 +176,20 @@
 - block:
   - name: Remove ipv6 parameter
     lineinfile:
-      path: /etc/sysctl.conf
+      path: /usr/lib/sysctl.d/90-sonic.conf
       line: 'net.ipv6.conf.all.disable_ipv6 = 0'
       state: absent
     become: yes
 
   - name: Update IPv6 parameter
     lineinfile:
-      path: /etc/sysctl.conf
+      path: /usr/lib/sysctl.d/90-sonic.conf
       line: 'net.ipv6.conf.all.disable_ipv6 = 1'
       state: present
     become: yes
 
   - name: Apply parameter to disable IPv6 function
-    shell: "sysctl -p"
+    shell: "sysctl -p /usr/lib/sysctl.d/90-sonic.conf"
     become: yes
 
   when: "fanout_sonic_version.asic_type in ['marvell-teralynx', 'mellanox', 'broadcom']"
@@ -212,4 +212,4 @@
             name: lldp
             state: absent
           become: true
-      when: lldp_container.stdout != "" and "marvell-teralynx" in fanout_sonic_version.asic_type
+      when: lldp_container.stdout != "" and fanout_sonic_version.asic_type in ['marvell-teralynx', 'mellanox']
