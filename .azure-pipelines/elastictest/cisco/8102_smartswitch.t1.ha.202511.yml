@@ -36,7 +36,7 @@ parameters:
 
   - name: DPU_NAME
     type: string
-    default: "str2-8102-smartswitch-03-dpu-0,str2-8102-smartswitch-03-dpu-1,str2-8102-smartswitch-04-dpu-0"
+    default: "str2-8102-smartswitch-03-dpu-0,str2-8102-smartswitch-04-dpu-0,str2-8102-smartswitch-04-dpu-1"
     displayName: "DPU Name"
 
   - name: MIN_WORKER
