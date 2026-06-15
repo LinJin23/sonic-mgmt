@@ -2,11 +2,11 @@
 # This playbook is called from fanout_connect.yml or fanout.yml
 
 - set_fact:
-    deploy_leaf: false
-  when: deploy_leaf is not defined
+    deploy_leaf: "{{ deploy_leaf | default(false) | bool }}"
 
-- set_fact: dut="{{ leaf_name }}"
-  when: deploy_leaf | bool
+- set_fact:
+    dut: "{{ leaf_name }}"
+  when: deploy_leaf
 
 - set_fact:
     clean_before_add: "{{ clean_before_add | default('y') }}"

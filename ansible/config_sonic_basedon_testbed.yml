@@ -67,11 +67,17 @@
       - ansible_hostv6 != ''
 
   - name: Rotate the password
-    shell: "echo {{ ansible_ssh_user }}:{{ ansible_altpasswords[0] }} | sudo chpasswd"
-    no_log: True
-    become: false
+    user:
+      name: "{{ ansible_ssh_user }}"
+      password: "{{ ansible_altpasswords[0] | password_hash('sha512') }}"
+      update_password: always
+    become: true
     ignore_errors: true
-    when: type is not defined or type != "kvm"
+    when:
+      - type is not defined or type != "kvm"
+      - ansible_ssh_user is defined
+      - ansible_altpasswords is defined
+      - ansible_altpasswords | length > 0
 
   - block:
     - name: set default testbed file

@@ -425,8 +425,8 @@ def patch_rsyslog(duthost):
             path=conf,
             state="present",
             backrefs=True,
-            regexp="(^[^#]*@\[10\.20\.6\.16\]:514)",  # noqa: W605
-            line="# \g<1>"  # noqa: W605
+            regexp=r"(^[^#]*@\[10\.20\.6\.16\]:514)",
+            line=r"# \g<1>"
         )
     duthost.shell("systemctl restart rsyslog")
 
@@ -697,12 +697,32 @@ def creds_on_dut(duthost):
         "docker_registry_host",
         "docker_registry_username",
         "docker_registry_password",
-        "public_docker_registry_host"
+        "public_docker_registry_host",
+        "fanout_admin_user",
+        "fanout_admin_password",
+        "fanout_network_user",
+        "fanout_network_password",
+        "fanout_shell_user",
+        "fanout_shell_password",
+        "fanout_tacacs_user",
+        "fanout_tacacs_password",
+        "fanout_tacacs_eos_user",
+        "fanout_tacacs_eos_password",
+        "fanout_tacacs_sonic_user",
+        "fanout_tacacs_sonic_password",
+        "fanout_tacacs_onyx_user",
+        "fanout_tacacs_onyx_password",
+        "fanout_sonic_user",
+        "fanout_sonic_password",
+        "fanout_mlnx_user",
+        "fanout_mlnx_password"
     ]
     hostvars = duthost.host.options['variable_manager']._hostvars[duthost.hostname]
     for cred_var in cred_vars:
         if cred_var in creds:
-            creds[cred_var] = jinja2.Template(creds[cred_var]).render(**hostvars)  # nosemgrep: direct-use-of-jinja2
+            creds[cred_var] = (
+                jinja2.Template(str(creds[cred_var])).render(**hostvars)
+            )  # nosemgrep: direct-use-of-jinja2
 
     creds["console_login_options"] = hostvars.get("console_login_options", {})
 
