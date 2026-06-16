@@ -3849,8 +3849,8 @@
   topo: t2_2lc_min_ports-masic
   ptf_image_name: docker-ptf
   ptf: ptf10-0
-  ptf_ip: 10.212.65.100/24
-  ptf_ipv6: 2603:10e2:140:3000::10e/122
+  ptf_ip: 172.16.161.6/18
+  ptf_ipv6: 2603:10e2:140:3000::6106/114
   server: server_tk5_10
   vm_base: VM14000
   dut:
