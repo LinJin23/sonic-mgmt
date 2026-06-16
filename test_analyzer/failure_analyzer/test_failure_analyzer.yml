@@ -40,11 +40,16 @@ stages:
                 ADOAccessToken=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken --output tsv)
                 export AZURE_DEVOPS_MSAZURE_TOKEN=$ADOAccessToken
 
-                set -x
-                python3 -m venv /var/AzDevOps/env-python3
+                set -ex
+                set -o pipefail
+
+                # Use the pre-provisioned virtual environment on the nightly
+                # agent (same one the sibling pipelines rely on). Do NOT recreate
+                # it here: the agent's system python3 no longer ships ensurepip,
+                # so `python3 -m venv` fails to bootstrap pip.
                 source /var/AzDevOps/env-python3/bin/activate
                 cd test_analyzer/failure_analyzer
-                mkdir logs
+                mkdir -p logs
                 touch logs/analyzer.log
                 pip install -r requirements.txt
 
