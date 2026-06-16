@@ -499,3 +499,77 @@ class TestDeduplicator(unittest.TestCase):
         ]
         self.assertCountEqual(actual_final_icm_list, expected_final_icm_list)
         self.assertCountEqual(actual_duplicated_icm_list, expected_duplicated_icm_list)
+
+    def _make_regression_item(self, subject, branch='202305'):
+        return {
+            'trigger_icm': True,
+            'testcase': 'test_soft_reboot',
+            'branch': branch,
+            'module_path': 'platform_tests.test_reboot',
+            'subject': subject,
+            'failure_summary': '',
+            'failure_level_info': {}
+        }
+
+    @patch('data_deduplicator.random.sample', side_effect=lambda population, k: list(population)[-k:])
+    def test_deduplication_branch_limit_with_replaced_candidate(self, _mock_sample):
+        """
+        Regression test for "ValueError: list.remove(x): x not in list".
+
+        When a Phase-1 'lower case' replacement removes an item from
+        final_icm_list, the replaced item is still left behind in
+        branch_candidates. If the branch limit is then exceeded and the
+        replaced (stale) item is among the rejected ones, deduplication must
+        not crash trying to remove it from final_icm_list a second time.
+        """
+        branch = '202305'  # icm_202305_limit == 5 in config_default.json
+        branch_limit = getattr(self.deduplicator, 'icm_{}_limit'.format(branch))
+
+        # Specific item that gets replaced by the more general `general_base`.
+        specific = self._make_regression_item('[case_a][{}][topologyA]'.format(branch), branch)
+        # More general item that covers `specific`, triggering the replacement.
+        general_base = self._make_regression_item('[case_a][{}]'.format(branch), branch)
+        # Enough distinct items to push branch_candidates past the limit, so that
+        # `specific` (the stale entry, patched to be rejected) is removed.
+        extra = [self._make_regression_item('[case_x{}][{}]'.format(i, branch), branch)
+                 for i in range(branch_limit)]
+
+        original_failure_dict = [{
+            'table': [specific, general_base] + extra,
+            'type': 'general'
+        }]
+        branches = ['master', 'internal', '202012', '202205', '202305', '202311', '202405']
+
+        # Must not raise ValueError.
+        final_icm_list, _duplicated_icm_list = self.deduplicator.deduplication(
+            original_failure_dict, branches)
+
+        # The replaced (stale) item must not appear in the final list.
+        self.assertNotIn(specific, final_icm_list)
+
+    @patch('data_deduplicator.random.sample', side_effect=lambda population, k: list(population)[-k:])
+    def test_deduplication_ai_flaky_limit_with_replaced_candidate(self, _mock_sample):
+        """
+        Regression test for the same "x not in list" crash on the AI-flaky path:
+        a replaced candidate left behind in ai_flaky_candidates must not crash
+        deduplication when the AI-flaky limit rejects it.
+        """
+        branch = '202305'
+        ai_flaky_limit = self.deduplicator.max_ai_flaky_icm_limit
+
+        specific = self._make_regression_item('[case_a][{}][topologyA]'.format(branch), branch)
+        general_base = self._make_regression_item('[case_a][{}]'.format(branch), branch)
+        extra = [self._make_regression_item('[case_x{}][{}]'.format(i, branch), branch)
+                 for i in range(ai_flaky_limit)]
+
+        original_failure_dict = [{
+            'table': [specific, general_base] + extra,
+            'type': 'ai_flaky'
+        }]
+        branches = ['master', 'internal', '202012', '202205', '202305', '202311', '202405']
+
+        # Must not raise ValueError.
+        final_icm_list, _duplicated_icm_list = self.deduplicator.deduplication(
+            original_failure_dict, branches)
+
+        self.assertNotIn(specific, final_icm_list)
