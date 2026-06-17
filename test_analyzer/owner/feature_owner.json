@@ -895,15 +895,15 @@
     },
     {
         "feature": "iface_namingmode",
-        "owner": "Ziting Guo",
-        "email": "zitingguo@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "iface_namingmode.test_iface_namingmode"
                 ],
-                "owner": "Ziting Guo",
-                "email": "zitingguo@microsoft.com"
+                "owner": "Storm Liang",
+                "email": "stormliang@microsoft.com"
             }
         ]
     },
