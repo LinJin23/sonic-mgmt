@@ -1,0 +1,11 @@
+metadata:
+  description: Smart T1/Dualtor - VoQ features (Cisco platforms)
+  branch: '202511'
+  test_branch: internal-202511
+features:
+  qos:
+    - qos.test_qos_sai.TestQosSai.testQosSaiLosslessVoq
+    - qos.test_qos_sai.TestQosSai.testQosSaiLossyQueueVoq
+    - qos.test_qos_sai.TestQosSai.testQosSaiLossyQueueVoqMultiSrc
+    - qos.test_oq_watchdog
+    - qos.test_voq_watchdog

@@ -1,0 +1,40 @@
+metadata:
+  description: qos expected cases (T1, 202511)
+  feature: qos
+  logic: ran = any HWSKU ran it; skip = all applicable (non-n/a) HWSKUs skipped it
+  branch: '202511'
+qos:
+  - module: qos.test_buffer
+    skip:
+      - test_buffer_model_test
+      - test_change_speed_cable
+      - test_exceeding_headroom
+      - test_headroom_override
+      - test_lossless_pg
+      - test_port_admin_down
+      - test_port_auto_neg
+      - test_shared_headroom_pool_configure
+  - qos.test_ecn_config
+  - qos.test_pfc_counters
+  - qos.test_qos_dscp_mapping
+  - module: qos.test_qos_sai
+    skip:
+      - TestQosSai.testIPIPQosSaiDscpToPgMapping
+      - TestQosSai.testQosSaiDot1pPgMapping
+      - TestQosSai.testQosSaiDot1pQueueMapping
+      - TestQosSai.testQosSaiDscpEcn
+      - TestQosSai.testQosSaiFullMeshTrafficSanity
+    skip_on:
+      - case: TestQosSai.testPfcStormWithSharedHeadroomOccupancy
+        vendor: [Cisco, Arista]
+        reason: Shared headroom not supported on non-Mellanox platforms
+  - module: qos.test_tunnel_qos_remap
+    skip:
+      - test_bounced_back_traffic_in_expected_queue
+      - test_encap_dscp_rewrite
+      - test_pfc_pause_extra_lossless_active
+      - test_pfc_pause_extra_lossless_standby
+      - test_separated_qos_map_on_tor
+      - test_tunnel_decap_dscp_to_pg_mapping
+      - test_tunnel_decap_dscp_to_queue_mapping
+      - test_xoff_for_pcbb

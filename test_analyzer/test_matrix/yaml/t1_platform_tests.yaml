@@ -1,0 +1,74 @@
+metadata:
+  description: platform_tests expected cases (T1, 202511)
+  feature: platform_tests
+  logic: ran = any HWSKU ran it; skip = all 9 HWSKUs skipped it
+  branch: '202511'
+platform_tests:
+  - module: platform_tests.api.test_chassis
+    skip:
+      - platform_tests.api.test_chassis.TestChassisApi.test_get_my_slot
+      - platform_tests.api.test_chassis.TestChassisApi.test_get_supervisor_slot
+      - platform_tests.api.test_chassis.TestChassisApi.test_modules
+      - platform_tests.api.test_chassis.TestChassisApi.test_status_led
+  - module: platform_tests.api.test_chassis_fans
+    skip:
+      - platform_tests.api.test_chassis_fans.TestChassisFans.test_get_serial
+      - platform_tests.api.test_chassis_fans.TestChassisFans.test_set_fans_led
+  - platform_tests.api.test_component
+  - platform_tests.api.test_fan_drawer
+  - platform_tests.api.test_fan_drawer_fans
+  - platform_tests.api.test_psu
+  - module: platform_tests.api.test_psu_fans
+    skip:
+      - platform_tests.api.test_psu_fans.TestPsuFans.test_get_fans_target_speed
+      - platform_tests.api.test_psu_fans.TestPsuFans.test_set_fans_speed
+  - platform_tests.api.test_sfp
+  - platform_tests.api.test_thermal
+  - platform_tests.api.test_watchdog
+  - platform_tests.broadcom.test_ser
+  - platform_tests.cli.test_show_platform
+  - platform_tests.counterpoll.test_counterpoll_watermark
+  - platform_tests.daemon.test_ledd
+  - platform_tests.daemon.test_pcied
+  - platform_tests.daemon.test_psud
+  - platform_tests.daemon.test_sensord
+  - platform_tests.daemon.test_syseepromd
+  - module: platform_tests.fwutil.test_fwutil
+    skip:
+      - platform_tests.fwutil.test_fwutil.test_fwutil_auto
+      - platform_tests.fwutil.test_fwutil.test_fwutil_install_bad_path
+      - platform_tests.fwutil.test_fwutil.test_fwutil_install_file
+      - platform_tests.fwutil.test_fwutil.test_fwutil_install_url
+      - platform_tests.fwutil.test_fwutil.test_fwutil_update_bad_config
+      - platform_tests.fwutil.test_fwutil.test_fwutil_update_current
+      - platform_tests.fwutil.test_fwutil.test_fwutil_update_next
+  - platform_tests.link_flap.test_cont_link_flap
+  - platform_tests.link_flap.test_link_flap
+  - platform_tests.sfp.test_sfpshow
+  - platform_tests.sfp.test_sfputil
+  - platform_tests.sfp.test_show_intf_xcvr
+  - platform_tests.test_cpu_memory_usage
+  - platform_tests.test_intf_fec
+  - platform_tests.test_kdump
+  - platform_tests.test_link_down
+  - platform_tests.test_memory_exhaustion
+  - module: platform_tests.test_platform_info
+    skip:
+      - platform_tests.test_platform_info.test_show_platform_fanstatus_mocked
+      - platform_tests.test_platform_info.test_show_platform_temperature_mocked
+      - platform_tests.test_platform_info.test_thermal_control_fan_status
+  - platform_tests.test_port_toggle
+  - platform_tests.test_power_off_reboot
+  - platform_tests.test_process_reboot_cause
+  - module: platform_tests.test_reboot
+    skip:
+      - test_fast_reboot
+      - test_soft_reboot
+      - test_warm_reboot
+  - platform_tests.test_reload_config
+  - platform_tests.test_sensors
+  - module: platform_tests.test_sequential_restart
+    skip:
+      - platform_tests.test_sequential_restart.test_restart_syncd
+  - platform_tests.test_var_log_tmpfs
+  - platform_tests.test_xcvr_info_in_db

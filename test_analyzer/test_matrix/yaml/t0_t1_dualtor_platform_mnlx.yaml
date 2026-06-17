@@ -1,0 +1,10 @@
+metadata:
+  description: Platform tests - Mellanox specific (shared T0+T1)
+  branch: '202511'
+  test_branch: internal-202511
+features:
+  platform_tests:
+    - platform_tests.mellanox.test_check_sfp_eeprom
+    - platform_tests.mellanox.test_check_sysfs
+    - platform_tests.mellanox.test_hw_management_service.test_hw_management_service_status
+    - platform_tests.mellanox.test_reboot_cause.test_reboot_cause

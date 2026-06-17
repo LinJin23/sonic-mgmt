@@ -1,0 +1,33 @@
+metadata:
+  description: generic_config_updater expected cases (T1, 202511)
+  feature: generic_config_updater
+  logic: ran = any HWSKU ran it; skip = all applicable (non-n/a) HWSKUs skipped it
+  branch: '202511'
+generic_config_updater:
+  - generic_config_updater.test_aaa
+  - generic_config_updater.test_bgp_prefix
+  - generic_config_updater.test_bgp_sentinel
+  - generic_config_updater.test_bgpl
+  - generic_config_updater.test_cacl
+  - generic_config_updater.test_ecn_config_update
+  - module: generic_config_updater.test_eth_interface
+    skip:
+      - test_replace_lanes
+      - test_update_invalid_index
+      - test_update_speed
+      - test_update_valid_index
+  - generic_config_updater.test_ip_bgp
+  - generic_config_updater.test_kubernetes_config
+  - module: generic_config_updater.test_lo_interface
+    skip:
+      - test_lo_interface_tc1_suite
+  - generic_config_updater.test_mgmt_interface
+  - generic_config_updater.test_mmu_dynamic_threshold_config_update
+  - generic_config_updater.test_monitor_config
+  - generic_config_updater.test_ntp
+  - generic_config_updater.test_pfcwd_interval
+  - generic_config_updater.test_pfcwd_status
+  - generic_config_updater.test_pg_headroom_update
+  - generic_config_updater.test_srv6
+  - generic_config_updater.test_static_route
+  - generic_config_updater.test_syslog

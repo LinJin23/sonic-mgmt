@@ -1,0 +1,31 @@
+metadata:
+  description: Smart dualtor - MLX/Cisco features not supported by Arista
+  branch: '202511'
+  test_branch: internal-202511
+  topology: dualtor
+  vendor_applicability: mellanox, cisco
+features:
+  acl:
+    - acl.test_acl.TestAclWithPortToggle.test_egress_unmatched_forwarded
+    - acl.test_acl.TestAclWithReboot.test_egress_unmatched_forwarded
+    - acl.test_acl.TestBasicAcl.test_egress_unmatched_forwarded
+    - acl.test_acl.TestIncrementalAcl.test_egress_unmatched_forwarded
+    - acl.test_acl_outer_vlan.TestAclVlanOuter_Egress
+  bfd:
+    - module: bfd.test_bfd
+      skip:
+        - test_bfd_multihop
+        - test_bfd_scale
+  everflow:
+    - everflow.test_everflow_ipv6.TestEgressEverflowIPv6
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_basic_forwarding
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_dscp_with_policer
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_neighbor_mac_change
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_remove_unused_ecmp_next_hop
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_remove_used_ecmp_next_hop
+  fib:
+    - fib.test_fib.test_nvgre_hash
+  vxlan:
+    - vxlan.test_scale_ecmp
+    - vxlan.test_vxlan_decap
+    - vxlan.test_vxlan_vnet_bgp_subintf
