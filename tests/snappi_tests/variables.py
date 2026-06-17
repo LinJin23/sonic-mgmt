@@ -37,21 +37,21 @@ MULTIDUT_PORT_INFO = {
         {
             'multi-dut-multi-asic-to-short-link': {
                 'rx_ports': [
-                    {'port_name': 'Ethernet200', 'hostname': "str3-8800-lc3-1"},
+                    {'port_name': 'Ethernet200', 'hostname': "str3-8800-lc5-1"},
                 ],
                 'tx_ports': [
-                    {'port_name': 'Ethernet136', 'hostname': "str3-8800-lc3-1"},
-                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc3-1"}
+                    {'port_name': 'Ethernet136', 'hostname': "str3-8800-lc5-1"},
+                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc5-1"}
                 ]
             }
         },
         {
             'multi-dut-single-asic-to-short-link': {
                 'rx_ports': [
-                    {'port_name': 'Ethernet136', 'hostname': "str3-8800-lc3-1"}
+                    {'port_name': 'Ethernet136', 'hostname': "str3-8800-lc5-1"}
                 ],
                 'tx_ports': [
-                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc3-1"},
+                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc5-1"},
                 ]
             }
         }
@@ -65,8 +65,8 @@ MIXED_SPEED_PORT_INFO = {
         {
             'multi-dut-multi-asic-to-short-link': {
                 'rx_ports': [
-                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc3-1"},
-                    {'port_name': 'Ethernet200', 'hostname': "str3-8800-lc3-1"}
+                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc5-1"},
+                    {'port_name': 'Ethernet200', 'hostname': "str3-8800-lc5-1"}
                 ],
                 'tx_ports': [
                     {'port_name': 'Ethernet280', 'hostname': "str3-8800-lc4-1"}
@@ -82,12 +82,12 @@ MULTIDUT_PORT_INFO2 = {
         {
             'multi-dut-multi-asic-to-short-link': {
                 'rx_ports': [
-                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc3-1"},
-                    {'port_name': 'Ethernet200', 'hostname': "str3-8800-lc3-1"}
+                    {'port_name': 'Ethernet128', 'hostname': "str3-8800-lc5-1"},
+                    {'port_name': 'Ethernet200', 'hostname': "str3-8800-lc5-1"}
                 ],
                 'tx_ports': [
-                    {'port_name': 'Ethernet192', 'hostname': "str3-8800-lc3-1"},
-                    {'port_name': 'Ethernet136', 'hostname': "str3-8800-lc3-1"}
+                    {'port_name': 'Ethernet192', 'hostname': "str3-8800-lc5-1"},
+                    {'port_name': 'Ethernet136', 'hostname': "str3-8800-lc5-1"}
                 ]
             }
         }
@@ -425,7 +425,7 @@ TOPOLOGY_CONFIG = {
 
         'CISCO': {
             # Device hostnames: [lower_tier, uplink_dut, downlink_dut, supervisor]
-            'device_hostnames': ["str2-7260cx3-d10-u42", "str3-8800-lc3-1", "str3-8800-lc2-1", "str3-8800-sup-2"],
+            'device_hostnames': ["str2-7260cx3-d10-u42", "str3-8800-lc5-1", "str3-8800-lc2-1", "str3-8800-sup-2"],
 
             'lower_tier_info': {
                 'dut_ip': '10.64.246.10',
@@ -739,7 +739,7 @@ TOPOLOGY_CONFIG = {
     # connected yet — only uplink fanout + IXIA for route convergence testing.
     # The fanout acts as a pure L2 bridge (all protocols disabled, empty CoPP).
     # =========================================================================
-    TOPOLOGY_RH_PIZZABOX: {
+    TOPOLOGY_RH_PIZZABOX: {  # noqa: F602
         'Vendor1': {
             'device_hostnames': ["rh-dut-01"],
 
@@ -802,7 +802,7 @@ TOPOLOGY_CONFIG = {
     # connected yet — only uplink fanout + IXIA for route convergence testing.
     # The fanout acts as a pure L2 bridge (all protocols disabled, empty CoPP).
     # =========================================================================
-    TOPOLOGY_RH_PIZZABOX: {
+    TOPOLOGY_RH_PIZZABOX: {  # noqa: F602
         'Vendor1': {
             'device_hostnames': ["rh-dut-01"],
 

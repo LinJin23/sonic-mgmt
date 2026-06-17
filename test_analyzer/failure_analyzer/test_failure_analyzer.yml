@@ -35,18 +35,39 @@ stages:
               inlineScript: |
                 pwd
 
+                set -ex
+                set -o pipefail
+
+                # The sonic-mgmt container's system python3.12 ships without
+                # ensurepip, so `python3 -m venv` cannot bootstrap pip. Use uv
+                # (already the standard tool in this repo - see
+                # ansible/roles/vm_set/tasks/ensure_python_env.yml) to create the
+                # venv and install dependencies; uv needs neither pip nor ensurepip.
+                #
+                # The environment (venv + dependencies) is set up BEFORE any
+                # credentials are exported, so the bootstrap never runs with the
+                # Kusto/ADO tokens present in the environment.
+                if ! command -v uv >/dev/null 2>&1; then
+                  curl -LsSf https://astral.sh/uv/install.sh | env UV_INSTALL_DIR=/usr/local/bin INSTALLER_NO_MODIFY_PATH=1 sh
+                fi
+
+                rm -rf /var/AzDevOps/env-python3
+                uv venv --python python3 /var/AzDevOps/env-python3
+                source /var/AzDevOps/env-python3/bin/activate
+
+                cd test_analyzer/failure_analyzer
+                mkdir -p logs
+                touch logs/analyzer.log
+                uv pip install --python /var/AzDevOps/env-python3/bin/python -r requirements.txt
+
+                # Export credentials only now that setup is complete. Disable xtrace
+                # first so the token values are never echoed into the build logs.
+                set +x
                 KustoAccessToken=$(az account get-access-token --resource https://api.kusto.windows.net --query accessToken -o tsv)
                 export ACCESS_TOKEN=$KustoAccessToken
                 ADOAccessToken=$(az account get-access-token --resource 499b84ac-1321-427f-aa17-267ca6975798 --query accessToken --output tsv)
                 export AZURE_DEVOPS_MSAZURE_TOKEN=$ADOAccessToken
-
                 set -x
-                python3 -m venv /var/AzDevOps/env-python3
-                source /var/AzDevOps/env-python3/bin/activate
-                cd test_analyzer/failure_analyzer
-                mkdir logs
-                touch logs/analyzer.log
-                pip install -r requirements.txt
 
                 python3 main.py \
                   -extb $(EXCLUDED_TESTBED_KEYWORDS) \

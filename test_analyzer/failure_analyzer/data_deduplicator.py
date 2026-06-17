@@ -131,7 +131,8 @@ class DataDeduplicator:
 
             for candidator in rejected_ai_flaky:
                 candidator['trigger_icm'] = False
-                final_icm_list.remove(candidator)
+                if candidator in final_icm_list:
+                    final_icm_list.remove(candidator)
                 duplicated_icm_list.append(candidator)
                 logger.info(f"AI flaky limit reached, not selected: {candidator['subject']}")
 
@@ -174,7 +175,8 @@ class DataDeduplicator:
 
                 for candidator in rejected_branch:
                     candidator['trigger_icm'] = False
-                    final_icm_list.remove(candidator)
+                    if candidator in final_icm_list:
+                        final_icm_list.remove(candidator)
                     duplicated_icm_list.append(candidator)
                     logger.info(f"Branch {branch} limit reached, not selected: {candidator['subject']}")
                 for candidator in selected_branch:

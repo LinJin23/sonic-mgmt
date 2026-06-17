@@ -913,7 +913,7 @@
   server: server_69
   vm_base:
   dut:
-  - str3-8800-lc3-1
+  - str3-8800-lc5-1
   - str3-8800-lc2-1
   - str3-8800-sup-2
   inv_name: ixia
@@ -933,7 +933,7 @@
   vm_base:
   dut:
   - str3-8800-lc4-1
-  - str3-8800-lc3-1
+  - str3-8800-lc5-1
   - str3-8800-sup-1
   inv_name: str3
   auto_recover: 'False'
@@ -2401,7 +2401,7 @@
 
 - conf-name: vms97-t1-sn5640-1
   group-name: vms97-1
-  topo: t1-isolated-d448u15-lag
+  topo: t1-isolated-d56u1-lag
   ptf_image_name: docker-ptf
   ptf: vms97-1
   ptf_ip: 10.64.247.177/25
@@ -2412,8 +2412,8 @@
   - str4-sn5640-6
   inv_name: str4
   auto_recover: 'True'
-  comment: janetcui
-  tb_owner: janetcui
+  comment: kumarsourabh
+  tb_owner: kumarsourabh
 
 - conf-name: vms110-t0-sn5640-1
   group-name: vms110-1
@@ -3849,8 +3849,8 @@
   topo: t2_2lc_min_ports-masic
   ptf_image_name: docker-ptf
   ptf: ptf10-0
-  ptf_ip: 10.212.65.100/24
-  ptf_ipv6: 2603:10e2:140:3000::10e/122
+  ptf_ip: 172.16.161.6/18
+  ptf_ipv6: 2603:10e2:140:3000::6106/114
   server: server_tk5_10
   vm_base: VM14000
   dut:
@@ -3867,8 +3867,8 @@
   topo: t2
   ptf_image_name: docker-ptf
   ptf: ptf9-0
-  ptf_ip: 10.212.65.97/24
-  ptf_ipv6: 2603:10e2:140:3000::10d/122
+  ptf_ip: 172.16.162.6/18
+  ptf_ipv6: 2603:10e2:140:3000::6206/114
   server: server_tk5_9
   vm_base: VM15000
   dut:

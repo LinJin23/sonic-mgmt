@@ -535,7 +535,7 @@ sonic_str3_cisco_8800_lc:
         watchdog:
           timeout: 600
           wait: 900
-    str3-8800-lc3-1:
+    str3-8800-lc5-1:
       hwsku: Cisco-88-LC0-36FH-O36
       sonic_hwsku: Cisco-88-LC0-36FH-O36
       sonic_hw_platform: x86_64-88_lc0_36fh-r0
