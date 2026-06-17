@@ -179,8 +179,8 @@
     },
     {
         "feature": "cacl",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Yawen Ni",
+        "email": "yawenni@microsoft.com",
         "scripts": [
             {
                 "scripts": [
@@ -188,8 +188,8 @@
                     "cacl.test_cacl_function",
                     "cacl.test_ebtables_application"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Yawen Ni",
+                "email": "yawenni@microsoft.com"
             }
         ]
     },
@@ -670,8 +670,8 @@
                 "scripts": [
                     "generic_config_updater.test_cacl"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Yawen Ni",
+                "email": "yawenni@microsoft.com"
             },
             {
                 "scripts": [
