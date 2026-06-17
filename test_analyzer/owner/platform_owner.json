@@ -122,16 +122,16 @@
     {
         "hwsku": "Arista-720DT-G48S4",
         "topo": "m0",
-        "owner": "Jing Kan",
-        "email": "jika@microsoft.com",
+        "owner": "Xichen Lin",
+        "email": "xichenlin@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
     {
         "hwsku": "Arista-720DT-G48S4",
         "topo": "mx",
-        "owner": "Jing Kan",
-        "email": "jika@microsoft.com",
+        "owner": "Xichen Lin",
+        "email": "xichenlin@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
@@ -538,16 +538,16 @@
     {
         "hwsku": "Nokia-7215",
         "topo": "mx",
-        "owner": "Jing Kan",
-        "email": "jika@microsoft.com",
+        "owner": "Zhijian Li",
+        "email": "zhijianli@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
     {
         "hwsku": "Nokia-M0-7215",
         "topo": "m0",
-        "owner": "Jing Kan",
-        "email": "jika@microsoft.com",
+        "owner": "Zhijian Li",
+        "email": "zhijianli@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
@@ -738,8 +738,8 @@
     {
         "hwsku": "Arista-7050CX3-32S-C28S4",
         "topo": "t0-d18u8s4",
-        "owner": "Ziting Guo",
-        "email": "zitingguo@microsoft.com",
+        "owner": "Xiawei Jiang",
+        "email": "xiaweijiang@microsoft.com",
         "new_platform": "Yes",
         "tag": "Yes"
     },
