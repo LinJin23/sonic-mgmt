@@ -370,16 +370,16 @@
     {
         "hwsku": "Force10-S6100",
         "topo": "t0",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
     {
         "hwsku": "Force10-S6100",
         "topo": "t1",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
@@ -802,8 +802,8 @@
     {
         "hwsku": "Celestica-DX010-C32",
         "topo": "t0",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
