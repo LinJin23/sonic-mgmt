@@ -138,8 +138,8 @@
     {
         "hwsku": "Arista-7260CX3-C64",
         "topo": "t1",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
@@ -162,16 +162,16 @@
     {
         "hwsku": "Arista-7260CX3-D108C8",
         "topo": "t0",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
     {
         "hwsku": "Arista-7260CX3-D108C10",
         "topo": "t0",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
