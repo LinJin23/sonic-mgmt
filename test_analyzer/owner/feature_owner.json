@@ -579,8 +579,8 @@
                     "ecmp.test_ecmp_sai_value",
                     "ecmp.test_ecmp_balance"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Xiawei Jiang",
+                "email": "xiaweijiang@microsoft.com"
             }
         ]
     },
@@ -993,15 +993,15 @@
     },
     {
         "feature": "lldp",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Xiawei Jiang",
+        "email": "xiaweijiang@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "lldp.test_lldp"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Xiawei Jiang",
+                "email": "xiaweijiang@microsoft.com"
             }
         ]
     },
