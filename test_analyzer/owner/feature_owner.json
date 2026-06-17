@@ -1467,15 +1467,15 @@
     },
     {
         "feature": "pytest",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Xiawei Jiang",
+        "email": "xiaweijiang@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "pytest"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Xiawei Jiang",
+                "email": "xiaweijiang@microsoft.com"
             }
         ]
     },
