@@ -1,0 +1,27 @@
+metadata:
+  description: Smart T0 - MLX-supported features not supported by Arista
+  branch: '202511'
+  test_branch: internal-202511
+  topology: t0
+  rules: vxlan, vnet, bfd, acl-egress, everflow-egress, nvgre_hash
+  vendor_applicability: mellanox
+features:
+  acl:
+    - acl.test_acl.TestAclWithPortToggle.test_egress_unmatched_forwarded
+    - acl.test_acl.TestAclWithReboot.test_egress_unmatched_forwarded
+    - acl.test_acl.TestBasicAcl.test_egress_unmatched_forwarded
+    - acl.test_acl.TestIncrementalAcl.test_egress_unmatched_forwarded
+    - acl.test_acl_outer_vlan.TestAclVlanOuter_Egress
+  everflow:
+    - everflow.test_everflow_ipv6.TestEgressEverflowIPv6
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_basic_forwarding
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_dscp_with_policer
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_neighbor_mac_change
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_remove_unused_ecmp_next_hop
+    - everflow.test_everflow_testbed.TestEverflowV4EgressAclEgressMirror.test_everflow_remove_used_ecmp_next_hop
+  fib:
+    - fib.test_fib.test_nvgre_hash
+  vxlan:
+    - vxlan.test_vnet_bgp_route_precedence
+    - vxlan.test_vxlan_bfd_tsa
+    - vxlan.test_vxlan_decap

@@ -5,34 +5,34 @@ from utilities.kusto import execute_kusto_query
 
 
 def get_host_tor_pingmesh_node_availablity_during_window(tor_name: str, start_time: str, end_time: str) -> DataFrame:
-
     # Query node downtime
 
     node_downtime_query = '''
 let startTime = datetime("{startTime}");
 let endTime = datetime("{endTime}");
 let torName = "{torName}";
-let dataplaneLoss = (startTime: datetime, endTime: datetime, torName: string  ) {{
-cluster('aznwsdn.kusto.windows.net').database('aznwmds').TorPingSendAggreEvent
+cluster('vnetkusto.northcentralus.kusto.windows.net').database('veritas').TorPingSendAggreEvent
     | where TIMESTAMP >= startTime and TIMESTAMP < endTime
     | where TorName =~ torName
     | summarize SendCount = max(SendCount) by TIMESTAMP, NodeId, TorName
     | join kind = leftouter
     (
-        cluster('aznwsdn.kusto.windows.net').database('aznwmds').TorPingRecvAggreEvent
-    | where TIMESTAMP >= startTime and TIMESTAMP < endTime 
+        cluster('vnetkusto.northcentralus.kusto.windows.net').database('veritas').TorPingRecvAggreEvent
+    | where TIMESTAMP >= startTime and TIMESTAMP < endTime
     | where TorName =~ torName
     | summarize RecvCount = max(RecvCount) by TIMESTAMP, NodeId, TorName
     )on TIMESTAMP, NodeId, TorName
     | extend RecvCount = iff(isnull(RecvCount), 0, RecvCount)
-    | project TIMESTAMP, TorName, NodeId, Availability = todouble(RecvCount) / todouble(SendCount) * 100, SendCount = toint(SendCount), RecvCount = toint(RecvCount), TimeWindowInMinutes = int(5)
-}};
-dataplaneLoss(startTime, endTime, torName);
+    | project TIMESTAMP, TorName, NodeId,
+        Availability = todouble(RecvCount) / todouble(SendCount) * 100,
+        SendCount = toint(SendCount),
+        RecvCount = toint(RecvCount),
+        TimeWindowInMinutes = int(5)
 
     '''
 
     query = node_downtime_query.format(startTime=start_time, endTime=end_time, torName=tor_name)
-    df_node_downtime = execute_kusto_query("aznwsdn", "aznwmds", query)
+    df_node_downtime = execute_kusto_query("vnetkusto.northcentralus", "veritas", query)
     return df_node_downtime
 
 
@@ -48,24 +48,27 @@ let nodeIdlist = (cluster('azphynet.kusto.windows.net').database('azdhmds').Devi
                     cluster('azphynet.kusto.windows.net').database('azdhmds').Servers
                 ) on DeviceName
                 | summarize by NodeId);
-                cluster('aznwsdn.kusto.windows.net').database('aznwmds').TorPingSendAggreEvent
+                cluster('vnetkusto.northcentralus.kusto.windows.net').database('veritas').TorPingSendAggreEvent
                 | where TIMESTAMP >= bin(startTime, 5m) and TIMESTAMP <  endTime
-                | where NodeId in~ (nodeIdlist) 
+                | where NodeId in~ (nodeIdlist)
                 | summarize SendCount = max(SendCount) by TIMESTAMP, NodeId
                 | join kind = leftouter (
-                    cluster('aznwsdn.kusto.windows.net').database('aznwmds').TorPingRecvAggreEvent
-                    | where TIMESTAMP >= bin(startTime, 5m) and TIMESTAMP < endTime  
-                    | where NodeId in~ (nodeIdlist) 
+                    cluster('vnetkusto.northcentralus.kusto.windows.net').database('veritas').TorPingRecvAggreEvent
+                    | where TIMESTAMP >= bin(startTime, 5m) and TIMESTAMP < endTime
+                    | where NodeId in~ (nodeIdlist)
                     | summarize RecvCount = max(RecvCount) by TIMESTAMP, NodeId
                 ) on TIMESTAMP, NodeId
                 | extend RecvCount = iff(isnull(RecvCount), 0, RecvCount)
                 | project TIMESTAMP, rate = todouble(RecvCount)/todouble(SendCount) * 100, NodeId, RecvCount, SendCount
-                | summarize rate = todouble(sum(RecvCount)) / todouble(sum(SendCount)) * 100, SendCount = toint(sum(SendCount)), RecvCount = toint(sum(RecvCount)) by TIMESTAMP
+                | summarize
+                    rate = max(rate),
+                    SendCount = toint(sum(SendCount)),
+                    RecvCount = toint(sum(RecvCount)) by TIMESTAMP
 
 """
 
     query = query_template.format(startTime=start_time, endTime=end_time, torName=tor_name)
-    df_tor_downtime = execute_kusto_query("azphynet", "azdhmds", query)
+    df_tor_downtime = execute_kusto_query("vnetkusto.northcentralus", "veritas", query)
     return df_tor_downtime
 
 
@@ -143,7 +146,6 @@ def filter_for_worst_drop_window_on_row(row):
         row["tor_availability_total_pkt_recv"] = None
         row["tor_availability_pkts_dropped_count"] = None
         row["tor_availability_pkts_dropped_pct"] = None
-    
 
     node_availability = row["node_availability"]
     if not node_availability.empty:
@@ -186,7 +188,6 @@ def apply_availability_status_on_row(row):
     else:
         # No tor availability data
         tor_drops = Availability.INCONCLUSIVE
-
 
     node_availability_row = row["node_availability"]
     if not node_availability_row.empty:
@@ -236,7 +237,7 @@ def apply_availability_status_on_row(row):
             raise ValueError(f"Unexpected node_drops value: {node_drops}")
     else:
         raise ValueError(f"Unexpected tor_drops value: {tor_drops}")
-    
+
     row["consolidated_status"] = consolidated_status
 
     return row
@@ -244,9 +245,16 @@ def apply_availability_status_on_row(row):
 
 def build_netvma_url(device_name, start_time, end_time):
     base_url = "https://netvma.azure.net/"
+
+    def _format(t):
+        # Produce "YYYY-MM-DD HH:MM:SS" (no fractional seconds, no timezone)
+        if hasattr(t, "strftime"):
+            return t.strftime("%Y-%m-%d %H:%M:%S")
+        return str(t)
+
     params = {
-        "startTime": start_time,
-        "endTime": end_time,
+        "startTime": _format(start_time),
+        "endTime": _format(end_time),
         "value": device_name
     }
     url = f"{base_url}?{urllib.parse.urlencode(params)}"
@@ -256,22 +264,24 @@ def build_netvma_url(device_name, start_time, end_time):
 def get_t1_peers_bgp_flap_logs_in_time_window(tor_name: str, start_time: str, end_time: str):
     query = f'''
 
-let tor_name = "{tor_name}"; 
+let tor_name = "{tor_name}";
 let startTime = datetime("{start_time}");
 let endTime = datetime("{end_time}");
-let peer_t1_devices= cluster('azphynet.kusto.windows.net').database('azdhmds').DeviceInterfaceLinks 
-| where StartDevice =~ tor_name 
-| where LinkType =~ "DeviceInterfaceLink" 
+let peer_t1_devices= cluster('azphynet.kusto.windows.net').database('azdhmds').DeviceInterfaceLinks
+| where StartDevice =~ tor_name
+| where LinkType =~ "DeviceInterfaceLink"
 | project StartDevice=tolower(StartDevice), EndDevice=tolower(EndDevice)
 | distinct EndDevice;
 cluster('azphynet.kusto.windows.net').database('azdhmds').SyslogData
 | where Device in~ (peer_t1_devices)
 | where TIMESTAMP between (startTime .. endTime)
-| where Message matches regex ".*teamd_PortChannel[0-9]{4}.*: carrier changed to DOWN.*" or Message matches regex ".*updatePortOperStatus: Port PortChannel[0-9]{4}.* oper state set from up to down" or Message matches regex ".*updatePortOperStatus: Port PortChannel[0-9]{4}.* oper state set from down to up"
+| where
+    Message matches regex ".*teamd_PortChannel[0-9]{4}.*: carrier changed to DOWN.*"
+    or Message matches regex ".*updatePortOperStatus: Port PortChannel[0-9]{4}.* oper state set from up to down"
+    or Message matches regex ".*updatePortOperStatus: Port PortChannel[0-9]{4}.* oper state set from down to up"
 | project TIMESTAMP, Device, Message
 
 
 '''
     df_t1_peers_bgp_flap_logs = execute_kusto_query("azphynet", "azdhmds", query)
     return df_t1_peers_bgp_flap_logs
-

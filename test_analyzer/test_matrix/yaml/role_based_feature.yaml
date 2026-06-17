@@ -1,0 +1,36 @@
+
+t1_smart_ha_voq:
+    - t1_general_feature_set.yaml
+    - t1_smart.yaml
+    - t1_dualtor_ha.yaml
+    - t1_dualtor_voq.yaml
+
+t1_smart:
+    - t1_general_feature_set.yaml
+    - t1_smart.yaml
+    - t0_t1_dualtor_platform_mnlx.yaml
+
+t1_general:
+    - t1_general_feature_set.yaml
+
+t0_smart:
+    - t0_general_feature_set.yaml
+    - t0_smart.yaml
+    - t0_t1_dualtor_platform_mnlx.yaml
+
+t0_general:
+    - t0_general_feature_set.yaml
+
+dualtor_smart_ha_voq:
+    - dualtor_general_feature_set.yaml
+    - dualtor_smart.yaml
+    - t1_dualtor_ha.yaml
+    - t1_dualtor_voq.yaml
+
+dualtor_smart:
+    - dualtor_general_feature_set.yaml
+    - dualtor_smart.yaml
+    - t0_t1_dualtor_platform_mnlx.yaml
+
+dualtor_general:
+    - dualtor_general_feature_set.yaml

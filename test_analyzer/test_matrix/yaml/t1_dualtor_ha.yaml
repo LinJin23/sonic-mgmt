@@ -1,0 +1,7 @@
+metadata:
+  description: Smart T1/Dualtor - HA features (Cisco/HA-capable platforms)
+  branch: '202511'
+  test_branch: internal-202511
+features:
+  bfd:
+    - bfd.test_bfd

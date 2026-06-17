@@ -179,8 +179,8 @@
     },
     {
         "feature": "cacl",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Yawen Ni",
+        "email": "yawenni@microsoft.com",
         "scripts": [
             {
                 "scripts": [
@@ -188,8 +188,8 @@
                     "cacl.test_cacl_function",
                     "cacl.test_ebtables_application"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Yawen Ni",
+                "email": "yawenni@microsoft.com"
             }
         ]
     },
@@ -258,8 +258,8 @@
                     "console.test_console_reversessh",
                     "console.test_console_udevrule"
                 ],
-                "owner": "Jing Kan",
-                "email": "jika@microsoft.com"
+                "owner": "Zhijian Li",
+                "email": "zhijianli@microsoft.com"
             }
         ]
     },
@@ -579,8 +579,8 @@
                     "ecmp.test_ecmp_sai_value",
                     "ecmp.test_ecmp_balance"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Xiawei Jiang",
+                "email": "xiaweijiang@microsoft.com"
             }
         ]
     },
@@ -670,8 +670,8 @@
                 "scripts": [
                     "generic_config_updater.test_cacl"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Yawen Ni",
+                "email": "yawenni@microsoft.com"
             },
             {
                 "scripts": [
@@ -732,8 +732,8 @@
                     "generic_config_updater.test_incremental_qos",
                     "generic_config_updater.test_pg_headroom_update"
                 ],
-                "owner": "Xu Chen",
-                "email": "xuchen3@microsoft.com"
+                "owner": "Liping Xu",
+                "email": "xuliping@microsoft.com"
             },
             {
                 "scripts": [
@@ -895,15 +895,15 @@
     },
     {
         "feature": "iface_namingmode",
-        "owner": "Ziting Guo",
-        "email": "zitingguo@microsoft.com",
+        "owner": "Storm Liang",
+        "email": "stormliang@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "iface_namingmode.test_iface_namingmode"
                 ],
-                "owner": "Ziting Guo",
-                "email": "zitingguo@microsoft.com"
+                "owner": "Storm Liang",
+                "email": "stormliang@microsoft.com"
             }
         ]
     },
@@ -993,15 +993,15 @@
     },
     {
         "feature": "lldp",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Xiawei Jiang",
+        "email": "xiaweijiang@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "lldp.test_lldp"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Xiawei Jiang",
+                "email": "xiaweijiang@microsoft.com"
             }
         ]
     },
@@ -1467,15 +1467,15 @@
     },
     {
         "feature": "pytest",
-        "owner": "Zhaohui Sun",
-        "email": "zhaohuisun@microsoft.com",
+        "owner": "Xiawei Jiang",
+        "email": "xiaweijiang@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "pytest"
                 ],
-                "owner": "Zhaohui Sun",
-                "email": "zhaohuisun@microsoft.com"
+                "owner": "Xiawei Jiang",
+                "email": "xiaweijiang@microsoft.com"
             }
         ]
     },
@@ -1927,15 +1927,15 @@
     },
     {
         "feature": "testbed_setup",
-        "owner": "Xin Wang",
-        "email": "xiwang5@microsoft.com",
+        "owner": "Jianquan Ye",
+        "email": "jianquanye@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "testbed_setup.test_populate_fdb"
                 ],
-                "owner": "Xin Wang",
-                "email": "xiwang5@microsoft.com"
+                "owner": "Jianquan Ye",
+                "email": "jianquanye@microsoft.com"
             }
         ]
     },
@@ -2031,8 +2031,8 @@
                     "tests.test_posttest",
                     "tests.test_pretest"
                 ],
-                "owner": "Xin Wang",
-                "email": "xiwang5@microsoft.com"
+                "owner": "Jianquan Ye",
+                "email": "jianquanye@microsoft.com"
             },
             {
                 "scripts": [
@@ -2052,18 +2052,18 @@
     },
     {
         "feature": "test_pretest",
-        "owner": "Xin Wang",
-        "email": "xiwang5@microsoft.com"
+        "owner": "Jianquan Ye",
+        "email": "jianquanye@microsoft.com"
     },
     {
         "feature": "test_posttest",
-        "owner": "Xin Wang",
-        "email": "xiwang5@microsoft.com"
+        "owner": "Jianquan Ye",
+        "email": "jianquanye@microsoft.com"
     },
     {
         "feature": "test_pktgen",
-        "owner": "Xu Chen",
-        "email": "xuchen3@microsoft.com"
+        "owner": "Shiyan Wang",
+        "email": "shiyanwang@microsoft.com"
     },
     {
         "feature": "upgrade_path",

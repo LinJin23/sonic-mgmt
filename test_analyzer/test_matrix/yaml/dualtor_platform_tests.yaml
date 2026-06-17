@@ -1,0 +1,66 @@
+metadata:
+  description: platform_tests expected cases (dualtor, 202511)
+  feature: platform_tests
+  logic: ran = any HWSKU ran it; skip = all HWSKUs skipped it
+  branch: '202511'
+platform_tests:
+  - module: platform_tests.api.test_chassis
+    skip:
+      - test_get_my_slot
+      - test_get_supervisor_slot
+      - test_modules
+      - test_status_led
+  - module: platform_tests.api.test_chassis_fans
+    skip:
+      - test_get_serial
+      - test_set_fans_led
+  - platform_tests.api.test_component
+  - platform_tests.api.test_fan_drawer
+  - platform_tests.api.test_fan_drawer_fans
+  - platform_tests.api.test_psu
+  - module: platform_tests.api.test_psu_fans
+    skip:
+      - test_get_fans_target_speed
+      - test_set_fans_speed
+  - platform_tests.api.test_sfp
+  - platform_tests.api.test_thermal
+  - platform_tests.api.test_watchdog
+  - platform_tests.broadcom.test_ser
+  - platform_tests.cli.test_show_platform
+  - platform_tests.counterpoll.test_counterpoll_watermark
+  - platform_tests.daemon.test_ledd
+  - platform_tests.daemon.test_pcied
+  - platform_tests.daemon.test_psud
+  - platform_tests.daemon.test_sensord
+  - platform_tests.daemon.test_syseepromd
+  - platform_tests.link_flap.test_cont_link_flap
+  - platform_tests.link_flap.test_link_flap
+  - platform_tests.sfp.test_sfpshow
+  - platform_tests.sfp.test_sfputil
+  - platform_tests.sfp.test_show_intf_xcvr
+  - module: platform_tests.test_cpu_memory_usage
+    skip:
+      - test_cpu_memory_usage_counterpoll
+  - platform_tests.test_intf_fec
+  - platform_tests.test_kdump
+  - platform_tests.test_link_down
+  - platform_tests.test_memory_exhaustion
+  - module: platform_tests.test_platform_info
+    skip:
+      - test_show_platform_fanstatus_mocked
+      - test_show_platform_temperature_mocked
+      - test_thermal_control_fan_status
+  - platform_tests.test_port_toggle
+  - platform_tests.test_power_off_reboot
+  - platform_tests.test_process_reboot_cause
+  - module: platform_tests.test_reboot
+    skip:
+      - test_fast_reboot
+      - test_soft_reboot
+      - test_warm_reboot
+  - platform_tests.test_reload_config
+  - module: platform_tests.test_sequential_restart
+    skip:
+      - test_restart_syncd
+  - platform_tests.test_var_log_tmpfs
+  - platform_tests.test_xcvr_info_in_db

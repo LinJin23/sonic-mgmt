@@ -1,0 +1,15 @@
+metadata:
+  description: drop_packets expected cases (T1, 202511)
+  feature: drop_packets
+  logic: ran = any HWSKU ran it; skip = all 9 HWSKUs skipped it
+  branch: '202511'
+drop_packets:
+  - module: drop_packets.test_drop_counters
+    skip:
+      - drop_packets.test_drop_counters.test_dst_ip_link_local
+      - drop_packets.test_drop_counters.test_equal_smac_dmac_drop
+      - drop_packets.test_drop_counters.test_loopback_filter
+      - drop_packets.test_drop_counters.test_multicast_smac_drop
+      - drop_packets.test_drop_counters.test_non_routable_igmp_pkts
+      - drop_packets.test_drop_counters.test_reserved_dmac_drop
+      - drop_packets.test_drop_counters.test_src_ip_link_local
