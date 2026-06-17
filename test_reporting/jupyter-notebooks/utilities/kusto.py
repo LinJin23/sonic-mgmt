@@ -2,12 +2,12 @@
 Utilities for helping with Jupyter notebooks.
 """
 
-from azure.kusto.data import KustoClient
 from azure.kusto.data import KustoClient, KustoConnectionStringBuilder
 from azure.kusto.data.helpers import dataframe_from_result_table
 from pandas import DataFrame
 
 KUSTO_CLIENTS = {}
+
 
 def init_kusto_clients():
 
@@ -25,10 +25,11 @@ def init_kusto_clients():
 
     global KUSTO_CLIENTS
     if not KUSTO_CLIENTS:
-        clusters = ['azwan', 'aznwsdn', 'azphynet']
+        clusters = ['azwan', 'aznwsdn', 'azphynet', 'vnetkusto.northcentralus']
         KUSTO_CLIENTS = {
             cluster: build_kusto_client(cluster) for cluster in clusters
         }
+
 
 # Init the kusto clients the moment this module is imported
 init_kusto_clients()
