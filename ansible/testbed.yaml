@@ -2385,7 +2385,7 @@
 
 - conf-name: vms70-t1-sn5640-3
   group-name: vms70-4
-  topo: t1-isolated-d56u1-lag
+  topo: t1-isolated-d32u1s2
   ptf_image_name: docker-ptf
   ptf: vms70-4
   ptf_ip: 10.64.246.65/25
@@ -2396,8 +2396,8 @@
   - str4-sn5640-3
   inv_name: str4
   auto_recover: 'True'
-  comment: janetcui
-  tb_owner: janetcui
+  comment: kumarsourabh
+  tb_owner: kumarsourabh
 
 - conf-name: vms97-t1-sn5640-1
   group-name: vms97-1
