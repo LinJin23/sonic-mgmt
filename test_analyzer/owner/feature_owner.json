@@ -732,8 +732,8 @@
                     "generic_config_updater.test_incremental_qos",
                     "generic_config_updater.test_pg_headroom_update"
                 ],
-                "owner": "Xu Chen",
-                "email": "xuchen3@microsoft.com"
+                "owner": "Liping Xu",
+                "email": "xuliping@microsoft.com"
             },
             {
                 "scripts": [
@@ -2062,8 +2062,8 @@
     },
     {
         "feature": "test_pktgen",
-        "owner": "Xu Chen",
-        "email": "xuchen3@microsoft.com"
+        "owner": "Shiyan Wang",
+        "email": "shiyanwang@microsoft.com"
     },
     {
         "feature": "upgrade_path",
