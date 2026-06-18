@@ -515,11 +515,21 @@ sonic_arista_7280dr3_400G:
     num_asics: 2
     frontend_asics: [0,1]
     macsec_card: True
+    plt_reboot_dict:
+      cold:
+        timeout: 360
+        wait: 360
+      watchdog:
+        timeout: 360
+        wait: 360
+      platform_tests/test_reload_config.py::test_reload_configuration_checks:
+        timeout: 360
+        wait: 60
   hosts:
     svcstr-7280dr3-1:
       hwsku: Arista-7280DR3AM-36
       sonic_hwsku: Arista-7280DR3AM-36
-      sonic_hw_platform: x86_64-arista_7280dr3a_36
+      sonic_hw_platform: x86_64-arista_7280dr3am_36
       switchids: [0,2]
       voq_inband_ip: [3.3.3.1/32,3.3.3.2/32]
       voq_inband_ipv6: [3333::3:1/128,3333::3:2/128]
@@ -529,23 +539,27 @@ sonic_arista_7280dr3_400G:
       base_mac: 38:38:a6:a3:56:aa
       ansible_host: 10.206.144.39
       ansible_hostv6: 2a01:111:e205:100::ace:9102
-      model: 'DCS-7280DR3AM-36'
+      model: DCS-7280DR3AM-36
       syseeprom_info:
         "0x21": "DCS-7280DR3AM-36"
         "0x22": "ASY0614403C0"
         "0x23": "FGN233103XS"
         "0x24": "38:38:a6:a3:56:aa"
         "0x25": "2025/02/02 00:20:32"
-        "0x26": "03.00"
-        "0x27": "11.00"
+        "0x26": "01"
+        "0x27": "03.00"
         "0x28": "x86_64-arista_7280dr3am_36"
+        "0x2A": "0xffff"
+        "0x2B": "Arista Networks"
+        "0x2C": "US"
         "0x2D": "Arista Networks"
         "0x2E": "Aboot-norcal10-10.0.6-udimm-36482749"
         "0x2F": "FGN233103XS"
+        "0xFE": "0xdeadbeef"
     svcstr-7280dr3-2:
       hwsku: Arista-7280DR3AM-36
       sonic_hwsku: Arista-7280DR3AM-36
-      sonic_hw_platform: x86_64-arista_7280dr3a_36
+      sonic_hw_platform: x86_64-arista_7280dr3am_36
       switchids: [0,2]
       voq_inband_ip: [3.3.3.1/32,3.3.3.2/32]
       voq_inband_ipv6: [3333::3:1/128,3333::3:2/128]
@@ -555,19 +569,23 @@ sonic_arista_7280dr3_400G:
       base_mac: 38:38:a6:a4:57:90
       ansible_host: 10.206.144.40
       ansible_hostv6: 2a01:111:e205:100::ace:9103
-      model: 'DCS-7280DR3AM-36'
+      model: DCS-7280DR3AM-36
       syseeprom_info:
         "0x21": "DCS-7280DR3AM-36"
         "0x22": "ASY0614404A0"
         "0x23": "FGN234005FZ"
         "0x24": "38:38:a6:a4:57:90"
         "0x25": "2023/10/03 23:27:10"
-        "0x26": "03.00"
-        "0x27": "11.13"
+        "0x26": "01"
+        "0x27": "03.00"
         "0x28": "x86_64-arista_7280dr3am_36"
+        "0x2A": "0xffff"
+        "0x2B": "Arista Networks"
+        "0x2C": "US"
         "0x2D": "Arista Networks"
         "0x2E": "Aboot-norcal10-10.0.6-udimm-36482749"
         "0x2F": "FGN234005FZ"
+        "0xFE": "0xdeadbeef"
 
 server:
   hosts:
