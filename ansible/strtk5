@@ -150,8 +150,8 @@ all:
           ansible_host: 10.212.65.95
           ansible_hostv6: 2603:10e2:140:3000::11f
         ptf8-0:
-          ansible_host: 10.212.65.96
-          ansible_hostv6: 2603:10e2:140:3000::10c
+          ansible_host: 172.16.135.6
+          ansible_hostv6: 2603:10e2:140:3000::4706
         ptf9-0:
           ansible_host: 172.16.162.6
           ansible_hostv6: 2603:10e2:140:3000::6206
