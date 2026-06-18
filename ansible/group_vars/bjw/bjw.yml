@@ -16,8 +16,10 @@ dns_servers: ['10.50.50.50', '10.50.10.50']
 # 10.50.50.50 and 10.50.10.50 DNS servers
 forced_mgmt_routes: [
   '10.150.22.0/23', '10.50.50.50', '10.50.10.50',
-  # 2404:f801:10:2200::a96:16de is IPv6 image server and http proxy server)
-  '2404:f801:10:2200::a96:16de'
+  '2404:f801:10:2200::a96:16de',    # IPv6 equivalent of testbed server (host route)
+  '2404:f801:10:2200::/64',         # Beijing lab network
+  '2404:f801:10:3200::/64',         # Beijing DNS server network
+  '2404:f801:10:1600::/64',         # Additional Beijing lab network
 ]
 
 #properties of ErspanDestinationIpv4 in minigraph
