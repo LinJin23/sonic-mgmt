@@ -2980,8 +2980,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-0
-  ptf_ip: 10.212.65.70/24
-  ptf_ipv6: 2603:10e2:140:3000::135/122
+  ptf_ip: 172.16.132.10/18
+  ptf_ipv6: 2603:10e2:140:3000::4410/114
   server: server_tk5_5
   vm_base: VM55000
   dut:
@@ -2996,8 +2996,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-1
-  ptf_ip: 10.212.65.71/24
-  ptf_ipv6: 2603:10e2:140:3000::136/122
+  ptf_ip: 172.16.132.11/18
+  ptf_ipv6: 2603:10e2:140:3000::4411/114
   server: server_tk5_5
   vm_base: VM55004
   dut:
@@ -3012,8 +3012,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-2
-  ptf_ip: 10.212.65.72/24
-  ptf_ipv6: 2603:10e2:140:3000::137/122
+  ptf_ip: 172.16.132.12/18
+  ptf_ipv6: 2603:10e2:140:3000::4412/114
   server: server_tk5_5
   vm_base: VM55008
   dut:
@@ -3028,8 +3028,8 @@
   topo: t0-35
   ptf_image_name: docker-ptf
   ptf: ptf5-3
-  ptf_ip: 10.212.65.73/24
-  ptf_ipv6: 2603:10e2:140:3000::138/122
+  ptf_ip: 172.16.132.13/18
+  ptf_ipv6: 2603:10e2:140:3000::4413/114
   server: server_tk5_5
   vm_base: VM55012
   dut:
@@ -3044,8 +3044,8 @@
   topo: t0-64
   ptf_image_name: docker-ptf
   ptf: ptf5-4
-  ptf_ip: 10.212.65.74/24
-  ptf_ipv6: 2603:10e2:140:3000::139/122
+  ptf_ip: 172.16.132.14/18
+  ptf_ipv6: 2603:10e2:140:3000::4414/114
   server: server_tk5_5
   vm_base: VM55016
   dut:
@@ -3060,8 +3060,8 @@
   topo: t0-64
   ptf_image_name: docker-ptf
   ptf: ptf5-5
-  ptf_ip: 10.212.65.75/24
-  ptf_ipv6: 2603:10e2:140:3000::13a/122
+  ptf_ip: 172.16.132.15/18
+  ptf_ipv6: 2603:10e2:140:3000::4415/114
   server: server_tk5_5
   vm_base: VM55020
   dut:
@@ -3076,8 +3076,8 @@
   topo: t1-lag
   ptf_image_name: docker-ptf
   ptf: ptf5-6
-  ptf_ip: 10.212.65.76/24
-  ptf_ipv6: 2603:10e2:140:3000::13b/122
+  ptf_ip: 172.16.132.16/18
+  ptf_ipv6: 2603:10e2:140:3000::4416/114
   server: server_tk5_5
   vm_base: VM55024
   dut:
@@ -3092,8 +3092,8 @@
   topo: t1-lag
   ptf_image_name: docker-ptf
   ptf: ptf5-7
-  ptf_ip: 10.212.65.77/24
-  ptf_ipv6: 2603:10e2:140:3000::13c/122
+  ptf_ip: 172.16.132.17/18
+  ptf_ipv6: 2603:10e2:140:3000::4417/114
   server: server_tk5_5
   vm_base: VM55048
   dut:
@@ -3108,8 +3108,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-8
-  ptf_ip: 10.212.65.78/24
-  ptf_ipv6: 2603:10e2:140:3000::13d/122
+  ptf_ip: 172.16.132.18/18
+  ptf_ipv6: 2603:10e2:140:3000::4418/114
   server: server_tk5_5
   vm_base: VM55072
   dut:
