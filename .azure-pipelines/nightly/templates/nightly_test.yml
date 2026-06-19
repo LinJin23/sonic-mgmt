@@ -408,10 +408,10 @@ stages:
                 fi
                 cd ansible
 
-                http_proxy='' https_proxy='' ./testbed-cli.sh restart-ptf ${{ parameters.TESTBED_NAME }} password.txt -e ptf_imagetag=latest
+                http_proxy='' https_proxy='' ./testbed-cli.sh restart-ptf ${{ parameters.TESTBED_NAME }} password.txt -e ptf_imagetag=internal
                 # If restart-ptf failed, try to redeploy the topology
                 if [[ $? != 0 ]]; then
-                    http_proxy='' https_proxy='' ./testbed-cli.sh redeploy-topo ${{ parameters.TESTBED_NAME }} password.txt -e ptf_imagetag=latest
+                    http_proxy='' https_proxy='' ./testbed-cli.sh redeploy-topo ${{ parameters.TESTBED_NAME }} password.txt -e ptf_imagetag=internal
                 fi
                 # Add macsec parameters if passed in EXTRA PARAMETERS
                 if [[ "${EXTRA_PARAMS}" =~ "macsec" ]] ;then
