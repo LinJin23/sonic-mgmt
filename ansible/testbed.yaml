@@ -3268,8 +3268,8 @@
   topo: t1-64-lag
   ptf_image_name: docker-ptf
   ptf: ptf7-0
-  ptf_ip: 10.212.65.90/24
-  ptf_ipv6: 2603:10e2:140:3000::11a/122
+  ptf_ip: 172.16.177.10/18
+  ptf_ipv6: 2603:10e2:140:3000::7110/114
   server: server_tk5_7
   vm_base: VM80000
   dut:
@@ -3284,8 +3284,8 @@
   topo: t1-lag
   ptf_image_name: docker-ptf
   ptf: ptf7-2
-  ptf_ip: 10.212.65.92/24
-  ptf_ipv6: 2603:10e2:140:3000::11c/122
+  ptf_ip: 172.16.177.12/18
+  ptf_ipv6: 2603:10e2:140:3000::7112/114
   server: server_tk5_7
   vm_base: VM80048
   dut:
@@ -4124,8 +4124,8 @@
   topo: dualtor
   ptf_image_name: docker-ptf
   ptf: ptf7-4
-  ptf_ip: 10.212.65.94/24
-  ptf_ipv6: 2603:10e2:140:3000::11e/122
+  ptf_ip: 172.16.177.14/18
+  ptf_ipv6: 2603:10e2:140:3000::7114/114
   server: server_tk5_7
   vm_base: VM80096
   dut:
@@ -6391,8 +6391,8 @@
   topo: lt2-o128
   ptf_image_name: docker-ptf
   ptf: ptf7-3
-  ptf_ip: 10.212.65.93/24
-  ptf_ipv6: 2603:10e2:140:3000::11d/122
+  ptf_ip: 172.16.177.13/18
+  ptf_ipv6: 2603:10e2:140:3000::7113/114
   server: server_tk5_7
   vm_base: VM80100
   dut:
