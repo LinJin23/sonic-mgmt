@@ -654,6 +654,14 @@ bgp/test_bgp_vnet.py:
       - "'internal' in branch"
       - "(topo_name not in ['t0-28', 't0-32'])"
 
+bgp/test_bgp_vnet_internal.py:
+  skip:
+    reason: "Test is only enabled for VS, Cisco and Nvidia mellanox platforms on t0-28 and t0-32 topologies."
+    conditions_logical_operator: or
+    conditions:
+      - "asic_type not in ['vs', 'cisco-8000', 'mellanox']"
+      - "topo_name not in ['t0-28', 't0-32']"
+
 bgp/test_bgpmon.py:
   skip:
     reason: "Not supported on T2 topology or topology backend"
