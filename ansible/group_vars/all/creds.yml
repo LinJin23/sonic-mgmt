@@ -33,4 +33,4 @@ vm_host_become_password: use_own_value
 snmp_rocommunity: public
 snmp_rwcommunity: private
 
-csonic_image: docker-sonic-vs
+csonic_image: "{{ lookup('env', 'SONIC_MGMT_CSONIC_DOCKER_IMAGE') | default('docker-sonic-vs', true) }}"
