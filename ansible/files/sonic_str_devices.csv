@@ -128,3 +128,5 @@ str-8102-01-dpu-7,10.64.247.44/26,Pensando-elba,DevSonic,,sonic
 str-8101-fanout-01,10.64.247.43/26,Cisco-8101-O32,FanoutLeaf,,sonic
 pdu-136,10.3.154.136/24,ApcRPDU,Pdu,snmp,
 pdu-134,10.3.154.137/24,ApcRPDU,Pdu,snmp,
+str-msn4280-02,10.64.247.111/26,Mellanox-SN4280-O28,DevSonic,,sonic
+str-msn4700-fanout-04,10.3.152.110/26,Mellanox-SN4700,FanoutLeaf,,sonic
