@@ -130,3 +130,12 @@ pdu-136,10.3.154.136/24,ApcRPDU,Pdu,snmp,
 pdu-134,10.3.154.137/24,ApcRPDU,Pdu,snmp,
 str-msn4280-02,10.64.247.111/26,Mellanox-SN4280-O28,DevSonic,,sonic
 str-msn4700-fanout-04,10.3.152.110/26,Mellanox-SN4700,FanoutLeaf,,sonic
+str-msn4280-01,10.3.156.98/27,Mellanox-SN4280-O28,DevSonic,,sonic
+str-msn4280-01-dpu-0,10.3.156.98/27,Nvidia-bf3-com-dpu,DevSonic,,sonic
+str-msn4280-01-dpu-1,10.3.156.98/27,Nvidia-bf3-com-dpu,DevSonic,,sonic
+str-msn4280-01-dpu-2,10.3.156.98/27,Nvidia-bf3-com-dpu,DevSonic,,sonic
+str-msn4280-01-dpu-3,10.3.156.98/27,Nvidia-bf3-com-dpu,DevSonic,,sonic
+str-msn4700-fanout-03,10.3.152.111/26,Mellanox-SN4700-O32,FanoutLeafSonic,,sonic
+str43-0101-0501-02c0,10.3.152.39,Cisco,ConsoleServer,ssh,
+pdu-132,10.3.154.132,ApcRPDU,Pdu,snmp,
+pdu-133,10.3.154.135,ApcRPDU,Pdu,snmp,

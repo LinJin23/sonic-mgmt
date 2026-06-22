@@ -261,6 +261,8 @@ sonic:
     sonic_cisco_8101:
     sonic_cisco_8102_smartswitch:
     sonic_pensando_elba_smartswitch_dpu:
+    sonic_mlnx_4280_smartswitch:
+    sonic_mlnx_bf_4902_smartswitch_dpu:
     sonic_nexthop_5010:
 
 sonic_cisco_8101:
@@ -373,6 +375,113 @@ sonic_pensando_elba_smartswitch_dpu:
       ansible_host: 10.64.247.44
       ansible_ssh_port: 5028
       mgmt_subnet_mask_length: 26
+
+sonic_mlnx_4280_smartswitch:
+  vars:
+    iface_speed: 400000
+  hosts:
+    str-msn4280-01:
+      ansible_host: 10.3.156.98
+      ansible_hostv6: 2a01:111:e210:86::c2
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 122
+      hwsku: Mellanox-SN4280-O28
+      model: MSN4280-WS2RXOS
+      serial: MT2517XZ0AZ9
+      base_mac: 2C:5E:AB:3C:45:00
+      syseeprom_info:
+        "0x21": "SN4280"
+        "0x22": "MSN4280-WS2RXOS"
+        "0x23": "MT2517XZ0AZ9"
+        "0x24": "2C:5E:AB:3C:45:00"
+        "0x26": "16"
+        "0x28": "x86_64-nvidia_sn4280-r0"
+        "0x2A": "222"
+        "0x2B": "Nvidia"
+        "0xFE": "0x8BFD8DD4"
+      plt_reboot_dict:
+        cold:
+          timeout: 300
+          wait: 360
+        watchdog:
+          timeout: 300
+          wait: 360
+        acl/test_acl.py::TestAclWithReboot:
+          timeout: 300
+          wait: 600
+        platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 300
+          wait: 600
+
+sonic_mlnx_bf_4902_smartswitch_dpu:
+  vars:
+    hwsku: Nvidia-bf3-com-dpu
+    iface_speed: 400000
+  hosts:
+    str-msn4280-01-dpu-0:
+      ansible_host: 10.3.156.98
+      ansible_hostv6: 2a01:111:e210:86::c2
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 122
+      ansible_ssh_port: 5021
+      model: SA004932
+      serial: MT2518XZ0D03
+      base_mac: 2C:5E:AB:3C:45:DE
+      syseeprom_info:
+        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
+        "0x22": "SA004932"
+        "0x23": "MT2518XZ0D03"
+        "0x24": "2C:5E:AB:3C:45:DE"
+        "0x27": "A2"
+        "0xFE": "0x2CC4CD50"
+    str-msn4280-01-dpu-1:
+      ansible_host: 10.3.156.98
+      ansible_hostv6: 2a01:111:e210:86::c2
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 122
+      ansible_ssh_port: 5022
+      model: SA004932
+      serial: MT2518XZ0D02
+      base_mac: 2C:5E:AB:3C:45:E6
+      syseeprom_info:
+        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
+        "0x22": "SA004932"
+        "0x23": "MT2518XZ0D02"
+        "0x24": "2C:5E:AB:3C:45:E6"
+        "0x27": "A2"
+        "0xFE": "0x0EB3FD8D"
+    str-msn4280-01-dpu-2:
+      ansible_host: 10.3.156.98
+      ansible_hostv6: 2a01:111:e210:86::c2
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 122
+      ansible_ssh_port: 5023
+      model: SA004932
+      serial: MT2518XZ0D0M
+      base_mac: 2C:5E:AB:3C:45:EE
+      syseeprom_info:
+        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
+        "0x22": "SA004932"
+        "0x23": "MT2518XZ0D0M"
+        "0x24": "2C:5E:AB:3C:45:EE"
+        "0x27": "A2"
+        "0xFE": "0x6F88AADB"
+    str-msn4280-01-dpu-3:
+      ansible_host: 10.3.156.98
+      ansible_hostv6: 2a01:111:e210:86::c2
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 122
+      ansible_ssh_port: 5024
+      model: SA004932
+      serial: MT2518XZ0CZH
+      base_mac: 2C:5E:AB:3C:45:F6
+      syseeprom_info:
+        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
+        "0x22": "SA004932"
+        "0x23": "MT2518XZ0CZH"
+        "0x24": "2C:5E:AB:3C:45:F6"
+        "0x27": "A2"
+        "0xFE": "0xE55E8D19"
 
 sonic_mlnx_40:
   hosts:
@@ -1193,6 +1302,10 @@ fanout:
       mgmt_subnet_v6_mask_length: 122
     str-8101-fanout-01:
       ansible_host: 10.64.247.43
+      mgmt_subnet_mask_length: 26
+      os: sonic
+    str-msn4700-fanout-03:
+      ansible_host: 10.3.152.111
       mgmt_subnet_mask_length: 26
       os: sonic
 

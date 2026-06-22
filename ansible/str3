@@ -2729,38 +2729,6 @@ sonic_mlnx_4280_smartswitch:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
-    str3-nvidia-4280-E04-U22:
-      ansible_host: 10.3.156.98
-      ansible_hostv6: 2a01:111:e210:86::c2
-      mgmt_subnet_mask_length: 27
-      mgmt_subnet_v6_mask_length: 122
-      hwsku: Mellanox-SN4280-O28
-      model: MSN4280-WS2RXOS
-      serial: MT2517XZ0AZ9
-      base_mac: 2C:5E:AB:3C:45:00
-      syseeprom_info:
-        "0x21": "SN4280"
-        "0x22": "MSN4280-WS2RXOS"
-        "0x23": "MT2517XZ0AZ9"
-        "0x24": "2C:5E:AB:3C:45:00"
-        "0x26": "16"
-        "0x28": "x86_64-nvidia_sn4280-r0"
-        "0x2A": "222"
-        "0x2B": "Nvidia"
-        "0xFE": "0x8BFD8DD4"
-      plt_reboot_dict:
-        cold:
-          timeout: 300
-          wait: 360
-        watchdog:
-          timeout: 300
-          wait: 360
-        acl/test_acl.py::TestAclWithReboot:
-          timeout: 300
-          wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 300
-          wait: 600
 
 sonic_mlnx_bf_4902_smartswitch_dpu:
   vars:
@@ -2831,70 +2799,6 @@ sonic_mlnx_bf_4902_smartswitch_dpu:
         "0x24": "2C:5E:AB:3C:22:F6"
         "0x27": "A2"
         "0xFE": "0x3FD18D82"
-    str3-nvidia-4280-E04-U22-dpu-0:
-      ansible_host: 10.3.156.98
-      ansible_hostv6: 2a01:111:e210:86::c2
-      mgmt_subnet_mask_length: 27
-      mgmt_subnet_v6_mask_length: 122
-      ansible_ssh_port: 5021
-      model: SA004932
-      serial: MT2518XZ0D03
-      base_mac: 2C:5E:AB:3C:45:DE
-      syseeprom_info:
-        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
-        "0x22": "SA004932"
-        "0x23": "MT2518XZ0D03"
-        "0x24": "2C:5E:AB:3C:45:DE"
-        "0x27": "A2"
-        "0xFE": "0x2CC4CD50"
-    str3-nvidia-4280-E04-U22-dpu-1:
-      ansible_host: 10.3.156.98
-      ansible_hostv6: 2a01:111:e210:86::c2
-      mgmt_subnet_mask_length: 27
-      mgmt_subnet_v6_mask_length: 122
-      ansible_ssh_port: 5022
-      model: SA004932
-      serial: MT2518XZ0D02
-      base_mac: 2C:5E:AB:3C:45:E6
-      syseeprom_info:
-        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
-        "0x22": "SA004932"
-        "0x23": "MT2518XZ0D02"
-        "0x24": "2C:5E:AB:3C:45:E6"
-        "0x27": "A2"
-        "0xFE": "0x0EB3FD8D"
-    str3-nvidia-4280-E04-U22-dpu-2:
-      ansible_host: 10.3.156.98
-      ansible_hostv6: 2a01:111:e210:86::c2
-      mgmt_subnet_mask_length: 27
-      mgmt_subnet_v6_mask_length: 122
-      ansible_ssh_port: 5023
-      model: SA004932
-      serial: MT2518XZ0D0M
-      base_mac: 2C:5E:AB:3C:45:EE
-      syseeprom_info:
-        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
-        "0x22": "SA004932"
-        "0x23": "MT2518XZ0D0M"
-        "0x24": "2C:5E:AB:3C:45:EE"
-        "0x27": "A2"
-        "0xFE": "0x6F88AADB"
-    str3-nvidia-4280-E04-U22-dpu-3:
-      ansible_host: 10.3.156.98
-      ansible_hostv6: 2a01:111:e210:86::c2
-      mgmt_subnet_mask_length: 27
-      mgmt_subnet_v6_mask_length: 122
-      ansible_ssh_port: 5024
-      model: SA004932
-      serial: MT2518XZ0CZH
-      base_mac: 2C:5E:AB:3C:45:F6
-      syseeprom_info:
-        "0x21": "BF-3 P-SERIES BASED COM EXPRESS RE-SPIN MODULE, 64GB DDR5, WITH DENSILINK, DPU MODE"
-        "0x22": "SA004932"
-        "0x23": "MT2518XZ0CZH"
-        "0x24": "2C:5E:AB:3C:45:F6"
-        "0x27": "A2"
-        "0xFE": "0xE55E8D19"
 sonic_arista_7280r4_400G:
   vars:
     max_cores: 8

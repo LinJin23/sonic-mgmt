@@ -94,3 +94,6 @@ pdu-136,1,str-8101-fanout-01,PSU1
 pdu-130,1,str-msn4280-02,PSU1
 pdu-130,17,str-msn4280-02,PSU2
 pdu-136,2,str-msn4700-fanout-04,PSU1
+pdu-132,4,str-msn4280-01,PSU1
+pdu-133,10,str-msn4280-01,PSU2
+pdu-136,10,str-msn4700-fanout-03,PSU1
