@@ -313,3 +313,6 @@ STR-SN5640-RDMA-1,Ethernet0,str-ocs-dlx64-acs-14,17|18
 STR-SN5640-RDMA-1,Ethernet8,str-ocs-dlx64-acs-14,19|20
 STR-SN5640-RDMA-1,Ethernet16,str-ocs-dlx64-acs-14,21|22
 STR-SN5640-RDMA-1,Ethernet24,str-ocs-dlx64-acs-14,23|24
+str3-7060-acs-3,Ethernet0,str-ocs-dlx64-acs-07,25
+str3-7060-acs-3,Ethernet4,str-ocs-dlx64-acs-07,26
+str3-7060-acs-3,Ethernet8,str-ocs-dlx64-acs-07,27

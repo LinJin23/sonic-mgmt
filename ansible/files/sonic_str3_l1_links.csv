@@ -7,3 +7,9 @@ str3-8101-fanout-28,Ethernet104,str-ocs-dlx64-acs-12,29
 str3-8101-fanout-28,Ethernet112,str-ocs-dlx64-acs-12,30
 str3-8101-fanout-28,Ethernet120,str-ocs-dlx64-acs-12,31
 str3-8101-fanout-28,Ethernet128,str-ocs-dlx64-acs-12,32
+str3-7060-acs-3,Ethernet0,str-ocs-dlx64-acs-07,25
+str3-7060-acs-3,Ethernet4,str-ocs-dlx64-acs-07,26
+str3-7060-acs-3,Ethernet8,str-ocs-dlx64-acs-07,27
+str3-dx010-acs-1,Ethernet0,str-ocs-dlx64-acs-07,29
+str3-dx010-acs-1,Ethernet4,str-ocs-dlx64-acs-07,30
+str3-dx010-acs-1,Ethernet8,str-ocs-dlx64-acs-07,31
