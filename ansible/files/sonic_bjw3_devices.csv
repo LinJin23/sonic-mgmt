@@ -31,6 +31,7 @@ bjw3-can-8220-leaf-1,10.150.238.119/23,Cisco-C8220TG-G1S2,FanoutLeafSonic,,sonic
 bjw3-can-720dt-leaf-28,10.150.238.123/23,Arista-720DT-G48S4,FanoutLeafSonic,,sonic
 bjw3-can-w5000-leaf-1,10.150.238.125/23,M2-W5000-48CON2SFP,FanoutLeafSonic,,sonic
 bjw3-can-7215c1-leaf-1,10.150.238.127/23,Nokia-7215-C1-G3,FanoutLeafSonic,,sonic
+bjw3-can-8220-leaf-2,10.150.238.134/23,Cisco-C8220TG-G1S2,FanoutLeafSonic,,sonic
 bjw3-can-7050c-5,10.150.238.64/23,Arista-7050CX3-32C-S128,devsonic,,sonic
 bjw3-can-7050c-6,10.150.238.66/23,Arista-7050CX3-32C-S128,devsonic,,sonic
 bjw3-can-7050c-7,10.150.238.68/23,Arista-7050CX3-32C-S128,devsonic,,sonic
@@ -70,6 +71,9 @@ bjw3-can-7215c1-3,10.150.238.129/23,Nokia-7215-C1-G3,DevSonic,,sonic
 bjw3-can-7215c1-4,10.150.238.130/23,Nokia-7215-C1-G3,DevSonic,,sonic
 bjw3-can-7215c1-5,10.150.238.131/23,Nokia-7215-C1-G3,DevSonic,,sonic
 bjw3-can-7215c1-6,10.150.238.132/23,Nokia-7215-C1-G3,DevSonic,,sonic
+bjw3-can-8220-4,10.150.238.133/23,Cisco-C8220TG-G1S2,DevSonic,,sonic
+bjw3-can-8220-5,10.150.238.135/23,Cisco-C8220TG-G1S2,DevSonic,,sonic
+bjw3-can-8220-6,10.150.238.136/23,Cisco-C8220TG-G1S2,DevSonic,,sonic
 bjw3-pdu-126-62,10.150.126.62,Vertiv,Pdu,snmp,
 bjw3-pdu-126-63,10.150.126.63,Vertiv,Pdu,snmp,
 bjw3-pdu-126-64,10.150.126.64,Vertiv,Pdu,snmp,

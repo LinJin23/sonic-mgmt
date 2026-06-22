@@ -100,3 +100,5 @@ vms20-rdma-t0-8111:
   pfcQueueGroupSize: 8
 vms20-rdma-t0-sn4700:
   pfcQueueGroupSize: 4
+vms20-rdma-t1-8101:
+  pfcQueueGroupSize: 4

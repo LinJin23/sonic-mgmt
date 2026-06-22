@@ -14,13 +14,13 @@ resources:
     name: sonic-upgrade-scripts
     ref: main
 
-schedules:
-  - cron: "0 0,12 * * *"
-    displayName: Nightly Scheduler
-    branches:
-      include:
-        - internal-202511
-    always: true
+#schedules:
+#  - cron: "0 0,12 * * *"
+#    displayName: Nightly Scheduler
+#    branches:
+#      include:
+#        - internal
+#    always: true
 
 variables:
   - group: SONIC_IMAGE_URLS
@@ -63,41 +63,11 @@ parameters:
 
 - name: FROM_IMAGE_LIST
   type: string
-  default: 30
+  default: 29
   displayName: "All base image numbers (space separated)"
 
 - name: FROM_IMAGE_URL
   displayName: "Base image location"
-  type: string
-  default: $(BJW_IMAGE_BRCM_ABOOT_202505)
-  values:
-  - $(BJW_IMAGE_BRCM_ABOOT_201811)
-  - $(BJW_IMAGE_BRCM_ABOOT_201911)
-  - $(BJW_IMAGE_BRCM_ABOOT_202012)
-  - $(BJW_IMAGE_BRCM_ABOOT_202012_SLIM)
-  - $(BJW_IMAGE_BRCM_ABOOT_202106)
-  - $(BJW_IMAGE_BRCM_ABOOT_202205)
-  - $(BJW_IMAGE_BRCM_ABOOT_202205_SLIM)
-  - $(BJW_IMAGE_BRCM_ABOOT_202305)
-  - $(BJW_IMAGE_BRCM_ABOOT_202305_SLIM)
-  - $(BJW_IMAGE_BRCM_ABOOT_202311)
-  - $(BJW_IMAGE_BRCM_ABOOT_202311_SLIM)
-  - $(BJW_IMAGE_BRCM_ABOOT_202405)
-  - $(BJW_IMAGE_BRCM_ABOOT_202405_SLIM)
-  - $(BJW_IMAGE_BRCM_ABOOT_202411)
-  - $(BJW_IMAGE_BRCM_ABOOT_202411_SLIM)
-  - $(BJW_IMAGE_BRCM_ABOOT_202505)
-  - $(BJW_IMAGE_BRCM_ABOOT_INTERNAL)
-  - $(BJW_IMAGE_BRCM_ABOOT_PUBLIC)
-  - custom
-
-- name: TO_IMAGE_LIST
-  type: string
-  default: latest
-  displayName: "All target image numbers (space separated)"
-
-- name: TO_IMAGE_URL
-  displayName: "Target image location"
   type: string
   default: $(BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202511)
   values:
@@ -117,8 +87,43 @@ parameters:
   - $(BJW_IMAGE_BRCM_ABOOT_202411)
   - $(BJW_IMAGE_BRCM_ABOOT_202411_SLIM)
   - $(BJW_IMAGE_BRCM_ABOOT_202505)
+  - $(BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202511)
+  - $(BJW_IMAGE_BRCM_ABOOT_202605)
+  - $(BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202605)
+  - $(BJW_IMAGE_BRCM_ABOOT_INTERNAL)
+  - $(BJW_IMAGE_BRCM_ABOOT_PUBLIC)
+  - custom
+
+- name: TO_IMAGE_LIST
+  type: string
+  default: latest
+  displayName: "All target image numbers (space separated)"
+
+- name: TO_IMAGE_URL
+  displayName: "Target image location"
+  type: string
+  default: $(BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202605)
+  values:
+  - $(BJW_IMAGE_BRCM_ABOOT_201811)
+  - $(BJW_IMAGE_BRCM_ABOOT_201911)
+  - $(BJW_IMAGE_BRCM_ABOOT_202012)
+  - $(BJW_IMAGE_BRCM_ABOOT_202012_SLIM)
+  - $(BJW_IMAGE_BRCM_ABOOT_202106)
+  - $(BJW_IMAGE_BRCM_ABOOT_202205)
+  - $(BJW_IMAGE_BRCM_ABOOT_202205_SLIM)
+  - $(BJW_IMAGE_BRCM_ABOOT_202305)
+  - $(BJW_IMAGE_BRCM_ABOOT_202305_SLIM)
+  - $(BJW_IMAGE_BRCM_ABOOT_202311)
+  - $(BJW_IMAGE_BRCM_ABOOT_202311_SLIM)
+  - $(BJW_IMAGE_BRCM_ABOOT_202405)
+  - $(BJW_IMAGE_BRCM_ABOOT_202405_SLIM)
+  - $(BJW_IMAGE_BRCM_ABOOT_202411)
+  - $(BJW_IMAGE_BRCM_ABOOT_202411_SLIM)
+  - $(BJW_IMAGE_BRCM_ABOOT_202505)
   - $(BJW_IMAGE_BRCM_ABOOT_202505_SLIM)
   - $(BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202511)
+  - $(BJW_IMAGE_BRCM_ABOOT_202605)
+  - $(BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202605)
   - $(BJW_IMAGE_BRCM_ABOOT_INTERNAL)
   - $(BJW_IMAGE_BRCM_ABOOT_PUBLIC)
   - custom
@@ -175,7 +180,7 @@ parameters:
 - name: MULTI_HOP_ADDITIONAL_UPGRADE_HOP_LOCATIONS
   type: string
   displayName: "Additional Upgrade Hop Locations - (comma separated values zipped with image numbers e.g. IMAGE_BRCM_ABOOT_202405,IMAGE_BRCM_ABOOT_202411)"
-  default: BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202511
+  default: BJW_IMAGE_BRCM_ABOOT_LEGACY_TH_202605
 
 - name: MULTI_HOP_ADDITIONAL_UPGRADE_HOP_IMAGE_NUMBERS
   type: string

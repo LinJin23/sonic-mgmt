@@ -120,6 +120,15 @@ all:
         bjw3-9-6:
           ansible_host: 10.150.239.36
           ansible_hostv6: 2404:f801:10:16::a96:ef23
+        bjw3-5-9:
+          ansible_host: 10.150.239.37
+          ansible_hostv6: 2404:f801:10:16::a96:ef24
+        bjw3-5-a:
+          ansible_host: 10.150.239.38
+          ansible_hostv6: 2404:f801:10:16::a96:ef25
+        bjw3-9-7:
+          ansible_host: 10.150.239.39
+          ansible_hostv6: 2404:f801:10:16::a96:ef26
     pdu:
       vars:
         pdu_ro_snmp_version: v3
@@ -296,6 +305,10 @@ fanout:
     bjw3-can-7215c1-leaf-1:
       ansible_host: 10.150.238.127
       ansible_hostv6: 2404:f801:10:16::a96:ee7f
+      os: sonic
+    bjw3-can-8220-leaf-2:
+      ansible_host: 10.150.238.134
+      ansible_hostv6: 2404:f801:10:16::a96:ee86
       os: sonic
 
 
@@ -987,6 +1000,30 @@ sonic_cisco_8220:
         '0x2c': 'US'
         '0x2d': 'Cisco'
         '0xfe': '0xBE248513'
+    bjw3-can-8220-4:
+      os: sonic
+      ansible_host: 10.150.238.133
+      ansible_hostv6: 2404:f801:10:16::a96:ee85
+      model: C8220TG-48A-O
+      serial: FVT3015L6U7
+      base_mac:
+      syseeprom_info:
+    bjw3-can-8220-5:
+      os: sonic
+      ansible_host: 10.150.238.135
+      ansible_hostv6: 2404:f801:10:16::a96:ee87
+      model: C8220TG-48A-O
+      serial: FVT3016L15H
+      base_mac:
+      syseeprom_info:
+    bjw3-can-8220-6:
+      os: sonic
+      ansible_host: 10.150.238.136
+      ansible_hostv6: 2404:f801:10:16::a96:ee88
+      model: C8220TG-48A-O
+      serial: FVT3015L6TV
+      base_mac:
+      syseeprom_info:
 
 
 sonic_arista_720dt:

@@ -1642,10 +1642,38 @@
   vm_base: VM63008
   dut:
   - str3-7060-acs-3
+  test_tags: []
+  l1s:
+  - str-ocs-dlx64-acs-07
+  tgs:
+  - str3-dx010-acs-1
+  - str3-7260cx3-acs-fan-03
   inv_name: str3
   auto_recover: 'True'
   comment: lipingxu
   tb_owner: lipingxu
+
+- conf-name: vms20-rdma-t1-7060
+  group-name: vms20-ixia-14
+  topo: tgen-t1-3-lag
+  ptf_image_name: docker-keysight-api-server
+  ptf_imagetag: 10.80.2412.176
+  ptf: ixia-apiserver4
+  ptf_ip: 10.64.246.126/25
+  ptf_ipv6:
+  server: server_20
+  vm_base:
+  dut:
+  - str3-7060-acs-3
+  test_tags: []
+  l1s:
+  - str-ocs-dlx64-acs-07
+  tgs:
+  - msr-ixia-4
+  inv_name: ixia
+  auto_recover: 'True'
+  comment: dashuaizhang
+  tb_owner: dashuaizhang
 
 - conf-name: vms63-t1-4600-5
   group-name: vms63-4
@@ -2980,8 +3008,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-0
-  ptf_ip: 10.212.65.70/24
-  ptf_ipv6: 2603:10e2:140:3000::135/122
+  ptf_ip: 172.16.132.10/18
+  ptf_ipv6: 2603:10e2:140:3000::4410/114
   server: server_tk5_5
   vm_base: VM55000
   dut:
@@ -2996,8 +3024,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-1
-  ptf_ip: 10.212.65.71/24
-  ptf_ipv6: 2603:10e2:140:3000::136/122
+  ptf_ip: 172.16.132.11/18
+  ptf_ipv6: 2603:10e2:140:3000::4411/114
   server: server_tk5_5
   vm_base: VM55004
   dut:
@@ -3012,8 +3040,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-2
-  ptf_ip: 10.212.65.72/24
-  ptf_ipv6: 2603:10e2:140:3000::137/122
+  ptf_ip: 172.16.132.12/18
+  ptf_ipv6: 2603:10e2:140:3000::4412/114
   server: server_tk5_5
   vm_base: VM55008
   dut:
@@ -3028,8 +3056,8 @@
   topo: t0-35
   ptf_image_name: docker-ptf
   ptf: ptf5-3
-  ptf_ip: 10.212.65.73/24
-  ptf_ipv6: 2603:10e2:140:3000::138/122
+  ptf_ip: 172.16.132.13/18
+  ptf_ipv6: 2603:10e2:140:3000::4413/114
   server: server_tk5_5
   vm_base: VM55012
   dut:
@@ -3044,8 +3072,8 @@
   topo: t0-64
   ptf_image_name: docker-ptf
   ptf: ptf5-4
-  ptf_ip: 10.212.65.74/24
-  ptf_ipv6: 2603:10e2:140:3000::139/122
+  ptf_ip: 172.16.132.14/18
+  ptf_ipv6: 2603:10e2:140:3000::4414/114
   server: server_tk5_5
   vm_base: VM55016
   dut:
@@ -3060,8 +3088,8 @@
   topo: t0-64
   ptf_image_name: docker-ptf
   ptf: ptf5-5
-  ptf_ip: 10.212.65.75/24
-  ptf_ipv6: 2603:10e2:140:3000::13a/122
+  ptf_ip: 172.16.132.15/18
+  ptf_ipv6: 2603:10e2:140:3000::4415/114
   server: server_tk5_5
   vm_base: VM55020
   dut:
@@ -3076,8 +3104,8 @@
   topo: t1-lag
   ptf_image_name: docker-ptf
   ptf: ptf5-6
-  ptf_ip: 10.212.65.76/24
-  ptf_ipv6: 2603:10e2:140:3000::13b/122
+  ptf_ip: 172.16.132.16/18
+  ptf_ipv6: 2603:10e2:140:3000::4416/114
   server: server_tk5_5
   vm_base: VM55024
   dut:
@@ -3092,8 +3120,8 @@
   topo: t1-lag
   ptf_image_name: docker-ptf
   ptf: ptf5-7
-  ptf_ip: 10.212.65.77/24
-  ptf_ipv6: 2603:10e2:140:3000::13c/122
+  ptf_ip: 172.16.132.17/18
+  ptf_ipv6: 2603:10e2:140:3000::4417/114
   server: server_tk5_5
   vm_base: VM55048
   dut:
@@ -3108,8 +3136,8 @@
   topo: t0
   ptf_image_name: docker-ptf
   ptf: ptf5-8
-  ptf_ip: 10.212.65.78/24
-  ptf_ipv6: 2603:10e2:140:3000::13d/122
+  ptf_ip: 172.16.132.18/18
+  ptf_ipv6: 2603:10e2:140:3000::4418/114
   server: server_tk5_5
   vm_base: VM55072
   dut:
@@ -3268,8 +3296,8 @@
   topo: t1-64-lag
   ptf_image_name: docker-ptf
   ptf: ptf7-0
-  ptf_ip: 10.212.65.90/24
-  ptf_ipv6: 2603:10e2:140:3000::11a/122
+  ptf_ip: 172.16.177.10/18
+  ptf_ipv6: 2603:10e2:140:3000::7110/114
   server: server_tk5_7
   vm_base: VM80000
   dut:
@@ -3284,8 +3312,8 @@
   topo: t1-lag
   ptf_image_name: docker-ptf
   ptf: ptf7-2
-  ptf_ip: 10.212.65.92/24
-  ptf_ipv6: 2603:10e2:140:3000::11c/122
+  ptf_ip: 172.16.177.12/18
+  ptf_ipv6: 2603:10e2:140:3000::7112/114
   server: server_tk5_7
   vm_base: VM80048
   dut:
@@ -4124,8 +4152,8 @@
   topo: dualtor
   ptf_image_name: docker-ptf
   ptf: ptf7-4
-  ptf_ip: 10.212.65.94/24
-  ptf_ipv6: 2603:10e2:140:3000::11e/122
+  ptf_ip: 172.16.177.14/18
+  ptf_ipv6: 2603:10e2:140:3000::7114/114
   server: server_tk5_7
   vm_base: VM80096
   dut:
@@ -6391,8 +6419,8 @@
   topo: lt2-o128
   ptf_image_name: docker-ptf
   ptf: ptf7-3
-  ptf_ip: 10.212.65.93/24
-  ptf_ipv6: 2603:10e2:140:3000::11d/122
+  ptf_ip: 172.16.177.13/18
+  ptf_ipv6: 2603:10e2:140:3000::7113/114
   server: server_tk5_7
   vm_base: VM80100
   dut:
@@ -6551,6 +6579,48 @@
   - str4-w6940-2
   inv_name: str4
   auto_recover: 'True'
+  comment: dashuaizhang
+  tb_owner: dashuaizhang
+
+- conf-name: vms71-rdma-lt2-w6940-1
+  group-name: vms71-ixia-1
+  topo: tgen-ft2-3
+  ptf_image_name: docker-keysight-api-server
+  ptf_imagetag: 10.80.2412.176
+  ptf: ixia-apiserver4
+  ptf_ip: 10.64.246.126/25
+  server: server_20
+  vm_base:
+  dut:
+  - str4-w6940-1
+  test_tags: []
+  l1s:
+  - str-ocs-dlx64-acs-14
+  tgs:
+  - msr-ixia-aresone-800ge-8
+  inv_name: ixia
+  auto_recover: 'False'
+  comment: dashuaizhang
+  tb_owner: dashuaizhang
+
+- conf-name: vms71-rdma-lt2-w6940-2
+  group-name: vms71-ixia-2
+  topo: tgen-ft2-3
+  ptf_image_name: docker-keysight-api-server
+  ptf_imagetag: 10.80.2412.176
+  ptf: ixia-apiserver4
+  ptf_ip: 10.64.246.126/25
+  server: server_20
+  vm_base:
+  dut:
+  - str4-w6940-2
+  test_tags: []
+  l1s:
+  - str-ocs-dlx64-acs-14
+  tgs:
+  - msr-ixia-aresone-800ge-8
+  inv_name: ixia
+  auto_recover: 'False'
   comment: dashuaizhang
   tb_owner: dashuaizhang
 
@@ -6834,3 +6904,54 @@
   auto_recover: 'True'
   netns_mgmt_ip: 10.255.0.211/16
   comment: dualtor setup example
+
+- conf-name: testbed-bjw3-can-8220-4
+  group-name: bjw3-5-9
+  topo: c0
+  ptf_image_name: docker-ptf
+  ptf: bjw3-5-9
+  ptf_ip: 10.150.239.37/23
+  ptf_ipv6: 2404:f801:10:16::a96:ef24/64
+  server: server_bjw3_5
+  vm_base: VM32134
+  dut:
+    - bjw3-can-8220-4
+  inv_name: bjw3
+  auto_recover: 'True'
+  comment: Beijing Lab
+  ptf_extra_mgmt_ip:
+    - 172.16.188.174/17
+
+- conf-name: testbed-bjw3-can-8220-5
+  group-name: bjw3-5-a
+  topo: c0-lo
+  ptf_image_name: docker-ptf
+  ptf: bjw3-5-a
+  ptf_ip: 10.150.239.38/23
+  ptf_ipv6: 2404:f801:10:16::a96:ef25/64
+  server: server_bjw3_5
+  vm_base: VM32137
+  dut:
+    - bjw3-can-8220-5
+  inv_name: bjw3
+  auto_recover: 'True'
+  comment: Beijing Lab
+  ptf_extra_mgmt_ip:
+    - 172.16.188.175/17
+
+- conf-name: testbed-bjw3-can-8220-6
+  group-name: bjw3-9-7
+  topo: c0-lo
+  ptf_image_name: docker-ptf
+  ptf: bjw3-9-7
+  ptf_ip: 10.150.239.39/23
+  ptf_ipv6: 2404:f801:10:16::a96:ef26/64
+  server: server_bjw3_9
+  vm_base: VM04092
+  dut:
+    - bjw3-can-8220-6
+  inv_name: bjw3
+  auto_recover: 'True'
+  comment: Beijing Lab
+  ptf_extra_mgmt_ip:
+    - 172.16.188.176/17

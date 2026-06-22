@@ -61,7 +61,6 @@ validators:
       - str2-msn4700-06           # conflicts with str3-7800-lc8-1
       - str3-t2-aresone-ixia      # conflicts with str2-ixia-1 and t2-aresone-ixia
       - str3-7060x6-64pe-fan-2    # conflicts with str4-7060x6-64pe-2
-      - str4-7060x6-64pe-fan-5    # conflicts with str4-7060x6-64pe-fan-4
       - svcstr2-e1031-acs-2       # conflicts with console-6
       - bjw2-pdu-127-166          # conflicts with bjw-pdu-127-166
       - str4-sn5640-[45]          # conflicts with str-acs-serv-102/103
@@ -334,7 +333,6 @@ validators:
       - str4-7060x6-pe64-root     # conflicts with str3-8101-fanout-25 on console-179:24
       - str4-7060x6-64pe-2        # conflicts with str3-7060x6-64pe-fan-2 on console-196:32
       - str4-7060x6-64pe-fan-11   # conflicts with str2-7050qx-32s-acs-02 on console-199:32
-      - str4-7060x6-512-8         # conflicts with str4-7060x6-64pe-fan-4 on console-212:39
       - str5-sn5640-fan-1         # conflicts with str2-8800-sup-2 on console-194:27
       - str3-7808-sup-2           # duplicate device conflicts on console-179:29
       - str-sn5640-stress-t0-3    # conflicts with str2-7050cx3-acs-14 on console-194:13
@@ -355,13 +353,11 @@ validators:
       - str2-8102-02              # conflicts with str2-7260cx3-acs-fan-22 on pdu-122:15
       - str3-8800-sup-2           # conflicts with str3-8800-sup-1 on pdu-121:31
       - str2-8800-sup-3           # conflicts with str2-8800-sup-2 on pdu-121:31
-      - str4-7060x6-64pe-fan-5    # conflicts with str4-7060x6-64pe-fan-4 on pdu-121:35
       - str2-bluefield-host-01    # conflicts with str2-bluefield-01 on pdu-119:5
       - str3-8101-fanout-04       # conflicts with str3-7260cx3-acs-fan-04 on pdu-119:3
       - str4-7060x6-64pe-2        # conflicts with str3-7060x6-64pe-fan-2 on pdu-119:3
       - str3-8101-fanout-25       # conflicts with str4-7060x6-pe64-root on pdu-121:33
       - str2-7050qx-32s-acs-02    # conflicts with str4-7060x6-64pe-fan-11 on pdu-119:5
-      - str4-7060x6-512-8         # conflicts with str4-7060x6-64pe-fan-4 on pdu-121:35
       - str5-msn4700-08           # conflicts with str4-7060x6-64pe-11 on pdu-119:5
       - str2-7804-sup-1           # device with internal PSU conflicts
       - str2-7250-sup-1           # device with internal PSU conflicts
