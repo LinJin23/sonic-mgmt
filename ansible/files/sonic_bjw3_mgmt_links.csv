@@ -81,3 +81,7 @@ bjw3-can-720dt-mc0-3,etp22,bjw3-can-7215c1-3,eth0
 bjw3-can-720dt-mc0-3,etp23,bjw3-can-7215c1-4,eth0
 bjw3-can-720dt-mc0-3,etp24,bjw3-can-7215c1-5,eth0
 bjw3-can-720dt-mc0-3,etp25,bjw3-can-7215c1-6,eth0
+bjw3-can-720dt-mc0-3,etp26,bjw3-can-8220-4,eth0
+bjw3-can-720dt-mc0-3,etp27,bjw3-can-8220-leaf-2,eth0
+bjw3-can-720dt-mc0-3,etp28,bjw3-can-8220-5,eth0
+bjw3-can-720dt-mc0-3,etp29,bjw3-can-8220-6,eth0

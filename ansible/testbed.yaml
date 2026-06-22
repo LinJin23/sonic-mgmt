@@ -6904,3 +6904,54 @@
   auto_recover: 'True'
   netns_mgmt_ip: 10.255.0.211/16
   comment: dualtor setup example
+
+- conf-name: testbed-bjw3-can-8220-4
+  group-name: bjw3-5-9
+  topo: c0
+  ptf_image_name: docker-ptf
+  ptf: bjw3-5-9
+  ptf_ip: 10.150.239.37/23
+  ptf_ipv6: 2404:f801:10:16::a96:ef24/64
+  server: server_bjw3_5
+  vm_base: VM32134
+  dut:
+    - bjw3-can-8220-4
+  inv_name: bjw3
+  auto_recover: 'True'
+  comment: Beijing Lab
+  ptf_extra_mgmt_ip:
+    - 172.16.188.174/17
+
+- conf-name: testbed-bjw3-can-8220-5
+  group-name: bjw3-5-a
+  topo: c0-lo
+  ptf_image_name: docker-ptf
+  ptf: bjw3-5-a
+  ptf_ip: 10.150.239.38/23
+  ptf_ipv6: 2404:f801:10:16::a96:ef25/64
+  server: server_bjw3_5
+  vm_base: VM32137
+  dut:
+    - bjw3-can-8220-5
+  inv_name: bjw3
+  auto_recover: 'True'
+  comment: Beijing Lab
+  ptf_extra_mgmt_ip:
+    - 172.16.188.175/17
+
+- conf-name: testbed-bjw3-can-8220-6
+  group-name: bjw3-9-7
+  topo: c0-lo
+  ptf_image_name: docker-ptf
+  ptf: bjw3-9-7
+  ptf_ip: 10.150.239.39/23
+  ptf_ipv6: 2404:f801:10:16::a96:ef26/64
+  server: server_bjw3_9
+  vm_base: VM04092
+  dut:
+    - bjw3-can-8220-6
+  inv_name: bjw3
+  auto_recover: 'True'
+  comment: Beijing Lab
+  ptf_extra_mgmt_ip:
+    - 172.16.188.176/17
