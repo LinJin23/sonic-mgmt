@@ -305,6 +305,10 @@ msr-ixia-aresone-800ge-8,Card1/Port1.1,str-ocs-dlx64-acs-14,1|2
 msr-ixia-aresone-800ge-8,Card1/Port2.1,str-ocs-dlx64-acs-14,3|4
 msr-ixia-aresone-800ge-8,Card1/Port3.1,str-ocs-dlx64-acs-14,5|6
 msr-ixia-aresone-800ge-8,Card1/Port4.1,str-ocs-dlx64-acs-14,7|8
+msr-ixia-aresone-800ge-8,Card1/Port5,str-ocs-dlx64-acs-14,41|42
+msr-ixia-aresone-800ge-8,Card1/Port6,str-ocs-dlx64-acs-14,43|44
+msr-ixia-aresone-800ge-8,Card1/Port7,str-ocs-dlx64-acs-14,45|46
+msr-ixia-aresone-800ge-8,Card1/Port8,str-ocs-dlx64-acs-14,47|48
 STR-7060x6-RDMA-1,Ethernet0,str-ocs-dlx64-acs-14,9|10
 STR-7060x6-RDMA-1,Ethernet8,str-ocs-dlx64-acs-14,11|12
 STR-7060x6-RDMA-1,Ethernet16,str-ocs-dlx64-acs-14,13|14
@@ -316,3 +320,9 @@ STR-SN5640-RDMA-1,Ethernet24,str-ocs-dlx64-acs-14,23|24
 str3-7060-acs-3,Ethernet0,str-ocs-dlx64-acs-07,25
 str3-7060-acs-3,Ethernet4,str-ocs-dlx64-acs-07,26
 str3-7060-acs-3,Ethernet8,str-ocs-dlx64-acs-07,27
+str4-w6940-1,Ethernet8,str-ocs-dlx64-acs-14,27|28
+str4-w6940-1,Ethernet16,str-ocs-dlx64-acs-14,29|30
+str4-w6940-1,Ethernet24,str-ocs-dlx64-acs-14,31|32
+str4-w6940-2,Ethernet8,str-ocs-dlx64-acs-14,35|36
+str4-w6940-2,Ethernet16,str-ocs-dlx64-acs-14,37|38
+str4-w6940-2,Ethernet24,str-ocs-dlx64-acs-14,39|40

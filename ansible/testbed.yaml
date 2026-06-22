@@ -6582,6 +6582,48 @@
   comment: dashuaizhang
   tb_owner: dashuaizhang
 
+- conf-name: vms71-rdma-lt2-w6940-1
+  group-name: vms71-ixia-1
+  topo: tgen-ft2-3
+  ptf_image_name: docker-keysight-api-server
+  ptf_imagetag: 10.80.2412.176
+  ptf: ixia-apiserver4
+  ptf_ip: 10.64.246.126/25
+  server: server_20
+  vm_base:
+  dut:
+  - str4-w6940-1
+  test_tags: []
+  l1s:
+  - str-ocs-dlx64-acs-14
+  tgs:
+  - msr-ixia-aresone-800ge-8
+  inv_name: ixia
+  auto_recover: 'False'
+  comment: dashuaizhang
+  tb_owner: dashuaizhang
+
+- conf-name: vms71-rdma-lt2-w6940-2
+  group-name: vms71-ixia-2
+  topo: tgen-ft2-3
+  ptf_image_name: docker-keysight-api-server
+  ptf_imagetag: 10.80.2412.176
+  ptf: ixia-apiserver4
+  ptf_ip: 10.64.246.126/25
+  server: server_20
+  vm_base:
+  dut:
+  - str4-w6940-2
+  test_tags: []
+  l1s:
+  - str-ocs-dlx64-acs-14
+  tgs:
+  - msr-ixia-aresone-800ge-8
+  inv_name: ixia
+  auto_recover: 'False'
+  comment: dashuaizhang
+  tb_owner: dashuaizhang
+
 - conf-name: tbtk5a-t0-7050cx3-1
   group-name: tk5a-101
   topo: t0

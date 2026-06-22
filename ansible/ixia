@@ -74,6 +74,7 @@ sonic:
     sonic_nexthop_ut2:
     sonic_arista_7280r4_ut2:
     sonic_cisco_8101_O8V48:
+    sonic_micas_cpo:
 
 fanout:
   hosts:
@@ -703,6 +704,18 @@ sonic_str3_arista_7060_cx32:
       base_mac: d4:af:f7:ff:70:48
   vars:
     iface_speed: 100000
+
+sonic_micas_cpo:
+  hosts:
+    str4-w6940-1:
+      ansible_host: 10.3.154.242
+      hwsku: M2-W6940-64X1-FR4
+    str4-w6940-2:
+      ansible_host: 10.3.154.243
+      hwsku: M2-W6940-64X1-FR4
+  vars:
+    iface_speed: 800000
+    mgmt_subnet_mask_length: 27
 
 sonic_arista_moby:
   hosts:

@@ -75,3 +75,11 @@ pdu-92,24,str43-7060x6-512-c17-u08,PSU1
 pdu-93,24,str43-7060x6-512-c17-u08,PSU2
 pdu-91,8,str43-7060x6-512-c17-u10,PSU1
 pdu-92,16,str43-7060x6-512-c17-u10,PSU2
+pdu-k09-a,13,str4-7060x6-cpo-fanout-2,PSU1
+pdu-k09-b,13,str4-7060x6-cpo-fanout-2,PSU2
+pdu-k09-a,11,str4-7060x6-cpo-fanout-1,PSU1
+pdu-k09-b,11,str4-7060x6-cpo-fanout-1,PSU2
+pdu-k09-a,12,str4-w6940-2,PSU1
+pdu-k09-b,12,str4-w6940-2,PSU2
+pdu-k09-a,10,str4-w6940-1,PSU1
+pdu-k09-b,10,str4-w6940-1,PSU2
