@@ -7,7 +7,7 @@
 # By using this practice, we suggest to add different tags for different PTF image versions in docker registry.
 - name: Set default value for ptf_imagetag
   set_fact:
-    ptf_imagetag: "internal"
+    ptf_imagetag: "latest"
   when: ptf_imagetag is not defined
 
 - name: set "PTF" container type, by default
@@ -155,7 +155,7 @@
   - name: Create ptf container ptf_{{ vm_set_name }}
     docker_container:
       name: ptf_{{ vm_set_name }}
-      image: "{{ docker_registry_host }}/{{ ptf_imagename }}:{{ ptf_imagetag }}"
+      image: "{{ public_docker_registry_host }}/{{ ptf_imagename }}:{{ ptf_imagetag }}"
       pull: yes
       state: started
       restart: no
@@ -275,7 +275,7 @@
 
 - name: Save PTF image
   block:
-  - shell: docker tag "{{ docker_registry_host }}/{{ ptf_imagename }}:{{ ptf_imagetag }}" docker-ptf
+  - shell: docker tag "{{ public_docker_registry_host }}/{{ ptf_imagename }}:{{ ptf_imagetag }}" docker-ptf
   - shell: docker save -o docker-ptf.tar docker-ptf
   - fetch: src=docker-ptf.tar dest=docker-ptf.tar flat=yes
   - shell: rm -f docker-ptf.tar

@@ -12,7 +12,7 @@
   block:
   - name: Set default value for ptf_imagetag
     set_fact:
-      ptf_imagetag: "internal"
+      ptf_imagetag: "latest"
     when: ptf_imagetag is not defined
 
   - name: Stop mux simulator
@@ -117,7 +117,7 @@
   - name: Create ptf container ptf_{{ vm_set_name }}
     docker_container:
       name: ptf_{{ vm_set_name }}
-      image: "{{ docker_registry_host }}/{{ ptf_imagename }}:{{ ptf_imagetag }}"
+      image: "{{ public_docker_registry_host }}/{{ ptf_imagename }}:{{ ptf_imagetag }}"
       pull: yes
       state: started
       restart: yes
