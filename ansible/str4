@@ -741,21 +741,21 @@ sonic_nvidia_sn5640:
       mgmt_subnet_v6_mask_length: 121
       hwsku: Mellanox-SN5640-C508O1X2
       model: MSN5640
-      serial: MT25116051TV
-      base_mac: 50:00:E6:01:F1:F4
+      serial: MT2545601T1Y
+      base_mac: 60:5E:65:EA:70:68
       syseeprom_info:
         "0x21": "SN5640"
         "0x22": "920-9N52F-09RB-7S0"
-        "0x23": "MT25116051TV"
-        "0x24": "50:00:E6:01:F1:F4"
-        "0x25": "03/17/2025 17:39:36"
-        "0x26": "16"
+        "0x23": "MT2545601T1Y"
+        "0x24": "60:5E:65:EA:70:68"
+        "0x25": "11/07/2025 22:02:25"
+        "0x26": "17"
         "0x28": "x86_64-nvidia_sn5640-r0"
-        "0x29": "2024.08-5.3.0013-9600"
+        "0x29": "2024.08-5.3.0015-9600"
         "0x2A": "546"
         "0x2B": "Nvidia"
         "0x2D": "Nvidia"
-        "0xFE": "0x52FF3025"
+        "0xFE": "0xA2416D15"
     str4-sn5640-6:
       ansible_host: 10.64.246.35
       ansible_hostv6: 2a01:111:e210:b000::a40:f623
