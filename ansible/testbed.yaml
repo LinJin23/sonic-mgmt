@@ -1734,10 +1734,10 @@
   topo: tgen-t0-3-32
   ptf_image_name: docker-keysight-api-server
   ptf_imagetag: 10.80.2412.176
-  ptf: ixia-apiserver4
-  ptf_ip: 10.64.246.126/25
+  ptf: ixia-apiserver2
+  ptf_ip: 10.64.246.229/25
   ptf_ipv6:
-  server: server_20
+  server: server_2
   vm_base:
   dut:
   - str-msn2700-22
