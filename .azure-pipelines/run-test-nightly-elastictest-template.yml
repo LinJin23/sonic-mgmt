@@ -130,7 +130,7 @@ parameters:
   # Flag to indicate pipeline will use PTF PY3 image pilot testing
   - name: PTF_IMAGE_TAG
     type: string
-    default: ""
+    default: "latest"
     displayName: "Use PTF py3only image"
 
 
