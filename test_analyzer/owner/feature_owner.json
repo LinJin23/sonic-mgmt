@@ -754,17 +754,22 @@
     },
     {
         "feature": "gnmi",
-        "owner": "Dawei Huang",
-        "email": "daweihuang@microsoft.com",
+        "owner": "Donghao Li",
+        "email": "donghaoli@microsoft.com",
         "scripts": [
             {
                 "scripts": [
                     "gnmi.test_gnmi",
                     "gnmi.test_gnmi_appldb",
-                    "gnmi.test_gnmi_configdb"
+                    "gnmi.test_gnmi_configdb",
+                    "gnmi.test_gnmi_2038",
+                    "gnmi.test_gnmi_countersdb",
+                    "gnmi.test_gnmi_smartswitch",
+                    "gnmi.test_gnmi_stress",
+                    "gnmi.test_gnmic"
                 ],
-                "owner": "Dawei Huang",
-                "email": "daweihuang@microsoft.com"
+                "owner": "Donghao Li",
+                "email": "donghaoli@microsoft.com"
             }
         ]
     },
