@@ -1,7 +1,7 @@
 StartDevice,StartPort,EndDevice,EndPort
 pdu-107,36,str-7260cx3-acs-1,PSU1
 pdu-108,36,str-7260cx3-acs-1,PSU2
-pdu-109,18,str-a7060cx-acs-1,PSU1
+pdu-108,17,str-a7060cx-acs-1,PSU1
 pdu-109,17,str-a7060cx-acs-1,PSU2
 pdu-107,21,str-a7060cx-acs-10,PSU1
 pdu-108,21,str-a7060cx-acs-10,PSU2
