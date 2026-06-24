@@ -26,7 +26,6 @@ STR-SN2700-C19-U38,Ethernet8,msr-ixia-4,Card2/Port8,100000,,Access,off,,,,,,,,,T
 str3-8101-04,Ethernet104,msr-ixia-5,Card1/Port13,400000,,Access,,,,,,,,,
 str3-8101-04,Ethernet112,msr-ixia-5,Card1/Port14,400000,,Access,,,,,,,,,
 str3-8101-04,Ethernet120,msr-ixia-5,Card1/Port15,400000,,Access,,,,,,,,,
-str3-8101-04,Ethernet128,msr-ixia-5,Card1/Port16,400000,,Access,,,,,,,,,
 STR-SN5640-RDMA-1,Ethernet0,msr-ixia-aresone-800ge-8,Card1/Port1.1,100000,,Access,off,,,,,,,,
 STR-SN5640-RDMA-1,Ethernet1,msr-ixia-aresone-800ge-8,Card1/Port1.2,100000,,Access,off,,,,,,,,
 STR-SN5640-RDMA-1,Ethernet2,msr-ixia-aresone-800ge-8,Card1/Port1.3,100000,,Access,off,,,,,,,,

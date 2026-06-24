@@ -468,6 +468,7 @@ all:
         - tgen-t0-32-30r-2v
         - tgen-ft2-3
         - tgen-t1-3-lag
+        - tgen-t1-3-l25
         - tgen-t1-64-4
         - tgen-t0-35-3
         - tgen
