@@ -776,40 +776,6 @@ class GenerateGoldenConfigDBModule(object):
         gold_config_db.update(smartswitch_config_obj)
         return json.dumps(gold_config_db, indent=4)
 
-    def generate_ut2_golden_config_db(self):
-        rendered_json = {}
-        if self.macsec_profile:
-            with open(MACSEC_PROFILE_PATH) as f:
-                macsec_profiles = json.load(f)
-
-                profile = macsec_profiles.get(self.macsec_profile)
-                if profile:
-                    profile['macsec_profile'] = self.macsec_profile
-
-                # Update the profile context with the asic count
-                profile['asic_cnt'] = self.num_asics
-
-                def safe_open_template(template_path):
-                    with open(template_path) as template_file:
-                        return Template(template_file.read())
-
-                # Render the template using the profile
-                rendered_json = json.loads(safe_open_template(GOLDEN_CONFIG_TEMPLATE_PATH).render(profile))
-
-        if self.num_asics > 1:
-            if "localhost" not in rendered_json:
-                rendered_json["localhost"] = {}
-            for asic in range(0, self.num_asics):
-                namespace = "asic{}".format(asic)
-                if namespace not in rendered_json:
-                    rendered_json[namespace] = {}
-                rendered_json[namespace] = {"BGP_DEVICE_GLOBAL": {"CONFED": {"asn": "65100", "peers": "65300"}}}
-        else:
-            if "BGP_DEVICE_GLOBAL" not in rendered_json:
-                rendered_json["BGP_DEVICE_GLOBAL"] = {}
-            rendered_json["BGP_DEVICE_GLOBAL"]["CONFED"] = {"asn": "65100", "peers": "65300"}
-        return json.dumps(rendered_json, indent=4)
-
     def _generate_ha_config(self, dpu_num, enabled_dpu_set):
         """
         Generate DASH-HA configuration tables (DPU, REMOTE_DPU, VDPU,
@@ -960,7 +926,7 @@ class GenerateGoldenConfigDBModule(object):
 
         return ha_config
 
-    def generate_ut2_golden_config_db(self):  # noqa: F811
+    def generate_ut2_golden_config_db(self):
         full_config = {}
         if self.num_asics > 1:
             full_config = self.get_config_from_minigraph_multiasic()
