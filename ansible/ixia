@@ -752,7 +752,6 @@ sonic_str_mlnx_2700:
   vars:
     hwsku: Mellanox-SN2700
     iface_speed: 100000
-    msft_an_enabled: True
 
 sonic_str3_mlnx_4700:
   hosts:
