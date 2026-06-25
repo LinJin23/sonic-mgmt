@@ -21,10 +21,10 @@ str5-7260cx3-acs-root,Ethernet49/1,str5-acs-serv-110,ens55f0,10000,"2450-2515,34
 str5-7260cx3-acs-root,Ethernet56/1,str5-acs-serv-91,ens4f1,100000,"100-613,3920-3937,3940-3946,3948-3955,3957,3961-3980,3982-3983,3987-3994",Trunk,off
 str5-7260cx3-acs-root,Ethernet57/1,str5-acs-serv-92,ens4f0,100000,"614-1103,3472-3919",Trunk,off
 str5-7260cx3-acs-root,Ethernet58/1,str5-acs-serv-93,ens4f0,100000,"2800-2869,2870-2935,2936-2939,3080-3086",Trunk,off
-str5-7260cx3-acs-root,Ethernet59/1,str5-acs-serv-94,ens4f0,100000,"1208-1721,4007-4018",Trunk,off
+str5-7260cx3-acs-root,Ethernet59/1,str5-acs-serv-94,ens4f0,100000,"1208-1721",Trunk,off
 str5-7260cx3-acs-root,Ethernet60/1,str5-acs-serv-95,ens4f0,100000,"2950-3021,3080-3471",Trunk,off
 str5-7260cx3-acs-root,Ethernet61/1,str5-acs-serv-96,ens4f0,100000,"",Trunk,off
-str5-7260cx3-acs-root,Ethernet63/1,str5-acs-serv-98,ens4f0,100000,"",Trunk,off
+str5-7260cx3-acs-root,Ethernet63/1,str5-acs-serv-98,ens4f1,100000,"1-99,742-1079,2236-2239,2442-2449,2776-2799,2940,3938-3939,3947,3956,3958-3960,3981,3984-3986,4007-4018,4019-4094",Trunk,off
 str5-7260cx3-acs-root,Ethernet64/1,str5-acs-serv-99,ens4f0,100000,"",Trunk,off
 str5-7060x6-512-3,Ethernet0,str5-7060x6-512-fan-3,Ethernet0,100000,100,Access,on
 str5-7060x6-512-3,Ethernet1,str5-7060x6-512-fan-3,Ethernet1,100000,101,Access,on
