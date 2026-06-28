@@ -2925,14 +2925,14 @@ sonic_cisco_8223:
       ansible_hostv6: 2a01:111:e210:3000::a03:96A4
       mgmt_subnet_mask_length: 27
       model: 8223-64EH-MO
-      serial: FLM293338ZW
-      base_mac: FC:58:9A:1E:76:5C
+      serial: FLM301741AU
+      base_mac: F4:B8:21:0A:B0:00
       macsec_card: True
       syseeprom_info:
         "0x21": "8223-64EH-MO"
         "0x22": "ECI123"
-        "0x23": "FLM293338ZW"
-        "0x24": "FC:58:9A:1E:76:5C"
+        "0x23": "FLM301741AU"
+        "0x24": "F4:B8:21:0A:B0:00"
         "0x26": "0"
         "0x28": "x86_64-8223_64e_mo-r0"
         "0x2A": "1024"
