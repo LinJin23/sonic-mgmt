@@ -62,12 +62,12 @@ def check_ca_cert(duthost, cert_name):
 
 
 @pytest.fixture(scope='function', params=TEST_DATA_CLOUD, ids=[d["cloudtype"] for d in TEST_DATA_CLOUD])
-def setup_ca_pem_cert(request, duthosts, rand_one_dut_hostname, creds):
+def setup_ca_pem_cert(request, duthosts, enum_rand_one_per_hwsku_hostname, creds):
     """
     Test ACMS CA_cert_downloader.py functionality.
     """
     test_data = request.param
-    duthost = duthosts[rand_one_dut_hostname]
+    duthost = duthosts[enum_rand_one_per_hwsku_hostname]
     http_proxy = creds.get('proxy_env', {}).get('http_proxy', '')
     https_proxy = creds.get('proxy_env', {}).get('https_proxy', '')
     if ("http" not in http_proxy):

@@ -18,8 +18,8 @@ CA_PEM = "/etc/sonic/credentials/AME_ROOT_CERTIFICATE.pem"
 
 
 @pytest.fixture(scope='function', autouse=True)
-def setup_certs(duthosts, rand_one_dut_hostname):
-    duthost = duthosts[rand_one_dut_hostname]
+def setup_certs(duthosts, enum_rand_one_per_hwsku_hostname):
+    duthost = duthosts[enum_rand_one_per_hwsku_hostname]
     dut_command = "docker exec %s supervisorctl stop start" % container_name
     duthost.shell(dut_command, module_ignore_errors=True)
     dut_command = "docker exec %s supervisorctl stop acms" % container_name
