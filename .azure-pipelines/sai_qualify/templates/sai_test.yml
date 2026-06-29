@@ -602,7 +602,7 @@ jobs:
             if [[ "${{ parameters.AGENT_POOL }}" == *"bjw"* ]]; then
               wget http://10.150.22.222/pipelines/sai_pipeline/vscode.tar.gz
             else
-              wget http://10.201.148.43/pipelines/sai_pipeline/vscode.tar.gz
+              wget http://10.1.3.6/pipelines/sai_pipeline/vscode.tar.gz
             fi
             python $SAI_ADHOC_PATH -i -t ptf -o copy -n  ${{ parameters.TESTBED_NAME }} -c "src=./vscode.tar.gz dest=/root"
             python $SAI_ADHOC_PATH -t ptf -o cmd -n ${{ parameters.TESTBED_NAME }} -c "tar -xvzf ./vscode.tar.gz"
