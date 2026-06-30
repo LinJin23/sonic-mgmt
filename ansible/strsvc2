@@ -119,6 +119,9 @@ sonic_cisco_sup:
         - PSU7
         - PSU8
         - PSU9
+        # PSU8 on svc5 is physically uncabled (no compatible power cable); platform_api
+        # get_name() returns 'psutray2.psu1' on 20240532.x, so skip it until it is cabled.
+        - psutray2.psu1
       asics_present: [0,1,4,5,8,9,10,11,12,13]
       plt_reboot_dict:
         cold:
