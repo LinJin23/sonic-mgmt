@@ -1,3 +1,10 @@
 ---
 # Path to the managed Python virtual environment on the testbed host.
 sonic_testbed_venv: "/opt/sonic-testbed/venv"
+
+# Build-artifact/image servers that the PTF must reach to download packages
+# (e.g. saithrift) during pretest. On non-bjw testbeds the PTF default route via
+# mgmt_gw cannot reach these, so they are routed through the testbed server, which
+# NATs the PTF mgmt subnet out its uplink. Override per group as needed.
+ptf_image_server_routes:
+  - 10.1.3.6/32
