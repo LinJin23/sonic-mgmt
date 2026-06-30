@@ -93,8 +93,6 @@ pdu-138,29,svcstr-7280r4-ut2-2,PSU1
 pdu-139,29,svcstr-7280r4-ut2-2,PSU2
 pdu-138,31,svcstr-nh5010-fanout-3,PSU1
 pdu-139,31,svcstr-nh5010-fanout-3,PSU2
-pdu-138,32,svcstr-8101-fanout-01,PSU1
-pdu-139,32,svcstr-8101-fanout-01,PSU2
 pdu-117,35,svcstr-nh5010-ut2-7,PSU1
 pdu-118,35,svcstr-nh5010-ut2-7,PSU2
 pdu-117,34,svcstr-nh5010-fanout-7,PSU1
@@ -115,3 +113,12 @@ pdu-16,40,svcstr-server-12,PSU1
 pdu-127,40,svcstr-server-12,PSU2
 pdu-140,31,svcstr-server-11,PSU1
 pdu-141,31,svcstr-server-11,PSU2
+pdu-117,32,svcstr-nh5010-rh-01,PSU1
+pdu-118,32,svcstr-nh5010-rh-01,PSU2
+pdu-117,29,strsvc-drh-aresone-ixia-1,PSU1
+pdu-117,30,strsvc-drh-aresone-ixia-1,PSU2
+pdu-118,30,strsvc-drh-aresone-ixia-1,PSU3
+pdu-117,31,svcstr-nh5010-fanout-01,PSU1
+pdu-118,31,svcstr-nh5010-fanout-01,PSU2
+pdu-117,33,svcstr-8101-frh-01,PSU1
+pdu-118,33,svcstr-8101-frh-01,PSU2

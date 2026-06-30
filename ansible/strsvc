@@ -170,10 +170,6 @@ fanout:
       os: sonic
       ansible_host: 10.206.144.66
       ansible_hostv6: 2a01:111:e205:100::ace:9042
-    svcstr-8101-fanout-01:
-      os: sonic
-      ansible_host: 10.206.144.94
-      ansible_hostv6: 2a01:111:e205:100::ace:905e
     svcstr-nh5010-fanout-3:
       os: sonic
       ansible_host: 10.206.144.92

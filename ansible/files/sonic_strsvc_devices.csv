@@ -41,7 +41,6 @@ svcstr-nh5010-ut2-3,10.206.144.45/24,NH-5010-F-O64,DevSonic,,
 svcstr-nh5010-fanout-2,10.206.144.93/24,NH-5010-F-O64,FanoutLeafSonic,,sonic
 svcstr-nh5010-ut2-7,10.206.144.95/24,NH-5010-F-O64,DevSonic,,
 svcstr-nh5010-fanout-7,10.206.144.96/24,NH-5010-F-O64,FanoutLeafSonic,,sonic
-svcstr-8101-fanout-01,10.206.144.94/24,Cisco-8101-O32,FanoutLeafSonic,,sonic
 svcstr-7280r4-ut2-1,10.206.144.46/24,Arista-7280R4K-32QF-32DF,DevSonic,,
 svcstr-7280r4-ut2-2,10.206.144.47/24,Arista-7280R4K-32QF-32DF,DevSonic,,
 svcstr-7280r4-ut2-3,10.206.144.50/24,Arista-7280R4K-32QF-32DF,DevSonic,,

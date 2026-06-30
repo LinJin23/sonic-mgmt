@@ -1144,6 +1144,21 @@
   comment: dashuaizhang
   tb_owner: dashuaizhang
 
+- conf-name: vmsvc-drh-route-conv-nh5010
+  group-name: svc-drh-ixia-1
+  topo: drh_tgen_route_conv
+  ptf_image_name: docker-keysight-api-server
+  ptf: strsvc-drh-aresone-ixia-1-api-serv
+  ptf_ip: 10.206.144.103/24
+  ptf_ipv6:
+  server: server_svc_5
+  vm_base:
+  dut:
+  - svcstr-nh5010-rh-01
+  inv_name: ixia
+  auto_recover: 'False'
+  comment: deepsinghal
+
 - conf-name: vmsvc6-t2-8800-1
   group-name: svc6-1
   topo: t2

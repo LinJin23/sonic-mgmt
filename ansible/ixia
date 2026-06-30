@@ -78,6 +78,7 @@ sonic:
     sonic_arista_7280r4_ut2:
     sonic_cisco_8101_O8V48:
     sonic_micas_cpo:
+    sonic_nh5010_drh:
 
 fanout:
   hosts:
@@ -85,6 +86,14 @@ fanout:
       ansible_host: 10.64.247.6
       os: sonic
       mgmt_subnet_mask_length: 26
+    svcstr-nh5010-fanout-01:
+      ansible_host: 10.206.144.100
+      os: sonic
+      mgmt_subnet_mask_length: 24
+    svcstr-8101-frh-01:
+      ansible_host: 10.206.144.94
+      os: sonic
+      mgmt_subnet_mask_length: 24
 
 pdu:
   hosts:
@@ -884,6 +893,33 @@ sonic_cisco_8101_O8V48:
           timeout: 300
           wait: 360
 
+sonic_nh5010_drh:
+  vars:
+    hwsku: NH-5010-F-O64
+    iface_speed: 400000
+    switch_type: voq
+    num_asics: 1
+    mgmt_subnet_mask_length: 24
+  hosts:
+    svcstr-nh5010-rh-01:
+      hwsku: NH-5010-F-O64
+      sonic_hwsku: NH-5010-F-O64
+      sonic_hw_platform: x86_64-nexthop_5010-r0
+      switchids: [0]
+      serial: NH-SMP2545003K
+      base_mac: E8:E4:9D:10:14:32
+      ansible_host: 10.206.144.105
+      model: 'NH-5010-F'
+      syseeprom_info:
+        "0x21": "NH-5010-F"
+        "0x22": "MNXXXXXXX"
+        "0x23": "NH-SMP2545003K"
+        "0x24": "E8:E4:9D:10:14:32"
+        "0x26": "1"
+        "0x28": "x86_64-nexthop_5010-r0"
+        "0x2A": "512"
+        "0x2B": "Nexthop"
+
 ixia_chassis:
   hosts:
     msr-ixia-4:
@@ -920,6 +956,9 @@ ixia_chassis:
       os: ixia
     t2-aresone-ixia-2:
       ansible_host: 10.64.247.89
+      os: ixia
+    strsvc-drh-aresone-ixia-1:
+      ansible_host: 10.206.144.103
       os: ixia
 
 l1_switch:
