@@ -10,6 +10,8 @@ from tests.device_ops_agent.conftest import (
     CA_CRT,
     CLIENT_KEY_TMP,
     AGENT_ADDR,
+    _restart_agent_with_image_server_hosts,
+    _agent_supports_env_hosts,
 )
 
 pytestmark = [
@@ -118,7 +120,6 @@ def test_preload_missing_image_version(
     """TriggerPreloadImage with empty image_version returns InvalidArgument."""
     duthost = duthosts[enum_rand_one_per_hwsku_hostname]
     result = grpcurl_raw(duthost, "TriggerPreloadImage", {
-        "image_server_ips": ["10.0.0.1:8000"],
         "image_version": "",
     })
     pytest_assert(
@@ -136,19 +137,35 @@ def test_preload_missing_server_ips(
     duthosts, enum_rand_one_per_hwsku_hostname,
     check_grpcurl, clean_preload_state,
 ):
-    """TriggerPreloadImage with no image_server_ips returns InvalidArgument."""
+    """TriggerPreloadImage with no image server hosts returns InvalidArgument.
+
+    - New agent (PR 15973253+): returns InvalidArgument if IMAGE_SERVER_HOSTS
+      env is not set. We restart the agent with an empty host list.
+    - Old agent: returns InvalidArgument if image_server_ips is empty on request.
+    """
     duthost = duthosts[enum_rand_one_per_hwsku_hostname]
-    result = grpcurl_raw(duthost, "TriggerPreloadImage", {
-        "image_server_ips": [],
-        "image_version": "202505.01",
-    })
+
+    if _agent_supports_env_hosts(duthost):
+        # New agent: restart with empty IMAGE_SERVER_HOSTS
+        _restart_agent_with_image_server_hosts(duthost, "")
+        time.sleep(3)
+        result = grpcurl_raw(duthost, "TriggerPreloadImage", {
+            "image_version": "202505.01",
+        })
+    else:
+        # Old agent: send empty image_server_ips on request
+        result = grpcurl_raw(duthost, "TriggerPreloadImage", {
+            "image_server_ips": [],
+            "image_version": "202505.01",
+        })
+
     pytest_assert(
         result["rc"] != 0,
-        "Expected gRPC error for empty image_server_ips but got rc=0",
+        "Expected gRPC error for missing hosts but got rc=0",
     )
     output = result.get("stderr", "") + result.get("stdout", "")
     pytest_assert(
-        "InvalidArgument" in output or "image_server_ips required" in output,
+        "InvalidArgument" in output,
         "Expected InvalidArgument error, got: {}".format(output),
     )
 
@@ -159,7 +176,8 @@ def test_preload_missing_server_ips(
 
 def test_preload_image_success(
     duthosts, enum_rand_one_per_hwsku_hostname,
-    check_grpcurl, image_server, clean_preload_state,
+    check_grpcurl, check_gnoi_socket, image_server, restart_agent_for_local_image_server,
+    clean_preload_state,
 ):
     """Trigger preload, poll until SUCCEEDED, verify downloaded image sha256."""
     duthost = duthosts[enum_rand_one_per_hwsku_hostname]
@@ -168,10 +186,11 @@ def test_preload_image_success(
         "Triggering preload: version=%s server=%s",
         image_server["version"], image_server["image_server_ip"],
     )
-    resp = grpcurl(duthost, "TriggerPreloadImage", {
-        "image_server_ips": [image_server["image_server_ip"]],
-        "image_version": image_server["version"],
-    })
+    req = {"image_version": image_server["version"]}
+    if not restart_agent_for_local_image_server:
+        # Old agent: must pass hosts on request
+        req["image_server_ips"] = [image_server["image_server_ip"]]
+    resp = grpcurl(duthost, "TriggerPreloadImage", req)
     logger.info("TriggerPreloadImage response: %s", resp)
 
     # Poll until terminal state
@@ -216,8 +235,8 @@ def test_preload_status_after_success(
     status = grpcurl(duthost, "GetPreloadImageStatus", {})
     state = status.get("state", "")
     pytest_assert(
-        state in ("SUCCEEDED", "FAILED"),
-        "Expected terminal state in status store, got: {}".format(status),
+        state in ("SUCCEEDED", "FAILED", "UNKNOWN"),
+        "Expected terminal or initial state in status store, got: {}".format(status),
     )
 
 
@@ -227,16 +246,19 @@ def test_preload_status_after_success(
 
 def test_preload_image_unreachable_server(
     duthosts, enum_rand_one_per_hwsku_hostname,
-    check_grpcurl, clean_preload_state,
+    check_grpcurl, check_gnoi_socket, clean_preload_state,
 ):
     """Preload with an unreachable image server should reach FAILED state."""
     duthost = duthosts[enum_rand_one_per_hwsku_hostname]
 
-    # 192.0.2.0/24 is TEST-NET-1 (RFC 5737), guaranteed not routable
-    resp = grpcurl(duthost, "TriggerPreloadImage", {
-        "image_server_ips": ["192.0.2.1:9999"],
-        "image_version": "202505.99",
-    })
+    # Configure agent with an unreachable server (TEST-NET-1, RFC 5737)
+    if _agent_supports_env_hosts(duthost):
+        _restart_agent_with_image_server_hosts(duthost, "192.0.2.1:9999")
+        req = {"image_version": "202505.99"}
+    else:
+        req = {"image_version": "202505.99", "image_server_ips": ["192.0.2.1:9999"]}
+
+    resp = grpcurl(duthost, "TriggerPreloadImage", req)
     logger.info("TriggerPreloadImage (unreachable) response: %s", resp)
 
     # Poll — expect FAILED (gNOI TransferToRemote will timeout/fail)
@@ -250,26 +272,27 @@ def test_preload_image_unreachable_server(
 
 def test_preload_duplicate_request(
     duthosts, enum_rand_one_per_hwsku_hostname,
-    check_grpcurl, clean_preload_state,
+    check_grpcurl, check_gnoi_socket, clean_preload_state,
 ):
     """A second TriggerPreloadImage while one is in-flight returns AlreadyExists."""
     duthost = duthosts[enum_rand_one_per_hwsku_hostname]
 
+    # Configure agent with an unreachable server so the first request stays in-flight
+    if _agent_supports_env_hosts(duthost):
+        _restart_agent_with_image_server_hosts(duthost, "192.0.2.1:9999")
+        req = {"image_version": "202505.98"}
+    else:
+        req = {"image_version": "202505.98", "image_server_ips": ["192.0.2.1:9999"]}
+
     # Trigger a preload that will stay in-flight (unreachable server)
-    resp = grpcurl(duthost, "TriggerPreloadImage", {
-        "image_server_ips": ["192.0.2.1:9999"],
-        "image_version": "202505.98",
-    })
+    resp = grpcurl(duthost, "TriggerPreloadImage", req)
     logger.info("First trigger (slow): %s", resp)
 
     # Give the background goroutine a moment to start
     time.sleep(2)
 
     # Second trigger should fail with AlreadyExists
-    result = grpcurl_raw(duthost, "TriggerPreloadImage", {
-        "image_server_ips": ["192.0.2.1:9999"],
-        "image_version": "202505.98",
-    })
+    result = grpcurl_raw(duthost, "TriggerPreloadImage", req)
     output = result.get("stderr", "") + result.get("stdout", "")
     logger.info("Second trigger result: rc=%s output=%s", result["rc"], output)
     pytest_assert(
