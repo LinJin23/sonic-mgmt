@@ -486,14 +486,31 @@ class VMTopology(object):
                 self.create_ovs_bridge(fp_br_name, self.fp_mtu)
 
     def create_ovs_bridge(self, bridge_name, mtu):
+        import time
         logging.info('=== Create bridge %s with mtu %d ===' %
                      (bridge_name, mtu))
         VMTopology.cmd('ovs-vsctl --may-exist add-br %s' % bridge_name)
 
-        if mtu != DEFAULT_MTU:
-            VMTopology.cmd('ifconfig %s mtu %d' % (bridge_name, mtu))
+        # Wait for the Linux kernel to expose the new network device to avoid 'No such device' errors
+        for i in range(10):
+            if VMTopology.intf_exists(bridge_name):
+                break
+            time.sleep(0.5)
+        else:
+            logging.error("Bridge %s was created in OVS but not exposed to the kernel after 5 seconds" % bridge_name)
 
-        VMTopology.cmd('ifconfig %s up' % bridge_name)
+        if mtu != DEFAULT_MTU:
+            # Try to set MTU with retries, as it sometimes fails immediately after interface creation
+            for i in range(3):
+                try:
+                    VMTopology.cmd('ip link set dev %s mtu %d' % (bridge_name, mtu))
+                    break
+                except Exception:
+                    if i == 2:
+                        raise
+                    time.sleep(1)
+
+        VMTopology.cmd('ip link set %s up' % bridge_name)
 
     def destroy_bridges(self):
         bridge_count = 0
