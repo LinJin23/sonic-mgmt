@@ -38,6 +38,7 @@ container_name_mapping = {
     "docker-restapi-watchdog": "restapi_watchdog",
     "docker-restapi-sidecar": "restapi_sidecar",
     "device-ops-agent": "device-ops-agent",
+    "aznetsec-agent": "aznsa",
 }
 
 existing_systemd_services = [

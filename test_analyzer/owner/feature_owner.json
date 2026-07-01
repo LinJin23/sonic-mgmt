@@ -85,6 +85,20 @@
         ]
     },
     {
+        "feature": "aznsa",
+        "owner": "Oliver Brown",
+        "email": "oliverbrown@microsoft.com",
+        "scripts": [
+            {
+                "scripts": [
+                    "aznsa.test_aznsa"
+                ],
+                "owner": "Oliver Brown",
+                "email": "oliverbrown@microsoft.com"
+            }
+        ]
+    },
+    {
         "feature": "autorestart",
         "owner": "Augustine Lee",
         "email": "augustinelee@microsoft.com",
