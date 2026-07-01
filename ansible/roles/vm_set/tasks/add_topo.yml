@@ -166,6 +166,8 @@
       # ptf_modified is False/undefined, use 'always' to always pull the latest image.
       # The ptf_modified flag is passed from Azure Pipelines through Elastictest's
       # add_topo_params as "-e ptf_modified=True" when testing PR built docker-ptf images.
+      # ptf_registry_host can be set independently (e.g. to 'localhost') to override just
+      # the PTF image registry without affecting other images that use docker_registry_host.
       pull: "{{ 'missing' if (ptf_modified | default(false) | bool) else 'always' }}"
       state: started
       restart: no

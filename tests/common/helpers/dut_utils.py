@@ -618,10 +618,17 @@ def create_duthost_console(duthost, localhost, conn_graph_facts, creds):  # noqa
     console_username = creds['console_user'][console_type]
 
     # console password and sonic_password are lists, which may contain more than one password
-    sonicadmin_alt_password = localhost.host.options['variable_manager']._hostvars[dut_hostname].get(
-        "ansible_altpassword")
+    # ansible-core >= 2.21: variable_manager._hostvars is None outside of a play run (it stays
+    # None in the pytest-ansible adhoc context). Fall back to the public get_vars() API, which
+    # resolves inventory + group + host vars for the target host.
+    _vm = localhost.host.options['variable_manager']
+    if _vm._hostvars is not None:
+        _host_vars = _vm._hostvars[dut_hostname]
+    else:
+        _host_obj = localhost.host.options['inventory_manager'].get_host(dut_hostname)
+        _host_vars = _vm.get_vars(host=_host_obj) if _host_obj is not None else {}
+    sonicadmin_alt_password = _host_vars.get("ansible_altpassword")
     sonicadmin_alt_passwords = creds["ansible_altpasswords"]
-
     sonic_password = [creds['sonicadmin_password'], sonicadmin_alt_password]
     sonic_password = sonic_password + sonicadmin_alt_passwords
 
@@ -717,7 +724,15 @@ def creds_on_dut(duthost):
         "fanout_mlnx_user",
         "fanout_mlnx_password"
     ]
-    hostvars = duthost.host.options['variable_manager']._hostvars[duthost.hostname]
+    # ansible-core >= 2.21: variable_manager._hostvars is None outside of a play run (it stays
+    # None in the pytest-ansible adhoc context). Fall back to the public get_vars() API, which
+    # resolves inventory + group + host vars for the target host.
+    _vm = duthost.host.options['variable_manager']
+    if _vm._hostvars is not None:
+        hostvars = _vm._hostvars[duthost.hostname]
+    else:
+        _host_obj = duthost.host.options['inventory_manager'].get_host(duthost.hostname)
+        hostvars = _vm.get_vars(host=_host_obj) if _host_obj is not None else {}
     for cred_var in cred_vars:
         if cred_var in creds:
             creds[cred_var] = (
