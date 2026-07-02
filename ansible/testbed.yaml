@@ -6602,9 +6602,9 @@
   topo: tgen-ft2-3
   ptf_image_name: docker-keysight-api-server
   ptf_imagetag: 10.80.2412.176
-  ptf: ixia-apiserver4
-  ptf_ip: 10.64.246.126/25
-  server: server_20
+  ptf: ixia-apiserver8
+  ptf_ip: 10.3.145.18/25
+  server: server_71
   vm_base:
   dut:
   - str4-w6940-1
@@ -6623,9 +6623,9 @@
   topo: tgen-ft2-3
   ptf_image_name: docker-keysight-api-server
   ptf_imagetag: 10.80.2412.176
-  ptf: ixia-apiserver4
-  ptf_ip: 10.64.246.126/25
-  server: server_20
+  ptf: ixia-apiserver8
+  ptf_ip: 10.3.145.18/25
+  server: server_71
   vm_base:
   dut:
   - str4-w6940-2
