@@ -763,6 +763,14 @@ def get_port_alias_to_name_map(hwsku, asic_name=None):
             port_alias_to_name_map["Port65"] = "Ethernet512"
             port_alias_to_name_map["Port66"] = "Ethernet513"
 
+        elif hwsku == "NH-4210-F-O256":
+            # 2x400G breakout: each 800G cage (8 lanes) splits into two 400G
+            # ports (4 lanes each), yielding 256 logical ports.
+            logical_num = 1
+            for i in range(0, 1024, 4):
+                port_alias_to_name_map["Port%d" % logical_num] = "Ethernet%d" % i
+                logical_num += 1
+
         elif "NH-5010" in hwsku:
             logical_num = 1
             for i in range(0, 256, 4):
