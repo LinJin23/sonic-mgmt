@@ -348,6 +348,11 @@ fanout:
       os: sonic
       mgmt_subnet_mask_length: 27
       mgmt_subnet_v6_mask_length: 64
+    str4-nh4210-leaf-01:
+      ansible_host: 10.3.154.244
+      os: sonic
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 64
 
 sonic:
   vars:
@@ -363,6 +368,7 @@ sonic:
     sonic_arista_7050cx3:
     sonic_nokia_ixr7220_th6p:
     sonic_micas_cpo:
+    sonic_nexthop_nh4210:
 
 sonic_arista_7060x6:
   hosts:
@@ -971,6 +977,41 @@ sonic_micas_cpo:
         "0x25": "11/11/2025 15:53:10"
         "0x27": "R01"
         "0x28": "x86_64-micas_m2-w6940-128x1-fr4-r0"
+
+sonic_nexthop_nh4210:
+  hosts:
+    str4-nh4210-01:
+      ansible_host: 10.3.154.238
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 64
+      hwsku: NH-4210-F-O256
+      model: NH-4210-F
+      serial: NH-NHQ26150001
+      base_mac: E8:E4:9D:13:1F:E8
+      syseeprom_info:
+        "0x21": "NH-4210-F"
+        "0x22": "950-00013-01"
+        "0x23": "NH-NHQ26150001"
+        "0x24": "E8:E4:9D:13:1F:E8"
+        "0x26": "0"
+        "0x28": "x86_64-nexthop_4210-r0021"
+        "0x2B": "Nexthop Systems Inc"
+    str4-nh4210-leaf-01:
+      ansible_host: 10.3.154.244
+      mgmt_subnet_mask_length: 27
+      mgmt_subnet_v6_mask_length: 64
+      hwsku: NH-4210-F-O256
+      model: NH-4210-F
+      serial: NH-NHQ26170003
+      base_mac: E8:E4:9D:13:38:18
+      syseeprom_info:
+        "0x21": "NH-4210-F"
+        "0x22": "950-00013-01"
+        "0x23": "NH-NHQ26170003"
+        "0x24": "E8:E4:9D:13:38:18"
+        "0x26": "0"
+        "0x28": "x86_64-nexthop_4210-r0021"
+        "0x2B": "Nexthop Systems Inc"
 
 server:
   hosts:

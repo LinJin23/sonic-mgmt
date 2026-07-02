@@ -279,6 +279,16 @@ autorestart/test_container_autorestart.py::test_containers_autorestart.*teamd.*:
       - "https://github.com/sonic-net/sonic-buildimage/issues/10336"
 
 #######################################
+#####            aznsa            #####
+#######################################
+
+aznsa:
+  skip:
+    reason: "aznetsec-agent requires 6.1+ kernel"
+    conditions:
+      - "release < '202405'"
+
+#######################################
 #####            bfd              #####
 #######################################
 bfd:

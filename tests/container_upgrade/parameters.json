@@ -200,5 +200,15 @@
             "-e SERVER_KEY=/etc/sonic/telemetry/streamingtelemetryserver.key",
             "-e CA_CRT=/etc/sonic/telemetry/dsmsroot.cer"
         ]
+    },
+    "aznetsec-agent": {
+        "parameters": [
+            "--pid=host",
+            "--net=host",
+            "-e RUST_LOG=debug",
+            "--cap-add CAP_BPF",
+            "--cap-add CAP_PERFMON",
+            "--cap-add CAP_SYS_PTRACE"
+        ]
     }
 }

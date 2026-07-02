@@ -1,3 +1,4 @@
 {
-    "device_ops_agent/test_device_ops_agent.py": 0
+    "device_ops_agent/test_device_ops_agent.py": 0,
+    "device_ops_agent/test_upgrade.py": 0
 }
