@@ -229,7 +229,7 @@
     become: yes
     when:
       - ptf_image_server_routes | length > 0
-      - group_names | map('lower') | select('search', 'bjw') | list | length == 0
+      - group_names | map('lower') | select('search', 'tk5') | list | length > 0
 
   - name: Start ptf_tgen service
     include_tasks: start_ptf_tgen.yml
