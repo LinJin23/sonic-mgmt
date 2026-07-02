@@ -1418,7 +1418,8 @@
                     "platform_tests.sfp.test_sfputil",
                     "platform_tests.daemon.test_ledd",
                     "platform_tests.sfp.test_show_intf_xcvr",
-                    "platform_tests.test_xcvr_info_in_db"
+                    "platform_tests.test_xcvr_info_in_db",
+                    "platform_tests.test_sfp_thermal_state_db"
                 ],
                 "owner": "Prince George",
                 "email": "prgeor@microsoft.com"

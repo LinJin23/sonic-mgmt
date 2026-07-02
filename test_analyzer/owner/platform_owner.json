@@ -538,16 +538,16 @@
     {
         "hwsku": "Nokia-7215",
         "topo": "mx",
-        "owner": "Zhijian Li",
-        "email": "zhijianli@microsoft.com",
+        "owner": "Jianquan Ye",
+        "email": "jianquanye@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
     {
         "hwsku": "Nokia-M0-7215",
         "topo": "m0",
-        "owner": "Zhijian Li",
-        "email": "zhijianli@microsoft.com",
+        "owner": "Jianquan Ye",
+        "email": "jianquanye@microsoft.com",
         "new_platform": "",
         "tag": ""
     },
@@ -922,8 +922,8 @@
     {
         "hwsku": "Nokia-7215-A1-MGX-G48S4",
         "topo": "mx",
-        "owner": "Zhijian Li",
-        "email": "zhijianli@microsoft.com",
+        "owner": "Jianquan Ye",
+        "email": "jianquanye@microsoft.com",
         "new_platform": "Yes",
         "tag": "Yes"
     },
