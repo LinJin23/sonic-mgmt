@@ -900,8 +900,8 @@ sonic_arista_7050cx3:
 sonic_nokia_ixr7220_th6p:
   hosts:
     str4-Nokia-7220-Th6p-1:
-      ansible_host: 10.3.154.234
-      ansible_hostv6: 2a01:111:e210:95::a03:9aea
+      ansible_host: 10.3.157.14
+      ansible_hostv6: 2a01:111:e210:ac::a03:9d0e
       mgmt_subnet_mask_length: 27
       mgmt_subnet_v6_mask_length: 64
       hwsku: Nokia-IXR7220-H6-O256
