@@ -1115,6 +1115,20 @@ sonic_nokia_7215c1:
       ansible_hostv6: 2404:f801:10:16::a96:ee81
       model: 3HE22118AARA01
       serial: UN260500025
+      base_mac: 10:8A:7B:BF:7E:FC
+      syseeprom_info:
+        "0x21": "7215 IXS-C1"
+        "0x22": "3HE22118AARA01"
+        "0x23": "UN260500025"
+        "0x24": "10:8A:7B:BF:7E:FC"
+        "0x25": "03/10/2026 10:10:30"
+        "0x27": "DEMO UNIT"
+        "0x28": "arm64-nokia_ixs7215_c1xa-r0"
+        "0x29": "2023.02-56-g6901d77e.10"
+        "0x2A": "256"
+        "0x2D": "NOKIA"
+        "0x2F": "CSxxx00xxx"
+        "0xFE": "0xF01E27F3"
     bjw3-can-7215c1-4:
       os: sonic
       ansible_host: 10.150.238.130
@@ -1127,6 +1141,20 @@ sonic_nokia_7215c1:
       ansible_hostv6: 2404:f801:10:16::a96:ee83
       model: 3HE22118AARA01
       serial: UN260500039
+      base_mac: 10:8A:7B:BF:7B:FC
+      syseeprom_info:
+        "0x21": "7215 IXS-C1"
+        "0x22": "3HE22118AARA01"
+        "0x23": "UN260500039"
+        "0x24": "10:8A:7B:BF:7B:FC"
+        "0x25": "03/10/2026 10:10:30"
+        "0x27": "DEMO UNIT"
+        "0x28": "arm64-nokia_ixs7215_c1xa-r0"
+        "0x29": "2023.02-56-g6901d77e.10"
+        "0x2A": "256"
+        "0x2D": "NOKIA"
+        "0x2F": "CSxxx00xxx"
+        "0xFE": "0xD02D7FDE"
     bjw3-can-7215c1-6:
       os: sonic
       ansible_host: 10.150.238.132
