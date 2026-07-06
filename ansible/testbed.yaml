@@ -3869,6 +3869,22 @@
   comment: yatishkoul
   tb_owner: yatishkoul
 
+- conf-name: vms76-bmc-7220-1
+  group-name: vms76-3
+  topo: bmc-dual-mgmt
+  ptf_image_name: docker-ptf
+  ptf: vms76-3
+  ptf_ip: 10.64.246.108/25
+  ptf_ipv6:
+  server: server_76
+  vm_base: VM76010
+  dut:
+  - str4-Nokia-7220-Th6p-1-bmc
+  inv_name: str4
+  auto_recover: 'True'
+  comment: ediwibowo
+  tb_owner: ediwibowo
+
 - conf-name: vms12-t1-smartswitch-4280-01
   group-name: vms12-4
   topo: t1-48-lag
