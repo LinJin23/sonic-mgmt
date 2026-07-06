@@ -4558,7 +4558,7 @@
 
 - conf-name: ptp-sn5640-1
   group-name:
-  topo: ptp-512
+  topo: ptp-514
   ptf_image_name: ''
   ptf: ''
   ptf_ip: ''
@@ -4574,7 +4574,7 @@
 
 - conf-name: ptp-sn5640-2
   group-name:
-  topo: ptp-512
+  topo: ptp-514
   ptf_image_name: ''
   ptf: ''
   ptf_ip: ''

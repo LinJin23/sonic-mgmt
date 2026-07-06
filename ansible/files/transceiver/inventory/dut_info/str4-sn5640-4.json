@@ -77,5 +77,15 @@
     "Ethernet4:512:8": {"transceiver_configuration": "DR8-800-QSFPDD-8x100G_DR8-0x10-0x10"},
     "Ethernet5:512:8": {"transceiver_configuration": "DR8-800-QSFPDD-8x100G_DR8-0x20-0x20"},
     "Ethernet6:512:8": {"transceiver_configuration": "DR8-800-QSFPDD-8x100G_DR8-0x40-0x40"},
-    "Ethernet7:512:8": {"transceiver_configuration": "DR8-800-QSFPDD-8x100G_DR8-0x80-0x80"}
+    "Ethernet7:512:8": {"transceiver_configuration": "DR8-800-QSFPDD-8x100G_DR8-0x80-0x80"},
+    "Ethernet512:521:8": {
+        "vendor_name": "WAVESPLITTER",
+        "vendor_pn": "WST-SFP+LR-C",
+        "vendor_oui": "00-00-00",
+        "vendor_rev": "1.0",
+        "vendor_date": "2025-04-23",
+        "transceiver_configuration": "LR-10-SFP-10G_STRAIGHT-0x1-0x1"
+    },
+    "Ethernet512": {"vendor_sn": "25021711109"},
+    "Ethernet520": {"vendor_sn": "25021711135"}
 }

@@ -4793,6 +4793,8 @@ str4-sn5640-4,Ethernet508,str4-sn5640-5,Ethernet508,100000,,Access,off
 str4-sn5640-4,Ethernet509,str4-sn5640-5,Ethernet509,100000,,Access,off
 str4-sn5640-4,Ethernet510,str4-sn5640-5,Ethernet510,100000,,Access,off
 str4-sn5640-4,Ethernet511,str4-sn5640-5,Ethernet511,100000,,Access,off
+str4-sn5640-4,Ethernet512,str4-sn5640-5,Ethernet512,10000,,Access,off
+str4-sn5640-4,Ethernet520,str4-sn5640-5,Ethernet520,10000,,Access,off
 str4-sn5640-5,Ethernet0,str4-sn5640-4,Ethernet0,100000,,Access,off
 str4-sn5640-5,Ethernet1,str4-sn5640-4,Ethernet1,100000,,Access,off
 str4-sn5640-5,Ethernet2,str4-sn5640-4,Ethernet2,100000,,Access,off
@@ -5305,6 +5307,8 @@ str4-sn5640-5,Ethernet508,str4-sn5640-4,Ethernet508,100000,,Access,off
 str4-sn5640-5,Ethernet509,str4-sn5640-4,Ethernet509,100000,,Access,off
 str4-sn5640-5,Ethernet510,str4-sn5640-4,Ethernet510,100000,,Access,off
 str4-sn5640-5,Ethernet511,str4-sn5640-4,Ethernet511,100000,,Access,off
+str4-sn5640-5,Ethernet512,str4-sn5640-4,Ethernet512,10000,,Access,off
+str4-sn5640-5,Ethernet520,str4-sn5640-4,Ethernet520,10000,,Access,off
 str4-sn5640-7,Ethernet0,str4-sn5640-fan-7,Ethernet0,100000,4007,Access,on
 str4-sn5640-7,Ethernet1,str4-sn5640-fan-7,Ethernet1,100000,,Access,on
 str4-sn5640-7,Ethernet2,str4-sn5640-fan-7,Ethernet2,100000,,Access,on
