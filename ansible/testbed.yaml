@@ -6613,14 +6613,14 @@
   comment: dashuaizhang
   tb_owner: dashuaizhang
 
-- conf-name: vms71-rdma-lt2-w6940-1
-  group-name: vms71-ixia-1
+- conf-name: vms70-rdma-lt2-w6940-1
+  group-name: vms70-ixia-1
   topo: tgen-ft2-3
   ptf_image_name: docker-keysight-api-server
-  ptf_imagetag: 10.80.2412.176
-  ptf: ixia-apiserver8
-  ptf_ip: 10.3.145.18/25
-  server: server_71
+  ptf_imagetag: 11.10.2508.146
+  ptf: ixia-apiserver70
+  ptf_ip: 10.64.246.109/25
+  server: server_70
   vm_base:
   dut:
   - str4-w6940-1
@@ -6634,14 +6634,14 @@
   comment: dashuaizhang
   tb_owner: dashuaizhang
 
-- conf-name: vms71-rdma-lt2-w6940-2
-  group-name: vms71-ixia-2
+- conf-name: vms70-rdma-lt2-w6940-2
+  group-name: vms70-ixia-2
   topo: tgen-ft2-3
   ptf_image_name: docker-keysight-api-server
-  ptf_imagetag: 10.80.2412.176
-  ptf: ixia-apiserver8
-  ptf_ip: 10.3.145.18/25
-  server: server_71
+  ptf_imagetag: 11.10.2508.146
+  ptf: ixia-apiserver70
+  ptf_ip: 10.64.246.109/25
+  server: server_70
   vm_base:
   dut:
   - str4-w6940-2

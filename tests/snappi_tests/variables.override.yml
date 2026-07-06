@@ -102,3 +102,7 @@ vms20-rdma-t0-sn4700:
   pfcQueueGroupSize: 4
 vms20-rdma-t1-8101:
   pfcQueueGroupSize: 4
+vms70-rdma-lt2-w6940-1:
+  pfcQueueGroupSize: 4
+vms70-rdma-lt2-w6940-2:
+  pfcQueueGroupSize: 4
