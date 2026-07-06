@@ -129,6 +129,14 @@ pdu:
       ansible_host: 10.3.154.90
       protocol: snmp
       snmp_rocommunity: public
+    pdu-119:
+      ansible_host: 10.3.154.120
+      protocol: snmp
+      snmp_rocommunity: public
+    pdu-120:
+      ansible_host: 10.3.154.121
+      protocol: snmp
+      snmp_rocommunity: public
 
 sonic_str_cisco_8111_O32:
   hosts:
