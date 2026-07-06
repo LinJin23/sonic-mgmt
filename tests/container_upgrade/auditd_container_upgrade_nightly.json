@@ -1,0 +1,5 @@
+{
+    "containers": "docker-auditd:kubelatest-amd64|docker-auditd-watchdog:kubelatest-amd64",
+    "testcase_file": "container_upgrade/auditd_nightly_testcases.json",
+    "parameters_file": "container_upgrade/parameters.json"
+}

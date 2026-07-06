@@ -1,0 +1,6 @@
+{
+    "containers": "docker-sonic-telemetry:kubelatest-amd64|docker-telemetry-watchdog:kubelatest-amd64|docker-telemetry-sidecar:kubelatest-amd64",
+    "testcase_file": "container_upgrade/telemetry_testcases.json",
+    "parameters_file": "container_upgrade/parameters.json",
+    "optional_parameters": "-e IS_V1_ENABLED=true"
+}

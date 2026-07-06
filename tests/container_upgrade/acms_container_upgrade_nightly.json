@@ -1,0 +1,5 @@
+{
+    "containers": "docker-acms:kubelatest-amd64|docker-acms-watchdog:kubelatest-amd64|docker-acms-sidecar:kubelatest-amd64",
+    "testcase_file": "container_upgrade/acms_testcases.json",
+    "parameters_file": "container_upgrade/parameters.json"
+}

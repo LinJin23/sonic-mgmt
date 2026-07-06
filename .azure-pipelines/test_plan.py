@@ -359,6 +359,7 @@ class TestPlanManager(object):
                 "skip_remove_add_topo_for_nightly": kwargs.get("skip_remove_add_topo_for_nightly", True),
                 "add_topo_params": kwargs.get("add_topo_params", ""),
                 "skip_restart_ptf": kwargs.get("skip_restart_ptf", False),
+                "skip_pre_post_test": kwargs.get("skip_pre_post_test", False),
                 "stop_on_failure": kwargs.get("stop_on_failure", True),
                 "enable_parallel_run": kwargs.get("enable_parallel_run", False),
                 "parallel_modes_file": kwargs.get("parallel_modes_file", "default.json"),
@@ -724,6 +725,17 @@ if __name__ == "__main__":
         required=False,
         choices=[True, False],
         help="Whether skip restart ptf for nightly test."
+    )
+    parser_create.add_argument(
+        "--skip-pre-post-test",
+        type=ast.literal_eval,
+        dest="skip_pre_post_test",
+        nargs='?',
+        const=False,
+        default=False,
+        required=False,
+        choices=[True, False],
+        help="Whether to skip test_pretest.py and test_posttest.py."
     )
     parser_create.add_argument(
         "--kvm-image-branch",
@@ -1216,6 +1228,7 @@ if __name__ == "__main__":
                     add_topo_params=args.add_topo_params,
                     deploy_mg_extra_params=args.deploy_mg_extra_params,
                     skip_restart_ptf=args.skip_restart_ptf,
+                    skip_pre_post_test=args.skip_pre_post_test,
                     kvm_build_id=args.kvm_build_id,
                     kvm_image_branch=args.kvm_image_branch,
                     kvm_image_build_pipeline_id=args.kvm_image_build_pipeline_id,

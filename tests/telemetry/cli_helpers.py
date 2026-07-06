@@ -3,6 +3,27 @@ import re
 from tests.common.reboot import reboot
 
 
+# Format-valid but unlikely-to-exist values, substituted when a device-derived
+# getter returns nothing. This keeps the gNMI path exercised: a well-formed
+# query for an absent resource must still return a clean, empty response rather
+# than erroring or crashing the server. Keyed by argumentMap/optionMap key.
+DUMMY_VALUES = {
+    "INTERFACE_NAME":      ["Ethernet0"],
+    "DEVICE_NEIGHBOR":     ["DummyNeighbor"],
+    "RIF_INTERFACE":       ["Ethernet0"],
+    "IPV6NEIGHBOR":        ["fe80::1"],
+    "ARP_IPV4_ADDRESS":    ["169.254.0.1"],
+    "FEATURE_NAME":        ["dummyfeature"],
+    "FILENAME":            ["dmesg.dummy"],
+    "MIRROR_SESSION_NAME": ["dummy_session"],
+    "DEVICE":              ["/dev/sda"],
+    "interface_vlan":      ["Vlan1000"],
+    "interface":           ["Ethernet0"],
+    "dpu":                 ["DPU0"],
+    "psu_index":           ["1"],
+}
+
+
 def get_json_from_gnmi_output(stdout):
     marker = "The GetResponse is below"
     marker_pos = stdout.find(marker)
@@ -165,3 +186,60 @@ def get_feature_name(duthost):
     if not features:
         return None
     return features
+
+
+def get_kdump_filename(duthost):
+    output = duthost.shell(
+        r"find /var/crash/ -type f \( -name 'kdump.*' -o -name 'dmesg.*' \) 2>/dev/null | head -5",
+        module_ignore_errors=True,
+    )["stdout"]
+    lines = [line.strip() for line in output.splitlines() if line.strip()]
+    if lines:
+        filenames = [line.rsplit('/', 1)[-1] for line in lines if line.rsplit('/', 1)[-1]]
+        if filenames:
+            return filenames[:3]
+    return None
+
+
+def get_lines_value(duthost):
+    """Get valid line count values for kdump logging"""
+    return ["2", "10", "50"]
+
+
+def get_mirror_session_name(duthost):
+    output = duthost.shell("redis-cli -n 4 keys 'MIRROR_SESSION|*'", module_ignore_errors=True)["stdout"]
+    lines = [line.strip() for line in output.splitlines() if line.strip()]
+    if not lines:
+        return None
+    session_names = [
+        line.split("|", 1)[-1].strip('"')
+        for line in lines
+        if "|" in line and line.split("|", 1)[-1].strip('"')
+    ]
+    return session_names or None
+
+
+def get_dpu_name(duthost):
+    output = duthost.shell("redis-cli -n 4 keys 'CHASSIS_MODULE|DPU*'", module_ignore_errors=True)["stdout"]
+    lines = [line.strip() for line in output.splitlines() if line.strip()]
+    if not lines:
+        return None
+    names = [line.split("|", 1)[-1].strip('"') for line in lines if "|" in line and line.split("|", 1)[-1].strip('"')]
+    return [names[0]] if names else None
+
+
+def get_psu_index(duthost):
+    output = duthost.shell("redis-cli -n 6 keys 'PSU_INFO|*'", module_ignore_errors=True)["stdout"]
+    lines = [line.strip() for line in output.splitlines() if line.strip()]
+    if not lines:
+        return None
+    return ["1"]
+
+
+def get_ssd_device(duthost):
+    output = duthost.shell("lsblk -dn -o NAME,TYPE", module_ignore_errors=True)["stdout"]
+    for line in output.splitlines():
+        parts = line.split()
+        if len(parts) >= 2 and parts[1] == "disk":
+            return ["/dev/{}".format(parts[0])]
+    return None

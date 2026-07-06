@@ -24,6 +24,7 @@ CONTAINER_STRING_KEY = "container_bundle"
 container_name_mapping = {
     "docker-sonic-telemetry": "telemetry",
     "docker-telemetry-watchdog": "telemetry_watchdog",
+    "docker-telemetry-sidecar": "telemetry_sidecar",
     "docker-sonic-gnmi": "gnmi",
     "docker-gnmi-watchdog": "gnmi_watchdog",
     "docker-auditd": "auditd",
@@ -156,17 +157,52 @@ def fetch_docker_conf(duthost):
     duthost.shell("systemctl restart docker.service")
 
 
-def os_upgrade(duthost, localhost, tbinfo, image_url):
+def os_upgrade(duthost, localhost, tbinfo, image_url, network_runner=None):
+    """Install a SONiC image and reboot.
+
+    Args:
+        network_runner: If set and not the duthost, download image there first
+            and pass the local path to install_sonic (for network-isolated DUTs).
+            Defaults to None which means download runs on the DUT.
+    """
     cleanup_prev_images(duthost)
-    backup_docker_conf(duthost)
-    logger.info(f"Installing image from {image_url}")
-    install_sonic(duthost, image_url, tbinfo)
-    logger.info("Rebooting device")
-    reboot(duthost, localhost)
-    logger.info("Waiting for critical services to startup")
-    fetch_docker_conf(duthost)
-    py_assert(wait_until(300, 20, 20, duthost.critical_services_fully_started),
-              "All critical services should be fully started!")
+
+    use_localhost = network_runner is not None and network_runner is not duthost
+    # On physical testbeds the DUT uses an http-proxy to reach the registry; we
+    # back up/restore that conf across the reboot. Network-isolated DUTs (KVM)
+    # don't use a proxy since docker images are pushed over from localhost.
+    if not use_localhost:
+        backup_docker_conf(duthost)
+
+    # Physical testbed: install_sonic downloads the image on the DUT directly.
+    # KVM nightly (use_localhost): the DUT is network-isolated, so download the
+    # image on localhost and hand install_sonic a local path to copy over.
+    image_source = image_url
+    local_path = None
+    if use_localhost:
+        import os as _os
+        local_path = f"/tmp/{_os.path.basename(image_url)}"
+        logger.info(f"[{network_runner}] Downloading {image_url} to {local_path}")
+        # -f: fail (nonzero exit) on HTTP errors instead of writing the error body
+        # to disk and later feeding it to sonic-installer. -L: follow redirects.
+        network_runner.shell(f"curl -fL -sS -o {local_path} {image_url}")
+        image_source = local_path
+
+    try:
+        logger.info(f"Installing image from {image_source}")
+        install_sonic(duthost, image_source, tbinfo)
+        logger.info("Rebooting device")
+        reboot(duthost, localhost)
+        logger.info("Waiting for critical services to startup")
+        if not use_localhost:
+            fetch_docker_conf(duthost)
+        py_assert(wait_until(300, 20, 20, duthost.critical_services_fully_started),
+                  "All critical services should be fully started!")
+    finally:
+        # Always remove the downloaded image from localhost, even on failure.
+        if local_path:
+            logger.info(f"[{network_runner}] Cleaning up {local_path}")
+            network_runner.shell(f"rm -f {local_path}", module_ignore_errors=True)
 
 
 def check_container_not_running(duthost, container_name):
@@ -213,16 +249,43 @@ def _ensure_device_ops_agent_env(duthost, parameters, captured_env):
     return parameters
 
 
-def pull_run_dockers(duthost, creds, env):
+def pull_run_dockers(duthost, creds, env, network_runner=None):
+    """Pull docker images and run them as containers on the DUT.
+
+    Args:
+        network_runner: If set and not the duthost, pull images there and
+            transfer to the DUT via docker save/load (for network-isolated DUTs).
+            Defaults to None which means pull runs on the DUT.
+    """
     logger.info("Pulling docker images")
     registry = load_docker_registry_info(duthost, creds)
     container_entries = list(zip(env.containers, env.container_versions, env.container_names))
     # Ensure sidecars are processed first
     container_entries.sort(key=lambda t: 0 if "sidecar" in t[2] else 1)
 
+    use_localhost = network_runner is not None and network_runner is not duthost
+    if use_localhost:
+        network_runner.shell(
+            f"docker login {registry.host} -u {registry.username} -p {registry.password}")
+
     for container, version, name in container_entries:
         docker_image = f"{registry.host}/{container}:{version}"
-        download_image(duthost, registry, container, version)
+
+        if use_localhost:
+            tar_path = f"/tmp/{container}_{version}.tar"
+            logger.info(f"[localhost] Pulling {docker_image}")
+            network_runner.shell(f"docker pull {docker_image}")
+            logger.info(f"[localhost] Saving to {tar_path}")
+            network_runner.shell(f"docker save {docker_image} -o {tar_path}")
+            logger.info(f"Copying {tar_path} to DUT")
+            duthost.copy(src=tar_path, dest=tar_path)
+            logger.info(f"[DUT] Loading {tar_path}")
+            duthost.shell(f"docker load -i {tar_path}")
+            duthost.shell(f"rm -f {tar_path}")
+            network_runner.shell(f"rm -f {tar_path}")
+        else:
+            download_image(duthost, registry, container, version)
+
         parameters = env.parameters[container]
         optional_parameters = env.optional_parameters
 

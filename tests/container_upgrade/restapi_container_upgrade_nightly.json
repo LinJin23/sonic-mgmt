@@ -1,0 +1,5 @@
+{
+    "containers": "docker-sonic-restapi:kubelatest-amd64|docker-restapi-watchdog:kubelatest-amd64|docker-restapi-sidecar:kubelatest-amd64",
+    "testcase_file": "container_upgrade/restapi_testcases.json",
+    "parameters_file": "container_upgrade/parameters.json"
+}

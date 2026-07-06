@@ -426,6 +426,8 @@ def pytest_addoption(parser):
                      help="File that contains testcases to execute per iteration")
     parser.addoption("--optional_parameters", action="store", default="", type=str,
                      help="Extra args appended to docker run, e.g. '-e IS_V1_ENABLED=true'")
+    parser.addoption("--nightly_config", action="store", default=None, type=str,
+                     help="Path to JSON config file for nightly container upgrade test")
 
     #################################
     #   Stress test options         #

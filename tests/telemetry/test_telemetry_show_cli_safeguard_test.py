@@ -21,6 +21,13 @@ SHOW_CMD_FILE = os.path.join(BASE_DIR, "show_cmd.json")
 RESOURCE_EXHAUSTION = "ResourceExhausted"
 CLIENT_LARGER_MESSAGE_ERROR = "Received message larger than max"
 
+# Keys for which substituting a dummy value is expected to produce a
+# server-side error because the resource truly cannot exist on the device
+# (e.g. listing logs from a non-existent kdump/dmesg file). When any arg in
+# the CLI was filled with a dummy from one of these keys, a non-zero gNMI
+# response is treated as expected behaviour rather than a failure.
+TOLERATE_DUMMY_FAILURE_KEYS = {"FILENAME", "DEVICE", "dpu", "psu_index"}
+
 # Removing ipv6/route (changes pending in client) and ndp (known issue with ipv6 parsing)
 
 argumentMap = {
@@ -34,9 +41,37 @@ argumentMap = {
     "IPV6ADDRESS_PREFIX_FAMILY": helper.get_ipv6_prefix_family,
     "IPV6_ROUTE_ARG":            helper.get_ipv6_route_arguments,
     "ARP_IPV4_ADDRESS":          helper.get_device_arp_ip,
-    "FEATURE_NAME":              helper.get_feature_name
+    "FEATURE_NAME":              helper.get_feature_name,
+    "FILENAME":                  helper.get_kdump_filename,
+    "MIRROR_SESSION_NAME":       helper.get_mirror_session_name,
+    "DEVICE":                    helper.get_ssd_device
     # "SID":                       helper.get_sid, (TODO: Since lab devices wont have SRV6 data we cannot provide SID)
 }
+
+
+def resolve_arg_value(arg, duthost):
+    """
+    Resolve a positional argument key to its value list.
+
+    Substitutes a dummy from helper.DUMMY_VALUES when the device-derived getter
+    returns nothing, so the gNMI path is still exercised.
+
+    Returns (values, used_dummy, error):
+      - values:     list of values, or None when unresolved
+      - used_dummy: True when the value list came from helper.DUMMY_VALUES
+      - error:      reason string when the key has neither getter nor dummy
+    """
+    getter = argumentMap.get(arg)
+    value = getter(duthost) if getter else None
+    if value:
+        return value, False, None
+    dummy = helper.DUMMY_VALUES.get(arg)
+    if dummy:
+        return dummy, True, None
+    if not getter:
+        return None, False, f"unknown arg '{arg}'"
+    return None, False, f"arg '{arg}' getter returned no value and no dummy defined"
+
 
 # Options (lowercase keys) -> (type, cli-name, getter)
 # type: "flag" => --name ; "kv" => --name=value
@@ -52,6 +87,12 @@ optionMap = {
     "trim":                 ("flag", "trim", None),
     "dom":                  ("flag", "dom", None),
     "interface_vlan":       ("kv", "iface", helper.get_interface_vlan),
+    "lines":                ("kv", "lines", helper.get_lines_value),
+    "dpu":                  ("kv", "dpu", helper.get_dpu_name),
+    "psu_index":            ("kv", "index", helper.get_psu_index),
+    "history":              ("flag", "history", None),
+    "vendor":               ("flag", "vendor", None),
+    "check":                ("flag", "check", None),
 }
 
 
@@ -92,6 +133,7 @@ def build_show_cli_tokens(base_path, positional_args, option_tokens):
 
 def option_value_lists(option_keys, duthost, arguments):
     lists = []
+    dummy_option_tokens = set()
     last_arg = arguments[-1] if arguments else None
     for key in option_keys:
 
@@ -110,10 +152,17 @@ def option_value_lists(option_keys, duthost, arguments):
                     lists.append([f"--{oname}=alias"])
                 continue
             vals = getter(duthost) if getter else []
+            used_dummy = False
             if not vals:
-                continue
-            lists.append([f"--{oname}={v}" for v in vals])
-    return lists
+                vals = helper.DUMMY_VALUES.get(key)
+                if not vals:
+                    continue
+                used_dummy = True
+            tokens = [f"--{oname}={v}" for v in vals]
+            if used_dummy and key in TOLERATE_DUMMY_FAILURE_KEYS:
+                dummy_option_tokens.update(tokens)
+            lists.append(tokens)
+    return lists, dummy_option_tokens
 
 
 def convert_show_cli_to_xpath(cli_str):
@@ -221,23 +270,22 @@ def test_telemetry_show_cli_schema_and_safeguard(
         should_validate = show_cmd.get("validateSchema", False)
 
         required_arg_values = []
+        dummy_arg_keys = set()
         if required_args:
-            invalid_arg = None
+            arg_error = None
             for arg in required_args:
-                getter = argumentMap.get(arg)
-                if not getter:
-                    invalid_arg = arg
-                    break
-                value = getter(duthost)
-                if not value:
-                    invalid_arg = arg
+                value, used_dummy, err = resolve_arg_value(arg, duthost)
+                if err:
+                    arg_error = err
                     break
                 required_arg_values.append(value)
-            if invalid_arg:
+                if used_dummy:
+                    dummy_arg_keys.add(arg)
+            if arg_error:
                 failures.append({
                     "cli": path,
                     "xpath": "",
-                    "reason": f"unknown required arg '{invalid_arg}'"
+                    "reason": arg_error
                 })
                 continue
 
@@ -248,38 +296,36 @@ def test_telemetry_show_cli_schema_and_safeguard(
             arg_values = []
             optional_arg_failed = False
             for arg in optional_args:
-                getter = argumentMap.get(arg)
-                if not getter:
+                value, used_dummy, err = resolve_arg_value(arg, duthost)
+                if err:
                     failures.append({
                         "cli": path,
                         "xpath": "",
-                        "reason": f"unknown optional arg '{arg}'"
+                        "reason": err
                     })
                     optional_arg_failed = True
                     break
-                arg_value = getter(duthost)
-                if not arg_value:
-                    failures.append({
-                        "cli": path,
-                        "xpath": "",
-                        "reason": f"optional arg: '{arg}' getter failed"
-                    })
-                    optional_arg_failed = True
-                    break
-                arg_values.append(arg_value)
+                arg_values.append(value)
+                if used_dummy:
+                    dummy_arg_keys.add(arg)
             if optional_arg_failed:
                 continue
             argument_combinations = generate_optional_argument_combinations(arg_values)
         else:
             argument_combinations = [[]]
 
+        tolerate_failure = bool(dummy_arg_keys & TOLERATE_DUMMY_FAILURE_KEYS)
+
         for argument_combination in argument_combinations:
             try:
-                per_option_lists = option_value_lists(options, duthost, argument_combination) if options else []
+                per_option_lists, dummy_option_tokens = (
+                    option_value_lists(options, duthost, argument_combination) if options else ([], set())
+                )
             except (KeyError, ValueError) as e:
                 failures.append({"cli": path, "xpath": "", "reason": str(e)})
                 continue
             for opt_tokens in (generate_option_combinations(per_option_lists) if per_option_lists else [[]]):
+                combo_tolerate_failure = tolerate_failure or any(t in dummy_option_tokens for t in opt_tokens)
                 cli = build_show_cli_tokens(path, argument_combination, opt_tokens)
                 commands_tested.append(cli)
                 try:
@@ -312,16 +358,11 @@ def test_telemetry_show_cli_schema_and_safeguard(
                 stdout = ptf_result.get("stdout", "")
                 stderr = ptf_result.get("stderr", "")
 
-                if rc != 0:
-                    if RESOURCE_EXHAUSTION in stdout or CLIENT_LARGER_MESSAGE_ERROR in stdout:
-                        continue
-                    failures.append({
-                        "cli": cli,
-                        "xpath": xpath,
-                        "reason": f"ptf rc={rc}, stderr={stderr}"
-                    })
-                    continue
-
+                # Check critical-process status BEFORE the rc-driven `continue`
+                # paths below - otherwise a request that kills a critical process
+                # AND returns nonzero would be reported as a plain rc failure
+                # (or tolerated silently if combo_tolerate_failure), and the
+                # far-worse "critical process died" signal would be dropped.
                 after_status = duthost.all_critical_process_status()
                 if before_status != after_status:
                     failures.append({
@@ -329,6 +370,22 @@ def test_telemetry_show_cli_schema_and_safeguard(
                         "xpath": xpath,
                         "reason": "Critical process status changed after GET"
                     })
+
+                if rc != 0:
+                    if RESOURCE_EXHAUSTION in stdout or CLIENT_LARGER_MESSAGE_ERROR in stdout:
+                        continue
+                    if combo_tolerate_failure:
+                        logger.info(
+                            "Tolerating expected gNMI failure for dummy-value CLI '%s' "
+                            "(dummy arg keys: %s)", cli, sorted(dummy_arg_keys)
+                        )
+                        continue
+                    failures.append({
+                        "cli": cli,
+                        "xpath": xpath,
+                        "reason": f"ptf rc={rc}, stderr={stderr!r}, stdout={stdout!r}"
+                    })
+                    continue
 
                 try:
                     payload = helper.get_json_from_gnmi_output(stdout)

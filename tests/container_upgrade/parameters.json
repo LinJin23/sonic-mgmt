@@ -52,6 +52,24 @@
             "--env RUNTIME_OWNER=local"
         ]
     },
+    "docker-telemetry-sidecar": {
+        "parameters": [
+            "--privileged",
+            "--pid=host",
+            "--net=host",
+            "--uts=host",
+            "--ipc=host",
+            "-v /etc/sonic:/etc/sonic:ro",
+            "-v /etc/localtime:/etc/localtime:ro",
+            "-v /usr/bin/docker:/usr/bin/docker:ro",
+            "-v /var/run/docker.sock:/var/run/docker.sock",
+            "-v /:/hostroot:ro",
+            "-v /etc/hostname:/etc/host-utsname:ro",
+            "-e DOCKER_BIN=/usr/bin/docker",
+            "--label io.kubernetes.pod.namespace=sonic",
+            "--label io.kubernetes.docker.type=container"
+        ]
+    },
     "docker-telemetry-watchdog": {
         "parameters": [
             "--privileged",

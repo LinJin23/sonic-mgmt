@@ -1,0 +1,84 @@
+name: Container_Upgrade_Nightly_KVM_$(Build.DefinitionName)_$(SourceBranchName)_$(Build.BuildId)_$(Date:yyyyMMdd)$(Rev:.r)
+
+trigger: none
+pr: none
+
+schedules:
+  - cron: "0 0 * * *"
+    displayName: Nightly Scheduler
+    branches:
+      include:
+        - internal
+    always: true
+
+parameters:
+  - name: MGMT_BRANCH
+    type: string
+    default: internal
+
+  - name: CONTAINERS
+    type: object
+    displayName: "Containers to test. Each entry needs an os_versions (comma-separated) field; one job per container x os_version x topology. Optional container_override (comma-separated name:tag,...) bypasses the config bundle."
+    default:
+      - name: telemetry
+        config: container_upgrade/telemetry_container_upgrade_nightly.json
+        os_versions: "20241211.46,20241212.54,20241212.56"
+      - name: auditd
+        config: container_upgrade/auditd_container_upgrade_nightly.json
+        os_versions: "20231110.30,20240510.25,20241110.22,20250510.30"
+      - name: acms
+        config: container_upgrade/acms_container_upgrade_nightly.json
+        os_versions: "20231110.30,20240510.25,20241110.22,20250510.30"
+      - name: restapi
+        config: container_upgrade/restapi_container_upgrade_nightly.json
+        os_versions: "20231110.30,20240510.25,20241110.22,20250510.30"
+
+  - name: KVM_IMAGE_BRANCH
+    type: string
+    default: internal
+    displayName: "Base image branch the KVM boots with (test upgrades to the target OS version)"
+
+  - name: MAX_RUN_TEST_MINUTES
+    type: number
+    default: 240
+
+  - name: RETRY_TIMES
+    type: string
+    default: "0"
+
+  - name: SKIP_PRE_POST_TEST
+    type: boolean
+    default: false
+    displayName: "Skip test_pretest.py / test_posttest.py framework hooks"
+
+variables:
+  - group: SONiC-Elastictest
+
+stages:
+- stage: Container_Upgrade_Nightly_KVM
+  jobs:
+  - ${{ each container in parameters.CONTAINERS }}:
+    - ${{ each version in split(container.os_versions, ',') }}:
+      - job: ${{ container.name }}_${{ replace(version, '.', '_') }}
+        displayName: ${{ container.name }}.kvm.${{ version }}
+        timeoutInMinutes: ${{ parameters.MAX_RUN_TEST_MINUTES }}
+        continueOnError: false
+        pool: sonic-ubuntu-1c
+        steps:
+        - template: ../run-test-elastictest-template.yml
+          parameters:
+            TOPOLOGY: t0
+            MIN_WORKER: "1"
+            MAX_WORKER: "1"
+            SCRIPTS: "container_upgrade/test_container_upgrade_nightly.py"
+            MGMT_BRANCH: ${{ parameters.MGMT_BRANCH }}
+            KVM_IMAGE_BRANCH: ${{ parameters.KVM_IMAGE_BRANCH }}
+            KVM_IMAGE_BUILD_PIPELINE_ID: "372481"
+            MAX_RUN_TEST_MINUTES: ${{ parameters.MAX_RUN_TEST_MINUTES }}
+            RETRY_TIMES: ${{ parameters.RETRY_TIMES }}
+            SKIP_PRE_POST_TEST: ${{ parameters.SKIP_PRE_POST_TEST }}
+            BUILD_REASON: "BaselineTest"
+            REPO_NAME: "sonic-mgmt-int"
+            REQUESTER: "ContainerUpgradeTest"
+            COMMON_EXTRA_PARAMS: "--disable_sai_validation"
+            SPECIFIC_PARAM: '[{"name": "container_upgrade/test_container_upgrade_nightly.py","param": "--nightly_config=${{ container.config }} --os_versions=${{ version }} --containers=${{ coalesce(container.container_override, '''') }}"}]'

@@ -613,6 +613,42 @@
     "validateSchema": false
   },
   {
+    "path": "show kdump config",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show kdump files",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show kdump logging",
+    "required_args": ["FILENAME"],
+    "optional_args": [],
+    "options": ["lines"],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
     "path": "show lldp neighbors",
     "required_args": [],
     "optional_args": ["INTERFACE_NAME"],
@@ -656,6 +692,18 @@
     "schema": {
       "shape": "object_keys",
       "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show mirror_session",
+    "required_args": [],
+    "optional_args": ["MIRROR_SESSION_NAME"],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": ["erspan_sessions", "span_sessions"],
       "required_map_keys": []
     },
     "validateSchema": false
@@ -951,6 +999,342 @@
   },
   {
     "path": "show watermark telemetry interval",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show chassis modules status",
+    "required_args": [],
+    "optional_args": [],
+    "options": ["dpu"],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show chassis modules midplane-status",
+    "required_args": [],
+    "optional_args": [],
+    "options": ["dpu"],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show system-health dpu",
+    "required_args": [],
+    "optional_args": [],
+    "options": ["dpu"],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show ecn",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show switch-trimming global",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show environment",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform summary",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform psustatus",
+    "required_args": [],
+    "optional_args": [],
+    "options": ["psu_index"],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show asic-sdk-health-event suppress-configuration",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show asic-sdk-health-event received",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show suppress-fib-pending",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform fan",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform temperature",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform voltage",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform current",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show pfc counters",
+    "required_args": [],
+    "optional_args": [],
+    "options": ["history"],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show pfc asymmetric",
+    "required_args": [],
+    "optional_args": ["INTERFACE_NAME"],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show pfc priority",
+    "required_args": [],
+    "optional_args": ["INTERFACE_NAME"],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show system-health summary",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show system-health detail",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show system-health monitor-list",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform firmware status",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show boot",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform ssdhealth",
+    "required_args": [],
+    "optional_args": ["DEVICE"],
+    "options": ["vendor"],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show management-interface address",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_map",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show system-health sysready-status",
+    "required_args": [],
+    "optional_args": [],
+    "options": [],
+    "schema": {
+      "shape": "object_keys",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform pcieinfo",
+    "required_args": [],
+    "optional_args": [],
+    "options": ["check"],
+    "schema": {
+      "shape": "array",
+      "required_keys": [],
+      "required_map_keys": []
+    },
+    "validateSchema": false
+  },
+  {
+    "path": "show platform syseeprom",
     "required_args": [],
     "optional_args": [],
     "options": [],

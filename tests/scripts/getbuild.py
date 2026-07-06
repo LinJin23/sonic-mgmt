@@ -167,7 +167,8 @@ def download_artifacts(url, content_type, platform, buildid, num_asic, access_to
                     sys.exit(1)
 
 
-def find_latest_build_id(branch, result_filter="succeeded", pipeline_id=None):
+def find_latest_build_id(branch, result_filter="succeeded", pipeline_id=None,
+                         url_prefix="mssonic/build", access_token="", token=""):
     """find latest successful build id for a branch"""
 
     if not pipeline_id:
@@ -175,12 +176,21 @@ def find_latest_build_id(branch, result_filter="succeeded", pipeline_id=None):
         # 2511 is Azure.sonic-buildimage-msft.PR
         pipeline_id = 2511 if branch == "202412" else 1
 
-    builds_url = (f"https://dev.azure.com/mssonic/build/_apis/build/builds?definitions={pipeline_id}&"
+    builds_url = (f"https://dev.azure.com/{url_prefix}/_apis/build/builds?definitions={pipeline_id}&"
                   f"branchName=refs/heads/{branch}&resultFilter={result_filter}&statusFilter=completed&api-version=6.0")
 
     print(f"Try to find latest {result_filter} build for branch {branch} from {builds_url}")
 
-    resp = urlopen(builds_url)
+    builds_req = Request(builds_url)
+    if token:
+        builds_req.add_header('Authorization', 'Bearer {}'.format(token))
+    elif access_token:
+        builds_req.add_header(
+            'Authorization',
+            'Basic {}'.format(base64.b64encode(access_token.encode('utf-8')).decode('utf-8'))
+        )
+
+    resp = urlopen(builds_req)
 
     j = json.loads(resp.read().decode('utf-8'))
 
@@ -224,9 +234,12 @@ def main():
     args = parser.parse_args()
 
     if args.buildid is None:
-        buildid_succ = find_latest_build_id(args.branch, "succeeded", args.build_pipeline_id)
+        buildid_succ = find_latest_build_id(
+            args.branch, "succeeded", args.build_pipeline_id, args.url_prefix,
+            args.access_token, args.token)
         buildid_partial = find_latest_build_id(
-            args.branch, "partiallySucceeded", args.build_pipeline_id)
+            args.branch, "partiallySucceeded", args.build_pipeline_id, args.url_prefix,
+            args.access_token, args.token)
         print(('Succeeded buildId:{}, PartiallySucceeded buildId {}'.format(
             buildid_succ, buildid_partial)))
         if buildid_succ == NOT_FOUND_BUILD_ID and buildid_partial == NOT_FOUND_BUILD_ID:

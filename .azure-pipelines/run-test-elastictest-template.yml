@@ -57,6 +57,10 @@ parameters:
     type: boolean
     default: false
 
+  - name: SKIP_PRE_POST_TEST
+    type: boolean
+    default: false
+
   - name: COMMON_EXTRA_PARAMS
     type: string
     default: ""
@@ -239,7 +243,9 @@ steps:
             set -ex
             CURRENT_BRANCH=${{ parameters.MGMT_BRANCH }}
             echo "Current branch: $CURRENT_BRANCH"
-            if [[ "$CURRENT_BRANCH" != "master" ]]; then
+            if [[ "${{ variables['BUILD.REPOSITORY.NAME'] }}" == *"sonic-mgmt-int"* ]]; then
+              echo "Running from sonic-mgmt-int, using local test_plan.py"
+            elif [[ "$CURRENT_BRANCH" != "master" ]]; then
               echo "Current mgmt branch is not master, need to download test_plan.py"
               curl "https://raw.githubusercontent.com/sonic-net/sonic-mgmt/master/.azure-pipelines/test_plan.py" -o ./.azure-pipelines/test_plan.py
             else
@@ -305,6 +311,7 @@ steps:
       --add-topo-params "${{ parameters.ADD_TOPO_PARAMS }}" \
       --deploy-mg-extra-params="${{ parameters.DEPLOY_MG_EXTRA_PARAMS }}" \
       --skip-restart-ptf ${{ parameters.SKIP_RESTART_PTF }} \
+      --skip-pre-post-test ${{ parameters.SKIP_PRE_POST_TEST }} \
       --common-extra-params="${{ parameters.COMMON_EXTRA_PARAMS }}" \
       --asic-type ${{ parameters.ASIC_TYPE }} \
       --vm-type ${{ parameters.VM_TYPE }} \
