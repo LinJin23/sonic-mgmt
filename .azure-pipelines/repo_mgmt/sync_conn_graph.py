@@ -36,6 +36,7 @@ TARGET_BRANCHES = [
     'internal-202605',
     'internal-202606',
     'internal-202607',
+    'internal-202608',
 ]
 CREATE_GRAPH_BRANCHES = ['internal-202012', 'internal-202205', 'internal-202305']
 ANSIBLE_INVENTORY_LIST = ['testbed.yaml', 'veos', 'wan_sonic_tb', 'wan_vtestbed.yaml']
