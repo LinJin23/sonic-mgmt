@@ -216,10 +216,19 @@
     become: yes
 
   - name: Route image servers via the testbed server so PTF can reach build artifacts
-    command: >
-      docker exec -i ptf_{{ vm_set_name }}
-      ip route replace {{ item }} via {{ ansible_host }} dev mgmt
-    loop: "{{ ptf_image_server_routes }}"
+    block:
+    - name: Resolve the testbed server's mgmt-bridge IP on the PTF subnet
+      shell: >-
+        ip -4 route get {{ mgmt_gw }}
+        | awk '{ for (i = 1; i <= NF; i++) if ($i == "src") { print $(i + 1); exit } }'
+      register: ptf_image_server_nexthop
+      changed_when: false
+      failed_when: ptf_image_server_nexthop.stdout | length == 0
+    - name: Replace image-server routes via the testbed server
+      command: >
+        docker exec -i ptf_{{ vm_set_name }}
+        ip route replace {{ item }} via {{ ptf_image_server_nexthop.stdout }} dev mgmt
+      loop: "{{ ptf_image_server_routes }}"
     become: yes
     when:
       - ptf_image_server_routes | length > 0
