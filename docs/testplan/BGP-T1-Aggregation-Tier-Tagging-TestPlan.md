@@ -34,14 +34,14 @@ This design does NOT use `summary-only=true` on T1. Instead:
 
 1. **Both aggregate and contributing routes are advertised upstream** to T2 / RH / AZNG / RWA neighbors.
 2. **Aggregate routes are tagged** with `COMM_AGG_T1 = 65525:21` so that T2/RH can identify and prefer them.
-3. **Contributing routes can be selectively suppressed** at T1 if and only if T0 has tagged them upstream with `COMM_SUPPRESS_ON_T1 = 65525:110`. T0 performs this tagging itself: its `TO_TIER1_V4/V6` route-map has a seq 100 entry that matches prefixes in `SUPPRESS_ON_T1_IPV{4,6}_PREFIX` and applies `set community 65525:110 additive`.
+3. **Contributing routes can be selectively suppressed** at T1 if and only if T0 has tagged them upstream with `COMM_SUPPRESS_ON_T1 = 65525:110`. T0 performs this tagging itself: its `TO_TIER1_V4/V6` route-map has a seq 100 entry that matches prefixes in `SUPPRESS_IPV{4,6}_PREFIX` and applies `set community 65525:110 additive`.
 4. **Aggregate routes are denied toward T0** by an explicit deny on `AGGREGATE_ROUTES_V4/V6`, preventing aggregation leakage downstream.
 
 | Scenario | Direction | Aggregate Community | Contributing Behavior |
 |----------|-----------|---------------------|-----------------------|
 | **T1 → T2 (upstream)** | out | `65525:21` (`COMM_AGG_T1`) | Permitted by catch-all unless tagged `65525:110` (`COMM_SUPPRESS_ON_T1`); seq 300 deny then drops it |
 | **T1 → T0 (downstream)** | out | denied | Permitted by catch-all (T1 doesn't withhold contributing from T0) |
-| **T0 → T1 (upstream)** | out | n/a (T0 doesn't aggregate) | Prefixes in `SUPPRESS_ON_T1_IPV{4,6}_PREFIX` are tagged `65525:110` (`COMM_SUPPRESS_ON_T1`); others go via catch-all untagged |
+| **T0 → T1 (upstream)** | out | n/a (T0 doesn't aggregate) | Prefixes in `SUPPRESS_IPV{4,6}_PREFIX` are tagged `65525:110` (`COMM_SUPPRESS_ON_T1`); others go via catch-all untagged |
 
 > The T1 → Sentinel / T1 → IPv6 BGPMon outbound tagging directions are not validated by this plan — see [Out of Scope](#out-of-scope) for the rationale (covered byte-for-byte by `src/sonic-bgpcfgd/tests/test_templates.py`).
 
@@ -90,7 +90,7 @@ Tests run on a **t1** topology. The DUT is the T1 (`LeafRouter`) device peering 
 2. FRR template must include:
    - Placeholder prefix-lists `AGGREGATE_ROUTES_V4/V6` (`127.0.0.1/32` / `::1/128`)
    - Placeholder prefix-lists `AGGREGATE_CONTRIBUTING_ROUTES_V4/V6`
-   - Placeholder prefix-lists `SUPPRESS_ON_T1_IPV4_PREFIX` / `SUPPRESS_ON_T1_IPV6_PREFIX` (T0 templates only — used by the T0 producer side, not directly verified by this plan)
+  - Placeholder prefix-lists `SUPPRESS_IPV4_PREFIX` / `SUPPRESS_IPV6_PREFIX` (T0 templates only — used by the T0 producer side, not directly verified by this plan)
    - `community-list standard COMM_AGG_T1 permit 65525:21`
    - `community-list standard COMM_SUPPRESS_ON_T1 permit 65525:110`
    - Route-map `TO_TIER2_V4/V6` with seq 100 / 200 / 300 / 10000
@@ -118,7 +118,7 @@ A single session-scoped fixture (e.g. `require_t1_tagging_image`) keeps every te
 | Tag | Value | Set By | Matched By |
 |-----|-------|--------|------------|
 | `COMM_AGG_T1` | `65525:21` | T1 `TO_TIER2_V4/V6` seq 200 (also set on `TO_BGP_SENTINEL` / `TO_BGPMON_V6` — out of scope for this plan, see [Out of Scope](#out-of-scope)) | T2 / RH / AZNG — to identify aggregate origin |
-| `COMM_SUPPRESS_ON_T1` | `65525:110` | T0 (`TO_TIER1_V4/V6` seq 100, on prefixes in `SUPPRESS_ON_T1_IPV{4,6}_PREFIX`) or any upstream operator | T1 (`TO_TIER2_V4/V6` seq 300 deny, with prefix-list AND community match) |
+| `COMM_SUPPRESS_ON_T1` | `65525:110` | T0 (`TO_TIER1_V4/V6` seq 100, on prefixes in `SUPPRESS_IPV{4,6}_PREFIX`) or any upstream operator | T1 (`TO_TIER2_V4/V6` seq 300 deny, with prefix-list AND community match) |
 
 ### Route-Map / Prefix-List Reference
 
@@ -126,7 +126,7 @@ A single session-scoped fixture (e.g. `require_t1_tagging_image`) keeps every te
 |--------|----------|-----------|---------|
 | `TO_TIER2_V4` / `TO_TIER2_V6` | `msft.general/{v4,v6}.leaf.spine/policy.conf.j2` | out (T1→T2) | seq 100 deny `UPSTREAM_PREFIX`; seq 200 permit aggregate, set `65525:21`; seq 300 deny suppressed contributing; seq 10000 catch-all permit |
 | `TO_TIER0_V4` / `TO_TIER0_V6` | `msft.general/{v4,v6}.leaf.tor.all/policy.conf.j2` | out (T1→T0) | seq 400 deny aggregate |
-| `TO_TIER1_V4` / `TO_TIER1_V6` | `msft.general/{v4,v6}.tor/policy.conf.j2` | out (T0→T1) | seq 100 permit `SUPPRESS_ON_T1_IPV{4,6}_PREFIX`, set `65525:110` additive (i.e. T0 marks the contributing prefixes T1 should later suppress); seq 1000 catch-all permit — context only; the T0 producer side is out of scope for this plan |
+| `TO_TIER1_V4` / `TO_TIER1_V6` | `msft.general/{v4,v6}.tor/policy.conf.j2` | out (T0→T1) | seq 100 permit `SUPPRESS_IPV{4,6}_PREFIX`, set `65525:110` additive (i.e. T0 marks the contributing prefixes T1 should later suppress); seq 1000 catch-all permit — context only; the T0 producer side is out of scope for this plan |
 | `AGGREGATE_ROUTES_V4` / `AGGREGATE_ROUTES_V6` | T1 templates | n/a | placeholder + runtime-populated; matched in seq 200 of `TO_TIER2_*` (and in `TO_BGP_SENTINEL` / `TO_BGPMON_V6` — both out of scope) |
 | `AGGREGATE_CONTRIBUTING_ROUTES_V4/V6` | T1 templates | n/a | placeholder + runtime-populated; matched in seq 300 of `TO_TIER2_*` (with `COMM_SUPPRESS_ON_T1`) |
 

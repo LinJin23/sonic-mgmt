@@ -258,10 +258,58 @@ def db_remove_aggregate(duthost, prefix):
 
 _EOS_ASN_CACHE = {}
 _DUT_ASN_CACHE = {}
+_EOS_BGP_VRF_CACHE = {}
 
 
 def _af_for_prefix(prefix):
     return "ipv6" if ":" in prefix else "ipv4"
+
+
+def _get_eos_bgp_vrf(host):
+    """Return the EOS BGP VRF context for this neighbor host, if any.
+
+    Priority:
+      1) ``host.bgp_vrf`` set by nbrhosts on converged multi-VRF peers.
+      2) Fallback parse from ``show running-config section bgp``.
+
+    Returns ``None`` for default/global BGP context.
+    """
+    key = getattr(host, "hostname", str(host))
+    if key in _EOS_BGP_VRF_CACHE:
+        return _EOS_BGP_VRF_CACHE[key]
+
+    vrf = getattr(host, "bgp_vrf", None)
+    if vrf:
+        _EOS_BGP_VRF_CACHE[key] = vrf
+        return vrf
+
+    try:
+        result = host.eos_command(commands=["show running-config section bgp"])
+        text = result.get("stdout", [""])[0] if isinstance(result, dict) else str(result)
+    except Exception:
+        text = host.shell("show running-config section bgp").get("stdout", "")
+
+    match = re.search(r"^\s*vrf\s+(\S+)\s*$", text, re.MULTILINE)
+    vrf = match.group(1) if match else None
+    _EOS_BGP_VRF_CACHE[key] = vrf
+    return vrf
+
+
+def _eos_null0_route_cmd(host, prefix, is_v4, withdraw=False):
+    """Build EOS static Null0 command, VRF-scoped when host has bgp_vrf.
+
+    On converged (multi-VRF) peers, BGP config is scoped under
+    ``router bgp <prime_asn> -> vrf <logical>`` by EosHost wrappers.
+    The contributing route must exist in the same VRF RIB, otherwise
+    ``network <prefix>`` will not originate. For stock peers, keep the
+    existing global/default-VRF command.
+    """
+    pl_kw = "ip" if is_v4 else "ipv6"
+    vrf = _get_eos_bgp_vrf(host)
+    action = "no " if withdraw else ""
+    if vrf:
+        return "{}{} route vrf {} {} Null0".format(action, pl_kw, vrf, prefix)
+    return "{}{} route {} Null0".format(action, pl_kw, prefix)
 
 
 def _get_eos_bgp_asn(host):
@@ -349,10 +397,10 @@ def announce_contributing_from_t0(t0_host, prefix, community=None,
     """
     af = _af_for_prefix(prefix)
     is_v4 = af == "ipv4"
-    pl_kw = "ip" if is_v4 else "ipv6"
     af_clause = "ipv4" if is_v4 else "ipv6"
 
     asn = _get_eos_bgp_asn(t0_host)
+    bgp_vrf = _get_eos_bgp_vrf(t0_host)
 
     logger.info(
         "T0 %s announce %s%s",
@@ -362,12 +410,16 @@ def announce_contributing_from_t0(t0_host, prefix, community=None,
     )
 
     # 1. Null0 static so the prefix is in RIB
-    t0_host.eos_config(lines=["{} route {} Null0".format(pl_kw, prefix)])
+    t0_host.eos_config(lines=[_eos_null0_route_cmd(t0_host, prefix, is_v4=is_v4)])
 
     # 2. `network` under the BGP address-family (origin into BGP table)
+    parents = ["router bgp {}".format(asn)]
+    if bgp_vrf:
+        parents.append("vrf {}".format(bgp_vrf))
+    parents.append("address-family {}".format(af_clause))
     t0_host.eos_config(
         lines=["network {}".format(prefix)],
-        parents=["router bgp {}".format(asn), "address-family {}".format(af_clause)],
+        parents=parents,
     )
 
     # 3. Community injection (DUT-side inbound) -- see docstring for rationale.
@@ -511,10 +563,10 @@ def withdraw_contributing_from_t0(t0_host, prefix, community=None, duthost=None)
     """
     af = _af_for_prefix(prefix)
     is_v4 = af == "ipv4"
-    pl_kw = "ip" if is_v4 else "ipv6"
     af_clause = "ipv4" if is_v4 else "ipv6"
 
     asn = _EOS_ASN_CACHE.get(getattr(t0_host, "hostname", str(t0_host)))
+    bgp_vrf = _get_eos_bgp_vrf(t0_host)
     if asn is None:
         try:
             asn = _get_eos_bgp_asn(t0_host)
@@ -534,15 +586,19 @@ def withdraw_contributing_from_t0(t0_host, prefix, community=None, duthost=None)
         _dut_cleanup_inbound_community(duthost, prefix)
 
     # 2. Remove BGP network statement on T0 cEOS
+    parents = ["router bgp {}".format(asn)]
+    if bgp_vrf:
+        parents.append("vrf {}".format(bgp_vrf))
+    parents.append("address-family {}".format(af_clause))
     t0_host.eos_config(
         lines=["no network {}".format(prefix)],
-        parents=["router bgp {}".format(asn), "address-family {}".format(af_clause)],
+        parents=parents,
         module_ignore_errors=True,
     )
 
     # 3. Remove the Null0 static route on T0 cEOS
     t0_host.eos_config(
-        lines=["no {} route {} Null0".format(pl_kw, prefix)],
+        lines=[_eos_null0_route_cmd(t0_host, prefix, is_v4=is_v4, withdraw=True)],
         module_ignore_errors=True,
     )
 
@@ -848,7 +904,6 @@ def wait_communities_on_neighbors(nbrhosts, neighbor_names, prefix,
             run_cfg=run_cfg or "<empty>",
             per_nbr="\n".join(per_neighbor) or "<none>",
         )
-
     pytest_assert(False, msg)
 
 

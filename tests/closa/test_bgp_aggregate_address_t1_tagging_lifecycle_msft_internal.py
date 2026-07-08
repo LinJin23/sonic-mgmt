@@ -55,6 +55,7 @@ pytestmark = [
 
 # ---- TC 3.3 churn constants (aligned with stress test reference) ----
 RAPID_CYCLE_ITERATIONS = 100
+RAPID_CYCLE_CHECK_EVERY = 5
 CYCLE_TIMEOUT = 30
 CYCLE_INTERVAL = 2
 
@@ -292,23 +293,64 @@ def test_rapid_add_remove_churn(
 
     try:
         for iteration in range(1, RAPID_CYCLE_ITERATIONS + 1):
-            duthost.shell(add_cmd, module_ignore_errors=True)
-            pytest_assert(
-                wait_until(
-                    CYCLE_TIMEOUT, CYCLE_INTERVAL, 0,
-                    check_communities_on_neighbors,
-                    nbrhosts, t2_names, AGGR_V4, {COMM_AGG_T1}, set(),
-                ),
-                "Iteration {}: aggregate not tagged on T2 with {}".format(
-                    iteration, COMM_AGG_T1,
-                ),
-            )
+            iter_start = time.perf_counter()
 
+            add_cmd_start = time.perf_counter()
+            duthost.shell(add_cmd, module_ignore_errors=True)
+            add_cmd_elapsed = time.perf_counter() - add_cmd_start
+
+            sampled_check = (iteration % RAPID_CYCLE_CHECK_EVERY == 0)
+            add_check_elapsed = 0.0
+            del_check_elapsed = 0.0
+
+            if sampled_check:
+                add_check_start = time.perf_counter()
+                pytest_assert(
+                    wait_until(
+                        CYCLE_TIMEOUT, CYCLE_INTERVAL, 0,
+                        check_communities_on_neighbors,
+                        nbrhosts, t2_names, AGGR_V4, {COMM_AGG_T1}, set(),
+                    ),
+                    "Iteration {}: aggregate not tagged on T2 with {}".format(
+                        iteration, COMM_AGG_T1,
+                    ),
+                )
+                add_check_elapsed = time.perf_counter() - add_check_start
+
+            del_cmd_start = time.perf_counter()
             duthost.shell(del_cmd, module_ignore_errors=True)
-            pytest_assert(
-                wait_until(CYCLE_TIMEOUT, CYCLE_INTERVAL, 0, _aggregate_absent_on_t2),
-                "Iteration {}: aggregate not withdrawn from T2".format(iteration),
-            )
+            del_cmd_elapsed = time.perf_counter() - del_cmd_start
+
+            if sampled_check:
+                del_check_start = time.perf_counter()
+                pytest_assert(
+                    wait_until(CYCLE_TIMEOUT, CYCLE_INTERVAL, 0, _aggregate_absent_on_t2),
+                    "Iteration {}: aggregate not withdrawn from T2".format(iteration),
+                )
+                del_check_elapsed = time.perf_counter() - del_check_start
+
+            iter_elapsed = time.perf_counter() - iter_start
+            if sampled_check:
+                logger.info(
+                    "TC3.3 iteration %d/%d timing(s) [sampled]: add_cmd=%.3f, add_check=%.3f, "
+                    "del_cmd=%.3f, del_check=%.3f, total=%.3f",
+                    iteration,
+                    RAPID_CYCLE_ITERATIONS,
+                    add_cmd_elapsed,
+                    add_check_elapsed,
+                    del_cmd_elapsed,
+                    del_check_elapsed,
+                    iter_elapsed,
+                )
+            else:
+                logger.debug(
+                    "TC3.3 iteration %d/%d timing(s): add_cmd=%.3f, del_cmd=%.3f, total=%.3f",
+                    iteration,
+                    RAPID_CYCLE_ITERATIONS,
+                    add_cmd_elapsed,
+                    del_cmd_elapsed,
+                    iter_elapsed,
+                )
     finally:
         # Last-chance safety: remove the row if the loop exited mid-cycle
         duthost.shell(del_cmd, module_ignore_errors=True)
