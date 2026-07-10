@@ -19,6 +19,11 @@ stages:
             value: true
 
         steps:
+          - task: UsePythonVersion@0
+            displayName: 'Use Python 3.11'
+            inputs:
+              versionSpec: '3.11'
+
           - task: AzureCLI@2
             retryCountOnTaskFailure: 3
             displayName: 'Run SONiC Shift ETL Pipeline'
@@ -37,11 +42,16 @@ stages:
                 echo "Getting access token for Kusto..."
                 accessToken=$(az account get-access-token --resource https://api.kusto.windows.net --query accessToken -o tsv)
                 export ACCESS_TOKEN=$accessToken
+                export KUSTO_AUTH_MODE=az_cli
                 echo "Access token retrieved successfully"
 
                 # Navigate to jupyter-notebooks directory
                 cd test_reporting/jupyter-notebooks
                 pwd
+
+                # Install ETL runtime dependencies from a dedicated requirements file.
+                python3 -m pip install --upgrade pip setuptools wheel
+                python3 -m pip install -r requirements-etl.txt
 
                 # Run the ETL pipeline script
                 echo "Running SONiC Shift ETL pipeline script..."

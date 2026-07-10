@@ -2,6 +2,7 @@ asttokens==2.4.1
 azure-core==1.32.0
 azure-identity==1.19.0
 azure-kusto-data==4.6.1
+azure-kusto-ingest==4.6.1
 backcall==0.2.0
 certifi==2024.8.30
 cffi==1.17.1

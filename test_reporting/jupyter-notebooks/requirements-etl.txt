@@ -1,0 +1,3 @@
+pandas==2.2.2
+azure-kusto-data==4.6.1
+azure-kusto-ingest==4.6.1
