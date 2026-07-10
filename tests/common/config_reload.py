@@ -199,6 +199,7 @@ def pfcwd_feature_enabled(duthost):
     switch_role = device_metadata['localhost'].get('type', '')
     return pfc_status == 'enable' and switch_role not in ['MgmtToRRouter', 'BmcMgmtToRRouter']
 
+
 def is_upstream_t2(duthost):
     """
     Check if the DUT is an upstream T2 device.
@@ -207,12 +208,13 @@ def is_upstream_t2(duthost):
     """
     if duthost.get_facts().get("modular_chassis"):
         output = duthost.shell('redis-cli -n 4 hget "DEVICE_METADATA|localhost" subtype',
-                                module_ignore_errors=True)
+                               module_ignore_errors=True)
         return (output and output.get('stdout') == 'UpstreamLC')
-    
+
     dut_type = duthost.shell('redis-cli -n 4 hget "DEVICE_METADATA|localhost" type',
-                              module_ignore_errors=True)
+                             module_ignore_errors=True)
     return (dut_type and dut_type.get('stdout') == 'UpperSpineRouter')
+
 
 @support_ignore_loganalyzer
 @synchronized_config_reload
@@ -292,6 +294,8 @@ def config_reload(sonic_host, config_source='config_db', wait=120, start_bgp=Tru
 
         upstreamt2 = is_upstream_t2(sonic_host)
         if config_source == "minigraph" and upstreamt2:
+            if start_bgp:
+                time.sleep(20)  # wait some time for bgp to establish before applying route maps
             cmds = ["azng_migration -d", "azng_migration -i", "azng_migration -o", "azng_migration -p"]
             for cmd in cmds:
                 sonic_host.shell(cmd)
