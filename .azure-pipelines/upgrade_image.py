@@ -277,7 +277,8 @@ def main(args):
             localhost,
             args.image_url,
             upgrade_type=args.upgrade_type,
-            onie_pause_time=args.onie_pause_time
+            onie_pause_time=args.onie_pause_time,
+            preserve_shadow=args.preserve_shadow
         )
         if not upgrade_success:
             logger.error("Upgrade to target image {} failed".format(args.image_url))
@@ -487,6 +488,16 @@ if __name__ == "__main__":
         default="",
         help="Docker folder size. Required for devices with small SSD."
              "If set to 0, docker folder size will not be updated. Example: '3000M'"
+    )
+
+    parser.add_argument(
+        "--preserve-shadow",
+        type=distutils.util.strtobool,
+        dest="preserve_shadow",
+        required=False,
+        default=0,
+        help="Preserve the running base-OS /etc/shadow into the target image overlay before reboot, "
+             "so user credentials (e.g. admin) survive the upgrade."
     )
 
     parser.add_argument(

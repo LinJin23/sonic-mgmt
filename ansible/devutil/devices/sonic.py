@@ -29,7 +29,69 @@ class SonicHosts(AnsibleHosts):
             return {}
 
 
-def upgrade_by_sonic(sonichosts, localhost, image_url, disk_used_percent):
+# Shell script that copies the running base-OS /etc/shadow into the freshly
+# installed target image's overlay so that user credentials (notably "admin")
+# are preserved across the upgrade reboot. Mirrors sonic-metadata's
+# update_firmware behavior. It never mutates the live /etc/shadow. Best effort:
+# any missing precondition logs a message and exits 0 instead of failing the
+# upgrade.
+_ROLLOVER_SHADOW_SCRIPT = r"""
+set -e
+TARGET_FW_VER=$(sonic-installer list | sed -n 's/^Next: *//p' | head -1)
+TARGET_FW_VER=${TARGET_FW_VER#SONiC-OS-}
+if [ -z "$TARGET_FW_VER" ]; then
+    echo "preserve-shadow: could not determine Next image version; skipping"
+    exit 0
+fi
+SRC_SHADOW=/etc/shadow
+TARGET_DIR=/host/image-${TARGET_FW_VER}/rw/etc
+TARGET_SHADOW=${TARGET_DIR}/shadow
+if [ ! -f "$SRC_SHADOW" ]; then
+    echo "preserve-shadow: /etc/shadow not found in base OS; skipping"
+    exit 0
+fi
+echo "preserve-shadow: copying ${SRC_SHADOW} to ${TARGET_SHADOW}"
+mkdir -p "$TARGET_DIR"
+cp "$SRC_SHADOW" "$TARGET_SHADOW"
+# Keep the target shadow only when the base OS has an admin entry; otherwise
+# fall back to the new image's default credentials.
+if grep -q '^admin:' "$SRC_SHADOW"; then
+    echo "preserve-shadow: admin entry found; target admin credential will match base OS"
+    chown root:shadow "$TARGET_SHADOW"
+    chmod 0600 "$TARGET_SHADOW"
+else
+    echo "preserve-shadow: no admin entry in base OS; removing target shadow to use image default"
+    rm -f "$TARGET_SHADOW"
+fi
+"""
+
+
+def rollover_shadow_to_target_image(sonichosts, target_hosts):
+    """Preserve user credentials across an image upgrade.
+
+    Copies the running base-OS /etc/shadow into the freshly-installed target
+    image overlay (/host/image-<ver>/rw/etc/shadow). Must run after the target
+    image is installed (so the overlay exists) and before the reboot into it.
+
+    Best effort: failures are logged but do not fail the upgrade, matching the
+    semantics of sonic-metadata's update_firmware script.
+    """
+    logger.info("preserve-shadow: rolling over /etc/shadow to target image on {}".format(target_hosts))
+    try:
+        results = sonichosts.shell(
+            _ROLLOVER_SHADOW_SCRIPT,
+            target_hosts=target_hosts,
+            module_attrs={"become": True}
+        )
+        if isinstance(results, dict):
+            for hostname, result in results.items():
+                stdout = result.get("stdout", "") if isinstance(result, dict) else result
+                logger.info("preserve-shadow: host {} output:\n{}".format(hostname, stdout))
+    except RunAnsibleModuleFailed as e:
+        logger.error("preserve-shadow: rollover failed (continuing upgrade): {}".format(repr(e)))
+
+
+def upgrade_by_sonic(sonichosts, localhost, image_url, disk_used_percent, preserve_shadow=False):
     try:
         # Skip upgrade image on DPU hosts
         target_hosts = []
@@ -49,6 +111,11 @@ def upgrade_by_sonic(sonichosts, localhost, image_url, disk_used_percent):
             target_hosts=target_hosts,
             module_attrs={"become": True}
         )
+        # The target image is now installed and its overlay exists, but the DUT
+        # has not rebooted into it yet. This is the only window in which we can
+        # roll the current credentials forward into the target image.
+        if preserve_shadow:
+            rollover_shadow_to_target_image(sonichosts, target_hosts)
         if is_chassis(sonichosts):
             logger.info("Upgrading image on chassis device...")
             # Chassis DUT need to firstly upgrade and reboot supervisor cards.
@@ -272,7 +339,8 @@ def post_upgrade_actions(sonichosts, localhost, disk_used_percent):
         return False
 
 
-def upgrade_image(sonichosts, localhost, image_url, upgrade_type="sonic", disk_used_percent=50, onie_pause_time=0):
+def upgrade_image(sonichosts, localhost, image_url, upgrade_type="sonic", disk_used_percent=50, onie_pause_time=0,
+                  preserve_shadow=False):
     if upgrade_type not in sonichosts.SUPPORTED_UPGRADE_TYPES:
         logger.error(
             "Upgrade type '{}' is not in SUPPORTED_UPGRADE_TYPES={}".format(
@@ -282,7 +350,8 @@ def upgrade_image(sonichosts, localhost, image_url, upgrade_type="sonic", disk_u
         return False
 
     if upgrade_type == "sonic":
-        upgrade_result = upgrade_by_sonic(sonichosts, localhost, image_url, disk_used_percent)
+        upgrade_result = upgrade_by_sonic(sonichosts, localhost, image_url, disk_used_percent,
+                                          preserve_shadow=preserve_shadow)
     elif upgrade_type == "onie":
         upgrade_result = upgrade_by_onie(sonichosts, localhost, image_url, onie_pause_time)
     if not upgrade_result:
