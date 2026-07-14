@@ -106,3 +106,17 @@ vms70-rdma-lt2-w6940-1:
   pfcQueueGroupSize: 4
 vms70-rdma-lt2-w6940-2:
   pfcQueueGroupSize: 4
+vms29-rdma-ut2-nh5010:
+  multidut_port_info:
+    - single-dut-single-asic:
+        rx_ports:
+          - hostname: str-nh5010-ut2-2
+            port_name: Ethernet64
+          - hostname: str-nh5010-ut2-2
+            port_name: Ethernet68
+        tx_ports:
+          - hostname: str-nh5010-ut2-2
+            port_name: Ethernet72
+          - hostname: str-nh5010-ut2-2
+            port_name: Ethernet76
+  pfcQueueGroupSize: 4

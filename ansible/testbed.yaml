@@ -7003,3 +7003,18 @@
   comment: Beijing Lab
   ptf_extra_mgmt_ip:
     - 172.16.188.176/17
+- conf-name: vms29-rdma-ut2-nh5010
+  group-name: vms20-ixia-12
+  topo: t2_single_node_tgen_rdma_pizzabox
+  ptf_image_name: docker-keysight-api-server
+  ptf_imagetag: 10.80.2412.123
+  ptf: str-t2-aresone-ixia-2-api-serv
+  ptf_ip: 10.64.247.89/26
+  ptf_ipv6:
+  server: server_20
+  vm_base:
+  dut:
+  - str-nh5010-ut2-2
+  inv_name: ixia
+  auto_recover: 'False'
+  comment: yatishkoul

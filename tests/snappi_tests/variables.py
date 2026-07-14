@@ -55,6 +55,20 @@ MULTIDUT_PORT_INFO = {
                 ]
             }
         }
+    ],
+    'vms29-rdma-ut2-nh5010': [
+        {
+            'single-dut-single-asic': {
+                'rx_ports': [
+                    {'port_name': 'Ethernet64', 'hostname': "str-nh5010-ut2-2"},
+                    {'port_name': 'Ethernet68', 'hostname': "str-nh5010-ut2-2"}
+                ],
+                'tx_ports': [
+                    {'port_name': 'Ethernet72', 'hostname': "str-nh5010-ut2-2"},
+                    {'port_name': 'Ethernet76', 'hostname': "str-nh5010-ut2-2"}
+                ]
+            }
+        }
     ]
 }
 
