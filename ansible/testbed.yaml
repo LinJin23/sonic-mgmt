@@ -6261,7 +6261,7 @@
 
 - conf-name: vmstr-ut2-nh5010-1
   group-name:
-  topo: t2_single_node_min_nexthop_ut2
+  topo: t2_single_node_min_first_6ports
   ptf_image_name: docker-ptf
   ptf:
   ptf_ip:
@@ -6277,7 +6277,7 @@
 
 - conf-name: vmstr-ut2-nh5010-3
   group-name:
-  topo: t2_single_node_min_nexthop_ut2
+  topo: t2_single_node_min_first_6ports
   ptf_image_name: docker-ptf
   ptf:
   ptf_ip:
@@ -6293,7 +6293,7 @@
 
 - conf-name: vmstr-ut2-nh5010-4
   group-name: vms96-1
-  topo: t2_single_node_min_nexthop_ut2
+  topo: t2_single_node_min_first_6ports
   ptf_image_name: docker-ptf
   ptf: vms96-1
   ptf_ip: 10.64.247.159/25
