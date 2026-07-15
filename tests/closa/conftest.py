@@ -15,10 +15,20 @@ import pytest
 
 from tests.closa.bgp_t1_tagging_helpers_msft_internal import (  # noqa: F401
     aggr_cleanup,
+    bgp_neighbors_not_established,
+    dut_t0_peer_ips,
+    dut_t2_peer_ips,
     require_t1_tagging_image,
     t0_announce_cleanup,
     t1_tagging_clean_config,
     t1_neighbors,
+)
+
+
+T1_TAGGING_TEST_MODULES = (
+    "test_bgp_aggregate_address_t1_tagging_lifecycle_msft_internal.py",
+    "test_bgp_aggregate_address_t1_tagging_t0_downstream_msft_internal.py",
+    "test_bgp_aggregate_address_t1_tagging_t2_upstream_msft_internal.py",
 )
 
 
@@ -36,3 +46,39 @@ def _closa_skip_if_multi_asic(duthosts, rand_one_dut_hostname):
         is_multi_asic = getattr(duthost, "is_multi_asic", False)
     if is_multi_asic:
         pytest.skip("Skip for multi-ASIC testbed")
+
+
+@pytest.fixture(autouse=True)
+def _closa_skip_if_bgp_not_established(request, duthosts, rand_one_dut_hostname,
+                                       _closa_skip_if_multi_asic):
+    """Skip T1-tagging tests when T0/T2 BGP sessions are not Established.
+
+    The T1-tagging cases validate route policy and community behavior over an
+    already-converged T1 testbed. Other closa modules target different
+    topologies (m1 or t0) and have their own narrower preconditions.
+    """
+    node_path = str(getattr(request.node, "path", getattr(request.node, "fspath", "")))
+    if not any(module_name in node_path for module_name in T1_TAGGING_TEST_MODULES):
+        return
+
+    duthost = duthosts[rand_one_dut_hostname]
+    peer_ips = []
+    for family in ("ipv4", "ipv6"):
+        peer_ips.extend(dut_t0_peer_ips(duthost, family=family))
+        peer_ips.extend(dut_t2_peer_ips(duthost, family=family))
+
+    if not peer_ips:
+        pytest.skip("Skip closa tests because no T0/T2 BGP peers were found on DUT")
+
+    try:
+        pending = bgp_neighbors_not_established(duthost, sorted(set(peer_ips)))
+    except RuntimeError as exc:
+        pytest.skip(
+            "Skip closa tests because BGP summary could not be collected: {}"
+            .format(exc)
+        )
+    if pending:
+        pytest.skip(
+            "Skip closa tests because DUT BGP sessions are not Established: {}"
+            .format(", ".join(pending))
+        )

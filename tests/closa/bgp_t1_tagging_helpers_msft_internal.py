@@ -483,6 +483,42 @@ def dut_t2_peer_ips(duthost, family="ipv4"):
     )
 
 
+def bgp_neighbors_not_established(duthost, neighbor_ips):
+    """Return DUT BGP neighbor IPs that are not currently Established.
+
+    Raises RuntimeError on command/JSON failure so collection issues are not
+    mistaken for real session-down state.
+    """
+    res = duthost.shell(
+        'vtysh -c "show bgp summary json"',
+        module_ignore_errors=True,
+    )
+    raw = (res.get("stdout") or "").strip()
+    if res.get("rc", 0) != 0:
+        raise RuntimeError(
+            "vtysh show bgp summary json failed (rc={}): {}".format(
+                res.get("rc"), (res.get("stderr") or "").strip()
+            )
+        )
+    if not raw:
+        raise RuntimeError("Empty output from 'show bgp summary json'")
+    try:
+        data = json.loads(raw)
+    except ValueError as exc:
+        raise RuntimeError("Invalid JSON from 'show bgp summary json': {}".format(exc))
+
+    established = set()
+    for af_block in data.values():
+        if not isinstance(af_block, dict):
+            continue
+        peers = af_block.get("peers") or {}
+        for peer_ip, info in peers.items():
+            if isinstance(info, dict) and info.get("state") == "Established":
+                established.add(peer_ip.lower())
+
+    return [ip for ip in neighbor_ips if ip.lower() not in established]
+
+
 def _dut_inject_inbound_community(duthost, prefix, community):
     """Apply ``set community ... additive`` on the DUT's inbound route-map(s)
     for every T0 BGP peer.

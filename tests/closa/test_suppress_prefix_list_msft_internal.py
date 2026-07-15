@@ -15,6 +15,7 @@ Phase 3 of the SONiC SUPPRESS_PREFIX feature. Test categories:
 """
 
 import logging
+import json
 import time
 
 import pytest
@@ -135,6 +136,67 @@ def verify_prefix_in_db(duthost, prefix):
 # Helpers - neighbor (T1 EOS) BGP state
 # ---------------------------------------------------------------------------
 
+def get_bgp_neighbor_table(duthost):
+    """Read DUT BGP_NEIGHBOR table from CONFIG_DB."""
+    raw = duthost.shell(
+        "sonic-cfggen -d --var-json BGP_NEIGHBOR",
+        module_ignore_errors=True,
+    ).get("stdout", "").strip()
+    if not raw or raw in ("None", "null"):
+        return {}
+    try:
+        return json.loads(raw) or {}
+    except (ValueError, TypeError) as exc:
+        logger.warning("Failed to parse BGP_NEIGHBOR JSON: %s", exc)
+        return {}
+
+
+def get_bgp_peer_ips_for_neighbor(duthost, neighbor_name):
+    """Return DUT-side BGP peer IPs whose configured neighbor name matches."""
+    bgp_neighbor = get_bgp_neighbor_table(duthost)
+    return sorted(
+        ip for ip, attrs in bgp_neighbor.items()
+        if isinstance(attrs, dict) and attrs.get("name") == neighbor_name
+    )
+
+
+def bgp_peers_established(duthost, peer_ips):
+    """Return True iff every peer IP is Established in DUT BGP summary.
+
+    Raises RuntimeError on command/JSON failure so collection issues are not
+    mistaken for real session-down state.
+    """
+    if not peer_ips:
+        return False
+    res = duthost.shell(
+        'vtysh -c "show bgp summary json"',
+        module_ignore_errors=True,
+    )
+    raw = (res.get("stdout") or "").strip()
+    if res.get("rc", 0) != 0:
+        raise RuntimeError(
+            "vtysh show bgp summary json failed (rc={}): {}".format(
+                res.get("rc"), (res.get("stderr") or "").strip()
+            )
+        )
+    if not raw:
+        raise RuntimeError("Empty output from 'show bgp summary json'")
+    try:
+        data = json.loads(raw)
+    except ValueError as exc:
+        raise RuntimeError("Invalid JSON from 'show bgp summary json': {}".format(exc))
+
+    established = set()
+    for af_block in data.values():
+        if not isinstance(af_block, dict):
+            continue
+        peers = af_block.get("peers") or {}
+        for peer_ip, info in peers.items():
+            if isinstance(info, dict) and info.get("state") == "Established":
+                established.add(peer_ip.lower())
+    return all(ip.lower() in established for ip in peer_ips)
+
+
 def get_route_state_on_neighbor(nbrhost, prefix):
     """Return (active, communities) for a prefix in the T1 EOS BGP table.
 
@@ -204,13 +266,27 @@ def setup_suppress_prefix(duthosts, rand_one_dut_hostname):
 
 
 @pytest.fixture(scope="module")
-def t1_neighbor(nbrhosts):
-    """Pick one T1 EOS neighbor for Category C tests."""
+def t1_neighbor(duthosts, rand_one_dut_hostname, nbrhosts):
+    """Pick one T1 EOS neighbor with Established DUT-side BGP sessions."""
+    duthost = duthosts[rand_one_dut_hostname]
     t1_names = [name for name in nbrhosts.keys() if name.upper().endswith("T1")]
     if not t1_names:
         pytest.skip("No T1 neighbors found in nbrhosts")
-    name = sorted(t1_names)[0]
-    return name, nbrhosts[name]
+
+    rejected = []
+    for name in sorted(t1_names):
+        peer_ips = get_bgp_peer_ips_for_neighbor(duthost, name)
+        try:
+            if bgp_peers_established(duthost, peer_ips):
+                return name, nbrhosts[name]
+            rejected.append("{}: {}".format(name, peer_ips or "no BGP peer IPs"))
+        except RuntimeError as exc:
+            rejected.append("{}: BGP summary collection failed: {}".format(name, exc))
+
+    pytest.skip(
+        "No T1 neighbor with Established DUT-side BGP sessions found. Candidates: {}"
+        .format("; ".join(rejected))
+    )
 
 
 # ===========================================================================
