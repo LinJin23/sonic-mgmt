@@ -542,6 +542,9 @@ sonic_cisco_8101:
         "0x2D": "Cisco"
         "0xFE": "0x12BBD105"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -572,6 +575,9 @@ sonic_cisco_8102:
         "0x2C": "US"
         "0xFE": "0xB68424AA"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1125,6 +1131,9 @@ sonic_cisco_8101_O8C48:
         "0x2D": "Cisco"
         "0xFE": "0xA61D2C29"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1160,6 +1169,9 @@ sonic_cisco_8101_O8C48:
         "0x2D": "Cisco"
         "0xFE": "0x5225AE62"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1201,6 +1213,9 @@ sonic_cisco_8101_O8V48:
         "0x2D": "Cisco"
         "0xFE": "0xBB3F881E"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1237,6 +1252,9 @@ sonic_cisco_8101_O8V48:
         "0x2D": "Cisco"
         "0xFE": "0xAC201999"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1278,6 +1296,9 @@ sonic_cisco_8101_tornado_V64:
         "0x2D": "Cisco"
         "0xFE": "0x68ADC235"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1315,6 +1336,9 @@ sonic_cisco_8101_tornado_V64:
         "0x2D": "Cisco"
         "0xFE": "0x72841C56"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1357,6 +1381,9 @@ sonic_cisco_8101_tornado_C32:
         "0x2D": "Cisco"
         "0xFE": "0xEDCD7684"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1392,6 +1419,9 @@ sonic_cisco_8101_tornado_C32:
         "0x2D": "Cisco"
         "0xFE": "0x3F6D03C9"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1427,6 +1457,9 @@ sonic_cisco_8101_tornado_C32:
         "0x2D": "Cisco"
         "0xFE": "0x815DC72C"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1462,6 +1495,9 @@ sonic_cisco_8101_tornado_C32:
         "0x2D": "Cisco"
         "0xFE": "0xEF54C753"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600

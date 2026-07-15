@@ -283,6 +283,9 @@ sonic_cisco_8101:
         "0x2D": "Cisco"
         "0xFE": "0x4F48A22C"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -305,6 +308,9 @@ sonic_cisco_8101:
         "0x2D": "Cisco"
         "0xFE": "0x4A406B0B"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         power off:
           timeout: 600
           wait: 600

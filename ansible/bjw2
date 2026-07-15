@@ -984,6 +984,9 @@ sonic_cisco_8102:
         "0x2D": "Cisco"
         "0xFE": "0x400C319E"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1015,6 +1018,9 @@ sonic_cisco_8102:
         "0x2D": "Cisco"
         "0xFE": "0x0D5C960E"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1046,6 +1052,9 @@ sonic_cisco_8102:
         "0x2D": "Cisco"
         "0xFE": "0xF25D05E6"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1077,6 +1086,9 @@ sonic_cisco_8102:
         "0x2D": "Cisco"
         "0xFE": "0xDA497DEF"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1108,6 +1120,9 @@ sonic_cisco_8102:
         "0x2D": "Cisco"
         "0xFE": "0xCF1C5351"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1139,6 +1154,9 @@ sonic_cisco_8102:
         "0x2D": "Cisco"
         "0xFE": "0x21A605A2"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1573,6 +1591,9 @@ sonic_cisco_8101:
         "0x2D": "Cisco"
         "0xFE": "0x69A1AF76"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1605,6 +1626,9 @@ sonic_cisco_8101:
         "0x2D": "Cisco"
         "0xFE": "0x95614377"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -1651,6 +1675,9 @@ sonic_cisco_8101C01_C28S4:
         "0x2D": "Cisco"
         "0xFE": "0xA3D36730"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360
@@ -1683,6 +1710,9 @@ sonic_cisco_8101C01_C28S4:
         "0x2D": "Cisco"
         "0xFE": "0xF17828B2"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360
@@ -1721,6 +1751,9 @@ sonic_cisco_8101_V64:
         "0x2D": "Cisco"
         "0xFE": "0x93776C6F"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360
@@ -1753,6 +1786,9 @@ sonic_cisco_8101_V64:
         "0x2D": "Cisco"
         "0xFE": "0x63151A01"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360
@@ -1785,6 +1821,9 @@ sonic_cisco_8101_V64:
         "0x2D": "Cisco"
         "0xFE": "0x30E02B9D"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360
@@ -1823,6 +1862,9 @@ sonic_cisco_8101_C32:
         "0x2D": "Cisco"
         "0xFE": "0x818A4364"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360
@@ -1855,6 +1897,9 @@ sonic_cisco_8101_C32:
         "0x2D": "Cisco"
         "0xFE": "0x442121FF"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360

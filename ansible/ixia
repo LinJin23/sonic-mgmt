@@ -150,6 +150,10 @@ sonic_str_8102:
   hosts:
     STR-8102-C19-U24:
       ansible_host: 10.3.146.252
+      plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
   vars:
     hwsku: Cisco-8102-C64
     iface_speed: 100000
@@ -894,6 +898,9 @@ sonic_cisco_8101_O8V48:
         "0x2D": "Cisco"
         "0xFE": "0xAC201999"
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 360

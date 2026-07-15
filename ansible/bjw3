@@ -906,6 +906,9 @@ sonic_cisco_8102:
       base_mac:
       syseeprom_info:
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
@@ -926,6 +929,9 @@ sonic_cisco_8102:
       base_mac:
       syseeprom_info:
       plt_reboot_dict:
+        Kernel Panic:
+          timeout: 600
+          wait: 600
         cold:
           timeout: 600
           wait: 600
