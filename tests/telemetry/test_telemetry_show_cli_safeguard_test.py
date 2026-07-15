@@ -20,12 +20,11 @@ BASE_DIR = os.path.dirname(os.path.realpath(__file__))
 SHOW_CMD_FILE = os.path.join(BASE_DIR, "show_cmd.json")
 RESOURCE_EXHAUSTION = "ResourceExhausted"
 CLIENT_LARGER_MESSAGE_ERROR = "Received message larger than max"
+CLIENT_LARGER_MESSAGE_ERROR_ALT = "trying to send message larger than max"
 
 # Keys for which substituting a dummy value is expected to produce a
-# server-side error because the resource truly cannot exist on the device
-# (e.g. listing logs from a non-existent kdump/dmesg file). When any arg in
-# the CLI was filled with a dummy from one of these keys, a non-zero gNMI
-# response is treated as expected behaviour rather than a failure.
+# server-side error because the resource truly cannot exist on the device.
+# Keep this set narrow to avoid masking regressions in normal CLI handling.
 TOLERATE_DUMMY_FAILURE_KEYS = {"FILENAME", "DEVICE", "dpu", "psu_index"}
 
 # Removing ipv6/route (changes pending in client) and ndp (known issue with ipv6 parsing)
@@ -240,6 +239,84 @@ def gnmi_get_with_retry(ptfhost, cmd, retries=3):
     return res
 
 
+def is_large_message_error(stdout, stderr):
+    output = "{}\n{}".format(stdout or "", stderr or "")
+    return (
+        RESOURCE_EXHAUSTION in output or
+        CLIENT_LARGER_MESSAGE_ERROR in output or
+        CLIENT_LARGER_MESSAGE_ERROR_ALT in output
+    )
+
+
+def is_vs_kvm_environment(duthost):
+    """Detect VS/KVM-like environments without relying on one exact platform string."""
+    asic_type = duthost.facts.get("asic_type", "")
+    platform = duthost.facts.get("platform", "")
+    return asic_type == "vs" or "kvm" in platform
+
+
+def is_kvm_limitation(duthost, cli, stdout, stderr):
+    """
+    Returns True for known VS/KVM platform limitations where SHOW command
+    behavior is expected to fail due to missing hardware/services/files.
+    """
+    if not is_vs_kvm_environment(duthost):
+        return False
+
+    output = "{}\n{}".format(stdout or "", stderr or "")
+
+    kvm_limitations = [
+        {
+            "cli_prefix": "show interfaces transceiver lpmode",
+            "errors": ["exit status 2"],
+        },
+        {
+            "cli_prefix": "show environment",
+            "errors": ["exit status 1"],
+        },
+        {
+            "cli_prefix": "show platform psustatus",
+            "errors": ["no PSUs detected"],
+        },
+        {
+            "cli_prefix": "show system-health summary",
+            "errors": ["System health configuration file not found"],
+        },
+        {
+            "cli_prefix": "show system-health detail",
+            "errors": ["System health configuration file not found"],
+        },
+        {
+            "cli_prefix": "show system-health monitor-list",
+            "errors": ["System health configuration file not found"],
+        },
+        {
+            "cli_prefix": "show boot",
+            "errors": ["No supported bootloader detected"],
+        },
+        {
+            "cli_prefix": "show system-health sysready-status",
+            "errors": [
+                "No system ready status data available",
+                "system-health service might be down",
+            ],
+        },
+        {
+            "cli_prefix": "show platform pcieinfo",
+            "errors": ["pcie.yaml", "Not found config file"],
+        },
+        {
+            "cli_prefix": "show platform syseeprom",
+            "errors": ["does not support EEPROM"],
+        },
+    ]
+
+    for rule in kvm_limitations:
+        if cli.startswith(rule["cli_prefix"]) and any(err in output for err in rule["errors"]):
+            return True
+    return False
+
+
 @pytest.mark.parametrize('setup_streaming_telemetry', [False], indirect=True)
 def test_telemetry_show_cli_schema_and_safeguard(
     duthosts,
@@ -372,7 +449,13 @@ def test_telemetry_show_cli_schema_and_safeguard(
                     })
 
                 if rc != 0:
-                    if RESOURCE_EXHAUSTION in stdout or CLIENT_LARGER_MESSAGE_ERROR in stdout:
+                    if is_large_message_error(stdout, stderr):
+                        continue
+                    if is_kvm_limitation(duthost, cli, stdout, stderr):
+                        logger.info(
+                            "Tolerating expected VS/KVM limitation for CLI '%s'",
+                            cli,
+                        )
                         continue
                     if combo_tolerate_failure:
                         logger.info(

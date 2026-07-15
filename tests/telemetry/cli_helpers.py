@@ -163,11 +163,31 @@ def get_rif_interface(duthost):
 
 
 def get_device_neighbor(duthost):
-    output = duthost.shell("redis-cli -n 4 keys 'DEVICE_NEIGHBOR|*'", module_ignore_errors=True)["stdout"]
-    lines = [line.strip() for line in output.splitlines() if line.strip()]
-    if not lines:
+    neighbor_output = duthost.shell("redis-cli -n 4 keys 'DEVICE_NEIGHBOR|*'", module_ignore_errors=True)["stdout"]
+    neighbor_keys = [line.strip() for line in neighbor_output.splitlines() if line.strip()]
+    if not neighbor_keys:
         return None
-    return [lines[0].split("|", 1)[-1]]
+
+    metadata_output = duthost.shell(
+        "redis-cli -n 4 keys 'DEVICE_NEIGHBOR_METADATA|*'",
+        module_ignore_errors=True,
+    )["stdout"]
+    metadata_names = {
+        line.split("|", 1)[-1].strip()
+        for line in metadata_output.splitlines()
+        if line.strip()
+    }
+    if not metadata_names:
+        return None
+
+    for key in neighbor_keys:
+        iface = key.split("|", 1)[-1]
+        name_output = duthost.shell("redis-cli -n 4 hget '{}' name".format(key), module_ignore_errors=True)["stdout"]
+        neighbor_name = name_output.strip()
+        if neighbor_name and neighbor_name in metadata_names:
+            return [iface]
+
+    return None
 
 
 def get_device_arp_ip(duthost):
@@ -195,7 +215,11 @@ def get_kdump_filename(duthost):
     )["stdout"]
     lines = [line.strip() for line in output.splitlines() if line.strip()]
     if lines:
-        filenames = [line.rsplit('/', 1)[-1] for line in lines if line.rsplit('/', 1)[-1]]
+        filenames = [
+            line.rsplit('/', 1)[-1]
+            for line in lines
+            if line.rsplit('/', 1)[-1]
+        ]
         if filenames:
             return filenames[:3]
     return None
