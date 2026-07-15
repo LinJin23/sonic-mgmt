@@ -81,6 +81,73 @@ def running_bgp_has_aggregate(duthost, prefix):
     )["stdout"]
 
 
+def _wait_gcu_aggregate_effective(duthost, cfg, timeout=60, interval=2):
+    """Wait until a GCU aggregate add is effective in CONFIG_DB and FRR."""
+    prefix = cfg.prefix
+    cfg_word = "ipv6" if ":" in prefix else "ip"
+
+    def _config_db_has_aggregate():
+        row = duthost.shell(
+            "redis-cli -n 4 HGETALL 'BGP_AGGREGATE_ADDRESS|{}'".format(prefix),
+            module_ignore_errors=True,
+        ).get("stdout", "").strip()
+        return bool(row)
+
+    def _prefix_list_has_prefix(run_cfg, name):
+        if not name:
+            return True
+        needle = "{} prefix-list {} ".format(cfg_word, name)
+        return any(
+            line.strip().startswith(needle) and prefix in line.split()
+            for line in run_cfg.splitlines()
+        )
+
+    def _check():
+        run_cfg = duthost.shell(
+            "vtysh -c 'show running-config'",
+            module_ignore_errors=True,
+        ).get("stdout", "")
+        return (
+            _config_db_has_aggregate() and
+            bool(running_bgp_has_aggregate(duthost, prefix)) and
+            _prefix_list_has_prefix(run_cfg, cfg.aggregate_prefix_list) and
+            _prefix_list_has_prefix(run_cfg, cfg.contributing_prefix_list)
+        )
+
+    effective = wait_until(timeout, interval, 0, _check)
+    if effective:
+        return
+
+    config_db_row = duthost.shell(
+        "redis-cli -n 4 HGETALL 'BGP_AGGREGATE_ADDRESS|{}'".format(prefix),
+        module_ignore_errors=True,
+    ).get("stdout", "").strip()
+    grep_terms = ["aggregate-address {}".format(prefix)]
+    for prefix_list in (cfg.aggregate_prefix_list, cfg.contributing_prefix_list):
+        if prefix_list:
+            grep_terms.append("prefix-list {}".format(prefix_list))
+    run_excerpt = duthost.shell(
+        "vtysh -c 'show running-config' | grep -E -i '{}' || true"
+        .format("|".join(grep_terms)),
+        module_ignore_errors=True,
+    ).get("stdout", "").strip()
+    pytest_assert(
+        False,
+        "Aggregate {} did not appear in FRR running config after GCU add.\n"
+        "Expected aggregate-address{}{}.\n"
+        "CONFIG_DB row:\n{}\n"
+        "FRR running-config excerpt:\n{}".format(
+            prefix,
+            " and dynamic prefix-list entry in {}".format(cfg.aggregate_prefix_list)
+            if cfg.aggregate_prefix_list else "",
+            " and dynamic prefix-list entry in {}".format(cfg.contributing_prefix_list)
+            if cfg.contributing_prefix_list else "",
+            config_db_row or "<empty>",
+            run_excerpt or "<empty>",
+        ),
+    )
+
+
 # ---- GCU JSON patch helpers ----
 def gcu_add_placeholder_aggregate(duthost, prefix):
     patch = [
@@ -128,6 +195,7 @@ def gcu_add_aggregate(duthost, aggregate_cfg):
         }
     ]
     apply_gcu_patch(duthost, patch)
+    _wait_gcu_aggregate_effective(duthost, aggregate_cfg)
 
 
 def gcu_remove_aggregate(duthost, prefix):

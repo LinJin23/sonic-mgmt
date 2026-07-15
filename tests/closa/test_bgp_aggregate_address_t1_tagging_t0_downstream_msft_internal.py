@@ -59,15 +59,15 @@ def test_aggregate_not_advertised_to_t0(
     t0_host = nbrhosts[t1_neighbors.t0[0]]["host"]
 
     for c in contribs:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(aggregate)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=aggregate,
         aggregate_prefix_list=agg_pl,
         contributing_prefix_list=contrib_pl,
     ))
-    aggr_cleanup(aggregate)
 
     # Aggregate must NOT be received by any T0 neighbor.  Pair duthost so
     # the failure message dumps the DUT-side BGP table for the prefix and
@@ -137,15 +137,15 @@ def test_other_routes_unaffected(
     # Originate one contributing so the aggregate activates
     t0_host = nbrhosts[t1_neighbors.t0[0]]["host"]
     for c in CONTRIB_V4:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
 
     # Aggregate is hidden from T0 (re-asserts TC 2.1 invariant)
     wait_route_absent_on_neighbors(

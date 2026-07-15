@@ -117,16 +117,16 @@ def test_aggregate_tagged_on_t2(
 
     # Originate contributing routes from T0 so the aggregate becomes active
     for c in contribs:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
     # Push the aggregate row to CONFIG_DB via GCU
+    aggr_cleanup(prefix)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=prefix,
         aggregate_prefix_list=agg_pl,
         contributing_prefix_list=contrib_pl,
     ))
-    aggr_cleanup(prefix)
 
     wait_communities_on_neighbors(
         nbrhosts, t1_neighbors.t2, prefix,
@@ -157,15 +157,15 @@ def test_contributing_traverse_catchall(
     t0_host = nbrhosts[t1_neighbors.t0[0]]["host"]
 
     for c in contribs:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(aggregate)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=aggregate,
         aggregate_prefix_list=agg_pl,
         contributing_prefix_list=contrib_pl,
     ))
-    aggr_cleanup(aggregate)
 
     for c in contribs:
         wait_communities_on_neighbors(
@@ -190,12 +190,12 @@ def test_prefix_list_dynamic_populate(
     assert_prefix_list_is_placeholder_only(duthost, PL_AGG_V4, "ipv4")
 
     # Add aggregate
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
 
     # After add: placeholder + dynamic entry
     pytest_assert(
@@ -258,21 +258,21 @@ def test_multiple_aggregates_share_prefix_list(
     # Originate one contributing per aggregate so both aggregates become active
     contribs = [CONTRIB_V4[0], "10.200.1.0/24"]
     for c in contribs:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
+    aggr_cleanup(AGGR_V4_SECOND)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4_SECOND,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4_SECOND)
 
     wait_communities_on_neighbors(
         nbrhosts, t1_neighbors.t2, AGGR_V4,
@@ -312,21 +312,21 @@ def test_shared_prefix_list_full_drain(
 
     contribs = [CONTRIB_V4[0], "10.200.1.0/24"]
     for c in contribs:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
+    aggr_cleanup(AGGR_V4_SECOND)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4_SECOND,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4_SECOND)
 
     wait_communities_on_neighbors(
         nbrhosts, t1_neighbors.t2, AGGR_V4,
@@ -372,19 +372,19 @@ def test_suppression_when_tagged(
     t0_host = nbrhosts[t1_neighbors.t0[0]]["host"]
 
     # Configure aggregate first so the contributing prefix-list matches it
+    aggr_cleanup(aggregate)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=aggregate,
         aggregate_prefix_list=agg_pl,
         contributing_prefix_list=contrib_pl,
     ))
-    aggr_cleanup(aggregate)
 
     # Inject contributing tagged with COMM_SUPPRESS_ON_T1 from T0
     # (community is applied on DUT-side inbound, see helper docstring)
+    t0_announce_cleanup(suppressed, COMM_SUPPRESS_ON_T1)
     announce_contributing_from_t0(
         t0_host, suppressed, community=COMM_SUPPRESS_ON_T1, duthost=duthost,
     )
-    t0_announce_cleanup(suppressed, COMM_SUPPRESS_ON_T1)
 
     # Pass duthost so failure dumps the DUT-side community (the critical
     # signal: if DUT view shows no 65525:110, T0 injection lost the tag).
@@ -419,18 +419,18 @@ def test_suppression_requires_both_conditions(
     # Both reverse cells use IPv4 prefixes.
     t2_peers_v4 = dut_t2_peer_ips(duthost, family="ipv4")
 
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
 
     # Case (A=False, B=True): non-contributing prefix carrying 65525:110
+    t0_announce_cleanup(NON_CONTRIB_V4, COMM_SUPPRESS_ON_T1)
     announce_contributing_from_t0(
         t0_host, NON_CONTRIB_V4, community=COMM_SUPPRESS_ON_T1, duthost=duthost,
     )
-    t0_announce_cleanup(NON_CONTRIB_V4, COMM_SUPPRESS_ON_T1)
     _wait_dut_communities(
         duthost, NON_CONTRIB_V4,
         expected={COMM_SUPPRESS_ON_T1},
@@ -446,8 +446,8 @@ def test_suppression_requires_both_conditions(
     assert_dut_advertising(duthost, t2_peers_v4, NON_CONTRIB_V4)
 
     # Case (A=True, B=False): contributing prefix WITHOUT 65525:110
-    announce_contributing_from_t0(t0_host, CONTRIB_V4[0])  # no community
     t0_announce_cleanup(CONTRIB_V4[0])
+    announce_contributing_from_t0(t0_host, CONTRIB_V4[0])  # no community
     wait_route_present_on_neighbors(nbrhosts, t1_neighbors.t2, CONTRIB_V4[0])
     wait_communities_on_neighbors(
         nbrhosts, t1_neighbors.t2, CONTRIB_V4[0],

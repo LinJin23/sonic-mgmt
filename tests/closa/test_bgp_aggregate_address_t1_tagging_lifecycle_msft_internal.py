@@ -145,6 +145,42 @@ def _bgp_neighbor_ips(duthost):
     return [line.split("|", 1)[1] for line in raw.splitlines() if "|" in line]
 
 
+def _assert_bgpd_startup_config_has_aggregate_prefix_lists(
+    duthost, prefix, aggregate_prefix_list, contributing_prefix_list,
+):
+    """Assert bgpd.conf includes the aggregate template and rendered prefix-lists."""
+    bgpd_conf = duthost.shell("sudo docker exec bgp cat /etc/frr/bgpd.conf")["stdout"]
+    template_marker = "template: bgpd/bgpd.aggregate.conf.j2"
+    pytest_assert(
+        template_marker in bgpd_conf,
+        "Rendered /etc/frr/bgpd.conf does not include {}".format(template_marker),
+    )
+
+    lines = [line.strip() for line in bgpd_conf.splitlines()]
+    ipcmd = "ipv6" if ":" in prefix.split("/", 1)[0] else "ip"
+    max_prefix_len = 128 if ipcmd == "ipv6" else 32
+
+    checks = {
+        "aggregate prefix-list": lambda line: (
+            line.startswith("{} prefix-list {} ".format(ipcmd, aggregate_prefix_list)) and
+            " permit {}".format(prefix) in line
+        ),
+        "contributing prefix-list": lambda line: (
+            line.startswith("{} prefix-list {} ".format(ipcmd, contributing_prefix_list)) and
+            " permit {} le {}".format(prefix, max_prefix_len) in line
+        ),
+        "aggregate-address": lambda line: (
+            line == "aggregate-address {}".format(prefix) or
+            line.startswith("aggregate-address {} ".format(prefix))
+        ),
+    }
+    missing = [name for name, predicate in checks.items() if not any(predicate(line) for line in lines)]
+    pytest_assert(
+        not missing,
+        "Rendered /etc/frr/bgpd.conf missing aggregate startup config: {}".format(missing),
+    )
+
+
 # ============================================================================
 # TC 3.1 — BGP container restart preserves tagging
 # ============================================================================
@@ -158,15 +194,15 @@ def test_aggregate_tag_survives_bgp_restart(
     t0_host = nbrhosts[t1_neighbors.t0[0]]["host"]
 
     for c in CONTRIB_V4:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
 
     wait_communities_on_neighbors(
         nbrhosts, t1_neighbors.t2, AGGR_V4,
@@ -179,6 +215,9 @@ def test_aggregate_tag_survives_bgp_restart(
     neighbor_ips = _bgp_neighbor_ips(duthost)
     duthost.shell("sudo systemctl restart bgp")
     _wait_bgp_sessions_established(duthost, neighbor_ips, LIFECYCLE_CONVERGE_TIMEOUT)
+    _assert_bgpd_startup_config_has_aggregate_prefix_lists(
+        duthost, AGGR_V4, PL_AGG_V4, PL_AGG_CONTRIB_V4,
+    )
 
     # Tagging must survive
     wait_communities_on_neighbors(
@@ -205,15 +244,15 @@ def test_aggregate_tag_survives_config_reload(
     t0_host = nbrhosts[t1_neighbors.t0[0]]["host"]
 
     for c in CONTRIB_V4:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
+    aggr_cleanup(AGGR_V4)
     gcu_add_aggregate(duthost, AggregateCfg(
         prefix=AGGR_V4,
         aggregate_prefix_list=PL_AGG_V4,
         contributing_prefix_list=PL_AGG_CONTRIB_V4,
     ))
-    aggr_cleanup(AGGR_V4)
     wait_communities_on_neighbors(
         nbrhosts, t1_neighbors.t2, AGGR_V4,
         expected={COMM_AGG_T1},
@@ -277,8 +316,8 @@ def test_rapid_add_remove_churn(
     # Pre-test setup: announce contributing routes so the aggregate has
     # something to summarize, and assert baseline prefix-list state.
     for c in CONTRIB_V4:
-        announce_contributing_from_t0(t0_host, c)
         t0_announce_cleanup(c)
+        announce_contributing_from_t0(t0_host, c)
 
     assert_prefix_list_is_placeholder_only(duthost, PL_AGG_V4, "ipv4")
     assert_prefix_list_is_placeholder_only(duthost, PL_AGG_CONTRIB_V4, "ipv4")
