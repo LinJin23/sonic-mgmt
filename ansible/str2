@@ -2427,9 +2427,6 @@ sonic_cisco_8102:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 600
-          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -2463,9 +2460,6 @@ sonic_cisco_8102:
           timeout: 600
           wait: 600
         acl/test_acl.py::TestAclWithReboot:
-          timeout: 600
-          wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
         power off:
@@ -2503,9 +2497,6 @@ sonic_cisco_8102:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 600
-          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -2539,9 +2530,6 @@ sonic_cisco_8102:
           timeout: 600
           wait: 600
         acl/test_acl.py::TestAclWithReboot:
-          timeout: 600
-          wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
         power off:
@@ -2699,9 +2687,6 @@ sonic_cisco_8101:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 600
-          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -2735,9 +2720,6 @@ sonic_cisco_8101:
           timeout: 600
           wait: 600
         acl/test_acl.py::TestAclWithReboot:
-          timeout: 600
-          wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
         power off:
@@ -2782,9 +2764,6 @@ sonic_cisco_8101_tornado_O8V48:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 600
-          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -2827,9 +2806,6 @@ sonic_cisco_8101_tornado_C32:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 300
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 300
-          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -2863,9 +2839,6 @@ sonic_cisco_8101_tornado_C32:
           timeout: 420
           wait: 600
         acl/test_acl.py::TestAclWithReboot:
-          timeout: 300
-          wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
         power off:
@@ -2903,9 +2876,6 @@ sonic_cisco_8101_tornado_C32:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 300
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
-          timeout: 300
-          wait: 600
         power off:
           timeout: 600
           wait: 600
@@ -2939,9 +2909,6 @@ sonic_cisco_8101_tornado_C32:
           timeout: 420
           wait: 600
         acl/test_acl.py::TestAclWithReboot:
-          timeout: 300
-          wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
         power off:
