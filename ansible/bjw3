@@ -1075,7 +1075,7 @@ sonic_micas_w5000:
 
 sonic_nokia_7215c1:
   vars:
-    hwsku: Nokia-7215-C1
+    hwsku: Nokia-7215-C1-G3
   hosts:
     bjw3-can-7215c1-1:
       ansible_host: 10.150.238.126
