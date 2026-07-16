@@ -1,5 +1,6 @@
 import pytest
 import logging
+from tests.aznsa.aznsa_helpers import CONTAINER_NAME, dump_aznsa_container_logs, is_aznsa_container_running
 from tests.common.helpers.assertions import pytest_assert
 
 pytestmark = [
@@ -10,24 +11,15 @@ pytestmark = [
 
 logger = logging.getLogger(__name__)
 
-CONTAINER_NAME = "aznsa"
-
 
 def test_container_running(duthosts, enum_rand_one_per_hwsku_hostname):
     """Verify aznetsec-agent container is running."""
     duthost = duthosts[enum_rand_one_per_hwsku_hostname]
-    output = duthost.shell(
-        f"docker ps --filter name={CONTAINER_NAME} --filter status=running -q",
-        module_ignore_errors=True,
-    )
-    duthost.shell(f"docker logs {CONTAINER_NAME}", module_ignore_errors=True)
-    duthost.shell(f"docker inspect {CONTAINER_NAME}", module_ignore_errors=True)
+    running = is_aznsa_container_running(duthost)
+    if not running:
+        dump_aznsa_container_logs(duthost)
     pytest_assert(
-        "stdout" in output,
-        f"shell command failed: {output.get('msg', 'unknown error')}",
-    )
-    pytest_assert(
-        output["stdout"].strip() != "",
+        running,
         f"{CONTAINER_NAME} container is not running",
     )
 

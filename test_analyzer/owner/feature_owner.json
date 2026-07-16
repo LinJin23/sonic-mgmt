@@ -91,7 +91,8 @@
         "scripts": [
             {
                 "scripts": [
-                    "aznsa.test_aznsa"
+                    "aznsa.test_aznsa",
+                    "aznsa.test_aznsa_e2e"
                 ],
                 "owner": "Oliver Brown",
                 "email": "oliverbrown@microsoft.com"
