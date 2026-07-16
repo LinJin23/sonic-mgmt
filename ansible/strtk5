@@ -562,7 +562,7 @@ sonic_cisco_8101:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
+        power off:
           timeout: 600
           wait: 600
     strtk5-8101-02:
@@ -597,7 +597,7 @@ sonic_cisco_8101:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
+        power off:
           timeout: 600
           wait: 600
 
@@ -1744,7 +1744,7 @@ sonic_arista_7060:
       base_mac: 8c:01:9d:c7:d9:e1
       syseeprom_info:
         '0x21': 'DCS-7060X6-64PE-B'
-        '0x22': 'SY0899401B0'
+        '0x22': 'ASY0899401B0'
         '0x23': 'HBG254712XL'
         '0x24': '8c:01:9d:c7:d9:e1'
         '0x25': '2025/11/28 18:28:05'

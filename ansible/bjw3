@@ -918,7 +918,7 @@ sonic_cisco_8102:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
+        power off:
           timeout: 600
           wait: 600
     bjw3-can-8102-8:
@@ -941,7 +941,7 @@ sonic_cisco_8102:
         acl/test_acl.py::TestAclWithReboot:
           timeout: 600
           wait: 600
-        platform_tests/test_reload_config.py::test_reload_configuration_checks:
+        power off:
           timeout: 600
           wait: 600
 
@@ -1075,7 +1075,7 @@ sonic_micas_w5000:
 
 sonic_nokia_7215c1:
   vars:
-    hwsku: Nokia-7215-C1
+    hwsku: Nokia-7215-C1-G3
   hosts:
     bjw3-can-7215c1-1:
       ansible_host: 10.150.238.126

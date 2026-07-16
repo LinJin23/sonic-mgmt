@@ -707,7 +707,13 @@ sonic_cisco_8102:
         "0x2C": "US"
         "0xFE": "0xC6B0FD08"
       plt_reboot_dict:
+        cold:
+          timeout: 600
+          wait: 600
         Kernel Panic:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
 

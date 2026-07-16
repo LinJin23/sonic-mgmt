@@ -226,7 +226,12 @@
             "-e RUST_LOG=debug",
             "--cap-add CAP_BPF",
             "--cap-add CAP_PERFMON",
-            "--cap-add CAP_SYS_PTRACE"
+            "--cap-add CAP_SYS_PTRACE",
+            "--cap-add CAP_SYS_RESOURCE",
+            "--security-opt apparmor=unconfined",
+            "-v /etc/sonic/aznsa/certs:/aznsa/certs:ro",
+            "-v /proc:/host/proc:ro",
+            "-e SSL_CERT_FILE=/aznsa/certs/ca.crt"
         ]
     }
 }
