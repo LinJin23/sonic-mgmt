@@ -565,6 +565,9 @@ sonic_cisco_8101:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     strtk5-8101-02:
       ansible_host: 10.212.70.7
       ansible_hostv6: 2603:10e2:140:3000::1c7
@@ -598,6 +601,9 @@ sonic_cisco_8101:
           timeout: 600
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
 

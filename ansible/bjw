@@ -710,6 +710,9 @@ sonic_cisco_8102:
         Kernel Panic:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
 
 sonic_mlnx_sn3800:
   vars:

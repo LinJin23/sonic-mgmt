@@ -999,6 +999,9 @@ sonic_cisco_8102:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8102-2:
       ansible_host: 10.150.22.45
       ansible_hostv6: 2404:f801:10:2200::a96:162d
@@ -1031,6 +1034,9 @@ sonic_cisco_8102:
           timeout: 600
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
     bjw2-can-8102-3:
@@ -1067,6 +1073,9 @@ sonic_cisco_8102:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8102-4:
       ansible_host: 10.150.22.49
       ansible_hostv6: 2404:f801:10:2200::a96:1631
@@ -1099,6 +1108,9 @@ sonic_cisco_8102:
           timeout: 600
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
     bjw2-can-8102-5:
@@ -1135,6 +1147,9 @@ sonic_cisco_8102:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8102-6:
       ansible_host: 10.150.22.53
       ansible_hostv6: 2404:f801:10:2200::a96:1635
@@ -1167,6 +1182,9 @@ sonic_cisco_8102:
           timeout: 600
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
 
@@ -1606,6 +1624,9 @@ sonic_cisco_8101:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8101-2:
       ansible_host: 10.150.22.57
       ansible_hostv6: 2404:f801:10:2200::a96:1639
@@ -1639,6 +1660,9 @@ sonic_cisco_8101:
           timeout: 600
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
 
@@ -1690,6 +1714,9 @@ sonic_cisco_8101C01_C28S4:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8101c1-2:
       ansible_host: 10.150.23.243
       ansible_hostv6: 2404:f801:10:2200::a96:17f3
@@ -1724,6 +1751,9 @@ sonic_cisco_8101C01_C28S4:
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
+          wait: 600
+        power off:
+          timeout: 600
           wait: 600
 
 sonic_cisco_8101_V64:
@@ -1766,6 +1796,9 @@ sonic_cisco_8101_V64:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8101c1-6:
       ansible_host: 10.150.22.59
       ansible_hostv6: 2404:f801:10:2200::a96:163b
@@ -1801,6 +1834,9 @@ sonic_cisco_8101_V64:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8101c1-7:
       ansible_host: 10.150.22.62
       ansible_hostv6: 2404:f801:10:2200::a96:163e
@@ -1835,6 +1871,9 @@ sonic_cisco_8101_V64:
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
+          wait: 600
+        power off:
+          timeout: 600
           wait: 600
 
 sonic_cisco_8101_C32:
@@ -1877,6 +1916,9 @@ sonic_cisco_8101_C32:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw2-can-8101c1-4:
       ansible_host: 10.150.23.247
       ansible_hostv6: 2404:f801:10:2200::a96:17f7
@@ -1911,6 +1953,9 @@ sonic_cisco_8101_C32:
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 300
+          wait: 600
+        power off:
+          timeout: 600
           wait: 600
 
 

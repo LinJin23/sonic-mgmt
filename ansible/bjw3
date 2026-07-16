@@ -921,6 +921,9 @@ sonic_cisco_8102:
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
           timeout: 600
           wait: 600
+        power off:
+          timeout: 600
+          wait: 600
     bjw3-can-8102-8:
       ansible_host: 10.150.238.114
       ansible_hostv6: 2404:f801:10:16::a96:ee72
@@ -942,6 +945,9 @@ sonic_cisco_8102:
           timeout: 600
           wait: 600
         platform_tests/test_reload_config.py::test_reload_configuration_checks:
+          timeout: 600
+          wait: 600
+        power off:
           timeout: 600
           wait: 600
 
