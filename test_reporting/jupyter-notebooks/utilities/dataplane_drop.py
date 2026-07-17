@@ -2,6 +2,95 @@ import urllib
 from enum import Enum
 from pandas import DataFrame
 from utilities.kusto import execute_kusto_query
+from utilities.sonic_shift import normalize_timestamp_to_iso_utc
+
+# A pingmesh receive rate strictly between these bounds (percent) indicates partial packet
+# loss (a drop). Rates at or below the lower bound (full loss) are handled separately.
+PINGMESH_DROP_LOWER_RATE = 1
+PINGMESH_DROP_UPPER_RATE = 99
+
+
+def get_upgrade_method_window_pingmesh_drops_batch(upgrades: DataFrame) -> DataFrame:
+    """Flag pingmesh drops for many upgrades with a SINGLE Kusto query.
+
+    The ``upgrades`` DataFrame must have the columns ``DeviceName`` (host), ``StartTime``
+    and ``EndTime`` (upgrade-method window). Builds one datatable row per upgrade (keyed by
+    the DataFrame index) and joins it to the per-node/5-minute-bucket send/recv rate
+    (RecvCount / SendCount * 100), scoped to each row's own [bin(start, 5m), end) window.
+    A drop is any node/bucket whose rate falls strictly between the lower and upper bounds
+    (partial loss). Upgrades with no pingmesh data in their window are treated as no drop.
+
+    Returns a DataFrame aligned to ``upgrades.index`` with columns ``HasDrop`` (bool) and
+    ``DropBuckets`` (list of per-bucket dicts: Timestamp, NodeId, SendCount, RecvCount) for
+    the partial-loss buckets in each window. Results are merged back in pandas (one query, not one
+    query per row); upgrades with no drop buckets get HasDrop=False and an empty list.
+    """
+    required_columns = {"DeviceName", "StartTime", "EndTime"}
+    missing_columns = required_columns - set(upgrades.columns)
+    assert not missing_columns, f"upgrades is missing required columns: {sorted(missing_columns)}"
+
+    if upgrades.empty:
+        return DataFrame(columns=["HasDrop", "DropBuckets"], index=upgrades.index)
+
+    # One datatable row per upgrade, keyed by the (stringified) DataFrame index.
+    literal_rows = []
+    for idx, row in upgrades.iterrows():
+        start_iso = normalize_timestamp_to_iso_utc(row["StartTime"])
+        end_iso = normalize_timestamp_to_iso_utc(row["EndTime"])
+        device = str(row["DeviceName"])
+        literal_rows.append(
+            '    "{idx}", "{device}", datetime({start}), datetime({end})'.format(
+                idx=idx, device=device, start=start_iso, end=end_iso
+            )
+        )
+
+    upgrades_literal = ",\n".join(literal_rows)
+    query = f"""
+let upgrades = datatable(UpgradeKey: string, TorName: string, StartTime: datetime, EndTime: datetime)
+[
+{upgrades_literal}
+];
+let lo = toscalar(upgrades | summarize min(bin(StartTime, 5m)));
+let hi = toscalar(upgrades | summarize max(EndTime));
+let hosts = toscalar(upgrades | summarize make_set(tolower(TorName)));
+let sendRecv =
+    cluster('vnetkusto.northcentralus.kusto.windows.net').database('veritas').TorPingSendAggreEvent
+    | where TIMESTAMP >= lo and TIMESTAMP < hi
+    | where tolower(TorName) in (hosts)
+    | summarize SendCount = max(SendCount) by TIMESTAMP, NodeId, TorName
+    | join kind = leftouter (
+        cluster('vnetkusto.northcentralus.kusto.windows.net').database('veritas').TorPingRecvAggreEvent
+        | where TIMESTAMP >= lo and TIMESTAMP < hi
+        | where tolower(TorName) in (hosts)
+        | summarize RecvCount = max(RecvCount) by TIMESTAMP, NodeId, TorName
+    ) on TIMESTAMP, NodeId, TorName
+    | extend RecvCount = iff(isnull(RecvCount), 0, RecvCount)
+    | extend rate = todouble(RecvCount) / todouble(SendCount) * 100
+    | extend jkey = tolower(TorName);
+upgrades
+| extend jkey = tolower(TorName)
+| join kind = inner sendRecv on jkey
+| where TIMESTAMP >= bin(StartTime, 5m) and TIMESTAMP < EndTime
+| where rate > {PINGMESH_DROP_LOWER_RATE} and rate < {PINGMESH_DROP_UPPER_RATE}
+| summarize DropBuckets = make_list(pack(
+    "Timestamp", TIMESTAMP, "NodeId", NodeId, "SendCount", SendCount, "RecvCount", RecvCount))
+    by UpgradeKey
+"""
+    # Kusto rejects query text larger than 1 MB; if batches ever grow that large, split them.
+    df = execute_kusto_query("vnetkusto.northcentralus", "veritas", query)
+
+    # Map drop buckets back by key. Only upgrades with partial-loss buckets appear in the
+    # result; any upgrade absent had no drops (or no pingmesh data) -> HasDrop False, empty list.
+    buckets_by_key = {}
+    if not df.empty:
+        buckets_by_key = dict(zip(df["UpgradeKey"].astype(str), df["DropBuckets"]))
+    return DataFrame(
+        {
+            "HasDrop": [str(idx) in buckets_by_key for idx in upgrades.index],
+            "DropBuckets": [buckets_by_key.get(str(idx), []) for idx in upgrades.index],
+        },
+        index=upgrades.index,
+    )
 
 
 def get_host_tor_pingmesh_node_availablity_during_window(tor_name: str, start_time: str, end_time: str) -> DataFrame:

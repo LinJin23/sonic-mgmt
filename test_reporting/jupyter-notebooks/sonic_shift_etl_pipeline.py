@@ -14,6 +14,7 @@ from utilities.sonic_shift import (
     ingest_hwproxy_rows_to_kusto,
     normalize_timestamp_to_iso_utc,
 )
+from utilities.dataplane_drop import get_upgrade_method_window_pingmesh_drops_batch
 
 logger = logging.getLogger(__name__)
 
@@ -245,6 +246,19 @@ def main() -> int:
         SonicShiftUpgradeSummary_df["UpgradeMethodStatus"] = SonicShiftUpgradeSummary_df["RawData"].apply(
             lambda x: _extract_raw_field(x, "success")
         )
+        # Flag whether pingmesh drops occurred during each row's upgrade-method window
+        # ([StartTime, EndTime]) with a SINGLE Kusto query for the whole batch, merged back
+        # by index. Computed before StartTime/EndTime are normalized below.
+        pingmesh_drops = get_upgrade_method_window_pingmesh_drops_batch(SonicShiftUpgradeSummary_df)
+        SonicShiftUpgradeSummary_df["UpgradeMethodWindowPingMeshDrops"] = pingmesh_drops["HasDrop"]
+        # Store the per-bucket drop detail (Timestamp, NodeId, SendCount, RecvCount) inside the
+        # existing RawData dynamic column for downstream time-window analysis.
+        SonicShiftUpgradeSummary_df["RawData"] = [
+            {**raw, "PingMeshDropBuckets": buckets}
+            for raw, buckets in zip(
+                SonicShiftUpgradeSummary_df["RawData"], pingmesh_drops["DropBuckets"]
+            )
+        ]
         # Convert timestamps to ISO strings and RawData to a JSON string for CSV ingestion.
         SonicShiftUpgradeSummary_df["StartTime"] = SonicShiftUpgradeSummary_df["StartTime"].apply(
             normalize_timestamp_to_iso_utc

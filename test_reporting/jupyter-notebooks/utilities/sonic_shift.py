@@ -79,14 +79,14 @@ def get_latest_ingested_start_time() -> pd.Timestamp | None:
 def ingest_hwproxy_rows_to_kusto(df: DataFrame) -> None:
     """Ingest HardwareProxy upgrade rows to SonicShiftUpgradeSummary table in Kusto.
     Expects DataFrame with columns: DeviceName, Cluster, StartTime, EndTime, TargetVersion,
-    UpgradeMethod, UpgradeMethodStatus, RawData. The Cluster value comes from the source
-    HardwareProxyApiCall row.
+    UpgradeMethod, UpgradeMethodStatus, UpgradeMethodWindowPingMeshDrops, RawData. The Cluster
+    value comes from the source HardwareProxyApiCall row.
     Handles Kusto authentication and ingestion details.
     """
     df = df.reindex(
         columns=[
             "DeviceName", "Cluster", "StartTime", "EndTime", "TargetVersion",
-            "UpgradeMethod", "UpgradeMethodStatus", "RawData",
+            "UpgradeMethod", "UpgradeMethodStatus", "UpgradeMethodWindowPingMeshDrops", "RawData",
         ]
     )
 
@@ -111,6 +111,7 @@ def ingest_hwproxy_rows_to_kusto(df: DataFrame) -> None:
         ColumnMapping("TargetVersion", "String"),
         ColumnMapping("UpgradeMethod", "String"),
         ColumnMapping("UpgradeMethodStatus", "String"),
+        ColumnMapping("UpgradeMethodWindowPingMeshDrops", "Boolean"),
         ColumnMapping("RawData", "Dynamic"),
     ]
     ingest_client.ingest_from_stream(csv_buffer, ingestion_properties=ingestion_props)
