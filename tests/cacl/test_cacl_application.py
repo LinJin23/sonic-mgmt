@@ -200,25 +200,30 @@ def clean_scale_rules(duthosts, enum_rand_one_per_hwsku_hostname, collect_ignore
     logger.info("Reload config to recover configuration.")
     config_reload(duthost, safe_reload=True, check_intf_up_ports=True, wait_for_bgp=True)
 
+
 @pytest.fixture(scope="function")
 def setup_acl_tables(duthost):
     """
     Setup ACL table for test case.
     """
     # Add ipv6 ACL tables which are not default table in the DUT
-    duthost.shell('redis-cli -n 4 HMSET "ACL_TABLE|SNMP_ACL_IPV6" policy_desc "SNMP_ACL_IPV6" services@ "SNMP" stage "ingress" type "CTRLPLANE"')
+    duthost.shell('redis-cli -n 4 HMSET "ACL_TABLE|SNMP_ACL_IPV6" policy_desc "SNMP_ACL_IPV6" '
+                  'services@ "SNMP" stage "ingress" type "CTRLPLANE"')
     duthost.copy(src='cacl/old_acl.json', dest="/tmp/old_acl.json")
     duthost.copy(src='cacl/new_acl.json', dest='/tmp/new_acl.json')
     result = duthost.shell("/usr/local/bin/acl-loader update full /tmp/old_acl.json")
     assert result["rc"] == 0, "Failed to load old acl rules"
 
-    duthost.shell('redis-cli -n 4 HMSET "ACL_TABLE|IPV6_SSH_ONLY" policy_desc "IPV6_SSH_ONLY" services@ "SSH" stage "ingress" type "CTRLPLANE"')
-    duthost.shell('redis-cli -n 4 HMSET "ACL_TABLE|IPV6_SNMP_ACL" policy_desc "IPV6_SNMP_ACL" services@ "SNMP" stage "ingress" type "CTRLPLANE"')
+    duthost.shell('redis-cli -n 4 HMSET "ACL_TABLE|IPV6_SSH_ONLY" policy_desc "IPV6_SSH_ONLY" '
+                  'services@ "SSH" stage "ingress" type "CTRLPLANE"')
+    duthost.shell('redis-cli -n 4 HMSET "ACL_TABLE|IPV6_SNMP_ACL" policy_desc "IPV6_SNMP_ACL" '
+                  'services@ "SNMP" stage "ingress" type "CTRLPLANE"')
 
     yield
 
     logger.info("Reload config to recover configuration.")
     config_reload(duthost, safe_reload=True, check_intf_up_ports=True)
+
 
 @pytest.fixture(scope="function")
 def dummy_acl_rules(duthosts, enum_rand_one_per_hwsku_hostname):
@@ -855,8 +860,12 @@ def generate_expected_rules(duthost, tbinfo, docker_network, asic_index, expecte
         iptables_rules.append("-A INPUT -j DROP")
         ip6tables_rules.append("-A INPUT -j DROP")
 
-    # Add OUTPUT rules to restrict access to ports 2601 and 2620
-    if "master" not in duthost.os_version:
+    # Add OUTPUT rules to restrict access to ports 2601 and 2620.
+    # These FRR VTY/FPM anti-spoofing rules are only applied by caclmgrd in the
+    # default/host network namespace; on multi-asic platforms they are not
+    # replicated into each per-ASIC namespace, so only expect them when
+    # asic_index is None (i.e. checking the host namespace).
+    if asic_index is None and "master" not in duthost.os_version:
         iptables_rules.append("-A OUTPUT -o lo -p tcp -m tcp --dport 2620 -m owner --uid-owner 300 -j ACCEPT")
         iptables_rules.append("-A OUTPUT -o lo -p tcp -m tcp --dport 2601 -m owner --uid-owner 300 -j ACCEPT")
         iptables_rules.append("-A OUTPUT -o lo -p tcp -m tcp --dport 2620 -j DROP")
@@ -1259,7 +1268,8 @@ def verify_cacl(duthost, tbinfo, localhost, creds, docker_network,
                   .format(repr(missing_ip6tables_rules)))
 
     # Ensure there are no unexpected ip6tables rules present on the DuT
-    unexpected_ip6tables_rules = set(actual_ip6tables_rules) - set(expected_ip6tables_rules) - set(ignored_ip6table_rules)
+    unexpected_ip6tables_rules = set(actual_ip6tables_rules) - set(expected_ip6tables_rules) - \
+        set(ignored_ip6table_rules)
     pytest_assert(len(unexpected_ip6tables_rules) == 0, "Unexpected ip6tables rules: {}"
                   .format(repr(unexpected_ip6tables_rules)))
 
@@ -1421,7 +1431,7 @@ def test_cacl_scale_rules_ipv6(duthosts, enum_rand_one_per_hwsku_hostname, colle
 
 
 def test_cacl_acl_loader_commands_internal(duthosts, enum_rand_one_per_hwsku_hostname, tbinfo, setup_acl_tables,
-                                     localhost, creds, docker_network):
+                                           localhost, creds, docker_network):
     """
     Test case to cover acl-loader commands which are used to do acl repave for Prod devices
     """
