@@ -1171,9 +1171,9 @@ sonic_arista_7280r4_400G:
         "0xFE": ""
 
     svcstr-7280r4-ut2-3:
-      hwsku: Arista-7280R4K-32QF-32DF
-      sonic_hwsku: Arista-7280R4K-32QF-32DF
-      sonic_hw_platform: Arista-7280R4K-32QF-32DF
+      hwsku: Arista-7280R4K-32QF-32DF-64O
+      sonic_hwsku: Arista-7280R4K-32QF-32DF-64O
+      sonic_hw_platform: Arista-7280R4K-32QF-32DF-64O
       switchids: [0]
       serial: JPN2530P1ZV
       base_mac:
@@ -1194,9 +1194,9 @@ sonic_arista_7280r4_400G:
         "0xFE": ""
 
     svcstr-7280r4-ut2-4:
-      hwsku: Arista-7280R4K-32QF-32DF
-      sonic_hwsku: Arista-7280R4K-32QF-32DF
-      sonic_hw_platform: Arista-7280R4K-32QF-32DF
+      hwsku: Arista-7280R4K-32QF-32DF-64O
+      sonic_hwsku: Arista-7280R4K-32QF-32DF-64O
+      sonic_hw_platform: Arista-7280R4K-32QF-32DF-64O
       switchids: [0]
       serial: JPN2530P20K
       base_mac:
