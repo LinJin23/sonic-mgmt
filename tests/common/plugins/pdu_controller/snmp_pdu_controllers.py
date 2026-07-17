@@ -85,6 +85,11 @@ class snmpPduController(PduControllerBase):
         SENTRY4_PORT_STATUS_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.3.1.1"
         SENTRY4_PORT_CONTROL_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.5.1.2"
         SENTRY4_PORT_POWER_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.3.1.9"
+        # MIB OID for 'Sentry5' (Server Technology Sentry5 uses the same Sentry4 MIB tree, 1.3.6.1.4.1.1718.4)
+        SENTRY5_PORT_NAME_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.2.1.3"
+        SENTRY5_PORT_STATUS_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.3.1.1"
+        SENTRY5_PORT_CONTROL_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.5.1.2"
+        SENTRY5_PORT_POWER_BASE_OID = "1.3.6.1.4.1.1718.4.1.8.3.1.9"
         # MIB OID for 'Vertiv Geist Upgradeable PDU'
         VERTIV_PORT_NAME_BASE_OID = "1.3.6.1.4.1.21239.5.2.3.5.1.3"
         VERTIV_PORT_STATUS_BASE_OID = "1.3.6.1.4.1.21239.5.2.3.5.1.4"
@@ -124,6 +129,13 @@ class snmpPduController(PduControllerBase):
             self.PORT_STATUS_BASE_OID = SENTRY4_PORT_STATUS_BASE_OID
             self.PORT_CONTROL_BASE_OID = SENTRY4_PORT_CONTROL_BASE_OID
             self.PORT_POWER_BASE_OID = SENTRY4_PORT_POWER_BASE_OID
+            self.has_lanes = False
+            self.max_lanes = 1
+        elif self.pduType == "Sentry5":
+            self.PORT_NAME_BASE_OID = SENTRY5_PORT_NAME_BASE_OID
+            self.PORT_STATUS_BASE_OID = SENTRY5_PORT_STATUS_BASE_OID
+            self.PORT_CONTROL_BASE_OID = SENTRY5_PORT_CONTROL_BASE_OID
+            self.PORT_POWER_BASE_OID = SENTRY5_PORT_POWER_BASE_OID
             self.has_lanes = False
             self.max_lanes = 1
         elif self.pduType == "Vertiv":
