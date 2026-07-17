@@ -46,9 +46,9 @@ stages:
                 export KUSTO_TOKEN=$Kusto_Token
 
                 cd test_analyzer
-                pip install -r requirements.txt
-
-                python testbed_data_copy.py
+                uv venv .venv
+                uv pip install --python .venv/bin/python -r requirements.txt
+                .venv/bin/python testbed_data_copy.py
             env:
               ELASTICTEST_MONGO_DB_CONN_STRING: $(ELASTICTEST_MONGO_DB_CONN_STRING)
               KUSTO_CLUSTER_INGEST_URL: $(TEST_REPORT_INGEST_KUSTO_CLUSTER_BACKUP)
