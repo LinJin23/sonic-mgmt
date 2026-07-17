@@ -43,6 +43,11 @@ parameters:
     default: $(IMAGE_MLNX_202605)
     displayName: "Image URL"
 
+  - name: DPU_IMAGE_URL
+    type: string
+    default: $(IMAGE_BLUEFIELD_202605_TAG)
+    displayName: "DPU Image URL"
+
   - name: MGMT_BRANCH
     type: string
     default: internal-202605
@@ -124,6 +129,7 @@ stages:
         MGMT_BRANCH: ${{ parameters.MGMT_BRANCH }}
         MAX_RUN_TEST_MINUTES: ${{ parameters.MAX_RUN_TEST_MINUTES }}
         IMAGE_URL: ${{ parameters.IMAGE_URL }}
+        DPU_IMAGE_URL: ${{ parameters.DPU_IMAGE_URL }}
         MIN_WORKER: ${{ parameters.MIN_WORKER }}
         MAX_WORKER: ${{ parameters.MAX_WORKER }}
         RETRY_TIMES: ${{ parameters.RETRY_TIMES }}
