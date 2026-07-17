@@ -101,7 +101,7 @@ parameters:
   - name: SPECIFIC_PARAM
     type: string
     default: '[
-      {"name": "upgrade_path/test_upgrade_smart_switch_gnoi.py", "param": "--upgrade_type=cold --base_image_list=http://10.1.3.6/pipelines/Networking-acs-buildimage-Official/nvidia-bluefield/internal-202605/tagged/prev/target/sonic-nvidia-bluefield.bin --target_image_list=http://10.1.3.6/pipelines/Networking-acs-buildimage-Official/nvidia-bluefield/internal-202605/tagged/latest/target/sonic-nvidia-bluefield.bin --target_version=SONiC-OS-20260510.02"}
+      {"name": "upgrade_path/test_upgrade_smart_switch_gnoi.py", "param": "--upgrade_type=cold --base_image_list=http://10.1.3.6/pipelines/Networking-acs-buildimage-Official/nvidia-bluefield/internal-202605/tagged/sonic-nvidia-bluefield.bin.PREV.1 --target_image_list=$(IMAGE_BLUEFIELD_202605_TAG) --target_version=SONiC-OS-20260510.06"}
     ]'
     displayName: "Specific param, support feature(e.g. 'bgp') or test module(e.g. 'bgp/test_bgp_fact.py')"
 stages:
