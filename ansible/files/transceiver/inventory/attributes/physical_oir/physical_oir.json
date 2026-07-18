@@ -1,7 +1,7 @@
 {
     "defaults": {
         "ports_under_test": [],
-        "oir_method": "automated",
+        "oir_method": "manual",
         "physical_oir_timeout_min": 30,
         "simultaneous_oir": false,
         "physical_oir_stress_iteration": 5,
