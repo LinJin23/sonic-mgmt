@@ -65,7 +65,7 @@ stages:
                 export ACCESS_TOKEN=$accessToken
                 set -x
                 cd test_analyzer
-                pip install -r requirements.txt
+                sudo uv pip install --system -r requirements.txt
                 cd pr_binary_search
                 python trigger_binary_searches.py \
                   --analyzer_run_id "$ANALYZER_RUN_ID" \

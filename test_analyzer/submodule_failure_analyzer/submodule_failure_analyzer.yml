@@ -31,7 +31,7 @@ stages:
                 echo "Diagnosing failing info..."
 
                 cd test_analyzer/submodule_failure_analyzer
-                pip install -r requirements.txt
+                sudo uv pip install --system -r requirements.txt
                 python get_failing_info.py
 
                 echo "Failing info uploaded to Kusto"

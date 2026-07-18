@@ -30,7 +30,7 @@ steps:
         export ACCESS_TOKEN=$accessToken
         set -x
         cd test_analyzer
-        pip install -r requirements.txt
+        sudo uv pip install --system -r requirements.txt
         cd pr_binary_search
         python pr_failure_analyzer.py \
           --lookback_days ${{ parameters.LOOKBACK_DAYS }} \

@@ -45,7 +45,7 @@ steps:
         export ACCESS_TOKEN=$accessToken
         set -x
         cd test_analyzer
-        pip install -r requirements.txt
+        sudo uv pip install --system -r requirements.txt
         cd pr_binary_search
         EXTRA_ARGS=""
         if [ -n "$FAILURE_JOIN_KEY" ]; then
