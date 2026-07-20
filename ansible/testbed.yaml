@@ -1159,6 +1159,21 @@
   auto_recover: 'False'
   comment: deepsinghal
 
+- conf-name: vmsvc5-rdma-nh5010-macsec-01
+  group-name: svc5-rdma-1
+  topo: t2_single_node_tgen_rdma_pizzabox
+  ptf_image_name: docker-keysight-api-server
+  ptf: svc5-ixia-2-api-serv
+  ptf_ip: 10.206.144.17/24
+  ptf_ipv6:
+  server: server_svc_5
+  vm_base:
+  dut:
+  - svcstr-nh5010-rh-01
+  inv_name: ixia
+  auto_recover: 'False'
+  comment: yatishkoul
+
 - conf-name: vmsvc6-t2-8800-1
   group-name: svc6-1
   topo: t2

@@ -69,6 +69,20 @@ MULTIDUT_PORT_INFO = {
                 ]
             }
         }
+    ],
+    'vmsvc5-rdma-nh5010-macsec-01': [
+        {
+            'single-dut-single-asic': {
+                'rx_ports': [
+                    {'port_name': 'Ethernet8', 'hostname': "svcstr-nh5010-rh-01"},
+                    {'port_name': 'Ethernet12', 'hostname': "svcstr-nh5010-rh-01"}
+                ],
+                'tx_ports': [
+                    {'port_name': 'Ethernet16', 'hostname': "svcstr-nh5010-rh-01"},
+                    {'port_name': 'Ethernet20', 'hostname': "svcstr-nh5010-rh-01"}
+                ]
+            }
+        }
     ]
 }
 

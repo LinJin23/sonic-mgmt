@@ -975,6 +975,9 @@ ixia_chassis:
     strsvc-drh-aresone-ixia-1:
       ansible_host: 10.206.144.103
       os: ixia
+    svc5-ixia-2:
+      ansible_host: 10.206.144.17
+      os: ixia
 
 l1_switch:
   hosts:

@@ -120,3 +120,17 @@ vms29-rdma-ut2-nh5010:
           - hostname: str-nh5010-ut2-2
             port_name: Ethernet76
   pfcQueueGroupSize: 4
+vmsvc5-rdma-nh5010-macsec-01:
+  multidut_port_info:
+    - single-dut-single-asic:
+        rx_ports:
+          - hostname: svcstr-nh5010-rh-01
+            port_name: Ethernet8
+          - hostname: svcstr-nh5010-rh-01
+            port_name: Ethernet12
+        tx_ports:
+          - hostname: svcstr-nh5010-rh-01
+            port_name: Ethernet16
+          - hostname: svcstr-nh5010-rh-01
+            port_name: Ethernet20
+  pfcQueueGroupSize: 4
