@@ -576,7 +576,7 @@
         "tag": "Yes"
     },
     {
-        "hwsku": "Cisco-8102-28FH-DPU-O-T1",
+        "hwsku": "Cisco-8102-28FH-DPU-O",
         "topo": "t1-28-lag",
         "owner": "Prabhat Aravind",
         "email": "paravind@microsoft.com",
