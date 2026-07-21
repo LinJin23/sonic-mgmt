@@ -14,7 +14,11 @@ from utilities.sonic_shift import (
     ingest_hwproxy_rows_to_kusto,
     normalize_timestamp_to_iso_utc,
 )
-from utilities.dataplane_drop import get_upgrade_method_window_pingmesh_drops_batch
+from utilities.dataplane_drop import (
+    get_upgrade_method_window_pingmesh_drops_batch,
+    get_warmboot_window_pingmesh_drops_batch,
+)
+from utilities.logs import get_warmboot_window_bounds_batch
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +91,38 @@ def _add_sonic_shift_upgrade_summary_dedupe_key_columns(df: pd.DataFrame) -> pd.
     # Replace None with a sentinel so rows with nulls still match deterministically on merge.
     for col in DEDUP_KEY_COLS[2:]:
         df[col] = df[col].fillna(NULL_SENTINEL)
+    return df
+
+
+def _annotate_warmboot_window_pingmesh_drops(df: pd.DataFrame) -> pd.DataFrame:
+    """Flag warmboot-window pingmesh drops and record each window's bounds in RawData.
+
+    Only upgrades that already showed upgrade-method-window drops are checked, with a SINGLE
+    Kusto query for the whole subset. Sets WarmbootWindowPingMeshDrops and stores wb_start /
+    wb_end in RawData. If the teardown log is missing (e.g. a failed warmboot) wb_end cannot
+    be derived: WarmbootWindowEnd is left absent and a ProcessingNotes entry records why.
+    """
+    df["WarmbootWindowPingMeshDrops"] = False
+    warmboot_source = df[df["UpgradeMethodWindowPingMeshDrops"]]
+    if warmboot_source.empty:
+        return df
+
+    warmboot_windows = get_warmboot_window_bounds_batch(warmboot_source)
+    warmboot_drops = get_warmboot_window_pingmesh_drops_batch(warmboot_source, warmboot_windows)
+    df.loc[warmboot_drops.index, "WarmbootWindowPingMeshDrops"] = warmboot_drops["HasDrop"]
+    for idx in warmboot_drops.index:
+        wb_start = warmboot_drops.at[idx, "WbStart"]
+        if wb_start is None or wb_start != wb_start:  # no warmboot window derived
+            continue
+        raw = df.at[idx, "RawData"]
+        raw["WarmbootWindowStart"] = normalize_timestamp_to_iso_utc(wb_start)
+        if warmboot_drops.at[idx, "WbEndMissing"]:
+            # No warmboot end found: leave WarmbootWindowEnd empty (no fallback); note why in RawData.
+            raw.setdefault("ProcessingNotes", []).append(
+                "WarmbootWindowEnd unavailable: teardown log not found; warmboot-window drop status undetermined."
+            )
+        else:
+            raw["WarmbootWindowEnd"] = normalize_timestamp_to_iso_utc(warmboot_drops.at[idx, "WbEnd"])
     return df
 
 
@@ -259,6 +295,8 @@ def main() -> int:
                 SonicShiftUpgradeSummary_df["RawData"], pingmesh_drops["DropBuckets"]
             )
         ]
+        # Flag warmboot-window drops (subset of the above) and record wb_start/wb_end in RawData.
+        SonicShiftUpgradeSummary_df = _annotate_warmboot_window_pingmesh_drops(SonicShiftUpgradeSummary_df)
         # Convert timestamps to ISO strings and RawData to a JSON string for CSV ingestion.
         SonicShiftUpgradeSummary_df["StartTime"] = SonicShiftUpgradeSummary_df["StartTime"].apply(
             normalize_timestamp_to_iso_utc

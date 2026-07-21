@@ -1,4 +1,5 @@
 import urllib
+import pandas as pd
 from enum import Enum
 from pandas import DataFrame
 from utilities.kusto import execute_kusto_query
@@ -88,6 +89,88 @@ upgrades
         {
             "HasDrop": [str(idx) in buckets_by_key for idx in upgrades.index],
             "DropBuckets": [buckets_by_key.get(str(idx), []) for idx in upgrades.index],
+        },
+        index=upgrades.index,
+    )
+
+
+def get_warmboot_window_pingmesh_drops_batch(upgrades: DataFrame, warmboot_windows: DataFrame) -> DataFrame:
+    """Flag pingmesh drops during the warm-reboot window for many upgrades (no Kusto query).
+
+    Pure aggregator over two already-fetched result sets:
+
+      * ``upgrades`` rows carry the upgrade-method pingmesh drops in
+        ``RawData['PingMeshDropBuckets']`` (from get_upgrade_method_window_pingmesh_drops_batch).
+      * ``warmboot_windows`` is the start/stop syslog result set from
+        get_warmboot_window_bounds_batch (columns UpgradeKey, WbStart, WbEndRaw).
+
+    For each upgrade the warmboot window is [WbStart, WbEnd) with WbEnd = WbEndRaw. If the
+    teardown log is missing there is no end (no fallback): WbEnd is None, ``WbEndMissing`` is
+    set, and the drop status is undetermined (HasDrop None). Otherwise a drop is any RawData
+    bucket whose 5-minute timestamp falls in [bin(WbStart, 5m), WbEnd). Upgrades with no
+    warm-reboot window at all are likewise unknown (HasDrop None, WbStart/WbEnd None).
+
+    Returns a DataFrame aligned to ``upgrades.index`` with ``HasDrop`` (bool or None),
+    ``WbStart``, ``WbEnd`` and ``WbEndMissing`` (bool).
+    """
+    required_columns = {"RawData"}
+    missing_columns = required_columns - set(upgrades.columns)
+    assert not missing_columns, f"upgrades is missing required columns: {sorted(missing_columns)}"
+
+    result_columns = ["HasDrop", "WbStart", "WbEnd", "WbEndMissing"]
+    if upgrades.empty:
+        return DataFrame(columns=result_columns, index=upgrades.index)
+
+    # Map each derived window back by key; upgrades without one keep no window (HasDrop None).
+    windows_by_key = {}
+    if not warmboot_windows.empty:
+        for _, r in warmboot_windows.iterrows():
+            wb_end_raw = r["WbEndRaw"]
+            end_missing = wb_end_raw is None or wb_end_raw != wb_end_raw  # None or NaT (no teardown log)
+            windows_by_key[str(r["UpgradeKey"])] = {
+                "WbStart": r["WbStart"],
+                "WbEnd": None if end_missing else wb_end_raw,
+                "WbEndMissing": end_missing,
+            }
+
+    def _warmboot_window_has_drop(idx, wb_start, wb_end):
+        # A drop is any already-detected upgrade-method bucket whose 5-minute timestamp
+        # falls in the warmboot window [bin(wb_start, 5m), wb_end).
+        raw = upgrades.at[idx, "RawData"]
+        buckets = raw.get("PingMeshDropBuckets", []) if isinstance(raw, dict) else []
+        if not buckets:
+            return False
+        window_lo = pd.to_datetime(wb_start, utc=True).floor("5min")
+        window_hi = pd.to_datetime(wb_end, utc=True)
+        for bucket in buckets:
+            ts = pd.to_datetime(bucket.get("Timestamp"), utc=True)
+            if window_lo <= ts < window_hi:
+                return True
+        return False
+
+    has_drop, wb_start_col, wb_end_col, wb_missing_col = [], [], [], []
+    for idx in upgrades.index:
+        window = windows_by_key.get(str(idx))
+        if window is None:
+            # No derived warmboot window -> unknown outcome (None), not a definitive no-drop.
+            has_drop.append(None)
+            wb_start_col.append(None)
+            wb_end_col.append(None)
+            wb_missing_col.append(False)
+            continue
+        wb_end = window["WbEnd"]
+        # No warmboot end found -> window is open-ended, so drop status is undetermined (None).
+        has_drop.append(None if wb_end is None else _warmboot_window_has_drop(idx, window["WbStart"], wb_end))
+        wb_start_col.append(window["WbStart"])
+        wb_end_col.append(wb_end)
+        wb_missing_col.append(window["WbEndMissing"])
+
+    return DataFrame(
+        {
+            "HasDrop": has_drop,
+            "WbStart": wb_start_col,
+            "WbEnd": wb_end_col,
+            "WbEndMissing": wb_missing_col,
         },
         index=upgrades.index,
     )
