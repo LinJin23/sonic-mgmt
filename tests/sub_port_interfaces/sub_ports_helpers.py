@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import random
@@ -591,17 +592,23 @@ def get_port_number(interface):
     return ''.join([i for i in interface.split('.')[0] if i.isdigit()])
 
 
-def get_port_mtu(duthost, interface):
+def get_port_mtu(duthost, interface, namespace=None):
     """
     Get MTU of port from interface name
 
     Args:
         duthost: DUT host object
         interface: Full interface name
+        namespace: ASIC namespace, if testing a multi-ASIC netdevice
 
     Returns: MTU
     """
-    out = ''
+    if namespace:
+        # The show CLI derives the child MTU from its parent. Read each actual netdevice instead.
+        result = duthost.command('ip -n {} -j link show dev {}'.format(namespace, interface))
+        link, = json.loads(result['stdout'])
+        logger.info('%s: %s MTU=%s', namespace, interface, link['mtu'])
+        return link['mtu']
 
     if '.' in interface:
         out = duthost.show_and_parse("show subinterface status {}".format(interface))

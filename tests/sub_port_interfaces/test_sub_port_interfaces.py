@@ -137,7 +137,7 @@ class TestSubPorts(object):
                                         ip_dst=value['ip'],
                                         pkt_action='fwd')
 
-    def test_mtu_inherited_from_parent_port(self, duthost, apply_config_on_the_dut, apply_config_on_the_ptf):
+    def test_mtu_inherited_from_parent_port(self, duthost, mtu_subports):
         """
         Validates that MTU settings of sub-ports inherited from parent port
 
@@ -149,15 +149,15 @@ class TestSubPorts(object):
 
         Pass Criteria: MTU settings of sub-ports inherited from parent port.
         """
-        sub_ports = apply_config_on_the_dut['sub_ports']
-
-        for sub_port in list(sub_ports.keys()):
-            sub_port_mtu = int(get_port_mtu(duthost, sub_port))
+        pytest_assert(mtu_subports, 'MTU inheritance requires at least one sub-port')
+        for sub_port, namespace in mtu_subports:
+            sub_port_mtu = int(get_port_mtu(duthost, sub_port, namespace))
             # Get name of parent port from name of sub-port
             port = sub_port.split('.')[0]
-            port_mtu = int(get_port_mtu(duthost, port))
+            port_mtu = int(get_port_mtu(duthost, port, namespace))
 
-            pytest_assert(sub_port_mtu == port_mtu, "MTU of {} doesn't inherit MTU of {}".format(sub_port, port))
+            pytest_assert(sub_port_mtu == port_mtu, '{}: {} MTU {} != {} MTU {}'.format(
+                namespace or 'host', sub_port, sub_port_mtu, port, port_mtu))
 
     def test_vlan_config_impact(self, duthost, ptfadapter, apply_config_on_the_dut, apply_config_on_the_ptf):
         """

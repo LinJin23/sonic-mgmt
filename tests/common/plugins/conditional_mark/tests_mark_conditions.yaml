@@ -5751,10 +5751,20 @@ sub_port_interfaces:
     reason: "Unsupported platform or asic and not supported on this DUT topology"
     conditions_logical_operator: or
     conditions:
-      - "is_multi_asic==True or asic_gen not in ['td2', 'spc1', 'spc2', 'spc3', 'spc4'] and asic_type not in ['barefoot','marvell-teralynx']"
+      - >-
+        (is_multi_asic or asic_gen not in ['td2', 'spc1', 'spc2', 'spc3', 'spc4'] and asic_type not in ['barefoot','marvell-teralynx'])
+        and not (asic_type == 'vs' and hwsku == 'msft_four_asic_vs' and topo_name == 't1-8-lag' and is_multi_asic)
       - "asic_type in ['mellanox', 'nvidia']"
       - "'dualtor' in topo_name"
       - "hwsku in ['Arista-7050CX3-32S-C32', 'Arista-7060CX-32S-C32','Arista-7060CX-32S-D48C8','Arista-7260CX3-C64','Arista-7260CX3-D108C8','Arista-7260CX3-D108C10']"
+
+# On this experimental profile, keep the rest of the directory skipped, including the LAG variant.
+'^sub_port_interfaces/(?!test_sub_port_interfaces\.py::TestSubPorts::test_mtu_inherited_from_parent_port\[port\]$)':
+  regex: true
+  skip:
+    reason: Only the physical-port MTU case has a namespace-aware fixture on four-ASIC VS
+    conditions:
+      - "asic_type == 'vs' and hwsku == 'msft_four_asic_vs' and topo_name == 't1-8-lag' and is_multi_asic"
 
 sub_port_interfaces/test_show_subinterface.py::test_subinterface_status[port]:
   skip:

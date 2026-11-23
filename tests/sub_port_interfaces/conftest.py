@@ -1,9 +1,13 @@
+import json
 import logging
 import os
 import sys
 import ipaddress
 import time
 import random
+import re
+from contextlib import ExitStack
+
 import jinja2
 import pytest
 
@@ -230,6 +234,64 @@ def apply_config_on_the_ptf(define_sub_ports_configuration, ptfhost, reload_ptf_
 
     for sub_port_info in list(sub_ports.values()):
         create_sub_port_on_ptf(ptfhost, sub_port_info['neighbor_port'], sub_port_info['neighbor_ip'])
+
+
+def _namespace_links(asic):
+    return {link['ifname'] for link in json.loads(asic.command('ip -j link show')['stdout'])}
+
+
+def _remove_mtu_subport(duthost, asic, child):
+    def configured():
+        cfg = asic.config_facts(source='running')['ansible_facts']
+        return child in cfg.get('VLAN_SUB_INTERFACE', {})
+
+    if configured():
+        duthost.command('sudo config subinterface {} del {}'.format(asic.cli_ns_option, child))
+    py_assert(wait_until(30, 2, 0, lambda: not configured() and child not in _namespace_links(asic)),
+              'Failed to remove {} from {}'.format(child, asic.namespace))
+    logger.info('Removed sub-port %s from %s (CONFIG_DB and Linux)', child, asic.namespace)
+
+
+@pytest.fixture
+def mtu_subports(duthost, tbinfo, port_type, request):
+    """Provide (sub-port, namespace) pairs to the existing MTU inheritance test."""
+    if not duthost.is_multi_asic:
+        config = request.getfixturevalue('apply_config_on_the_dut')
+        request.getfixturevalue('apply_config_on_the_ptf')
+        yield [(child, None) for child in config['sub_ports']]
+        return
+
+    if not (duthost.facts['asic_type'] == 'vs' and duthost.facts['hwsku'] == 'msft_four_asic_vs'
+            and tbinfo['topo']['name'] == 't1-8-lag' and port_type == 'port'):
+        pytest.skip('Multi-ASIC MTU experiment requires the physical-port variant on four-ASIC VS t1-8-lag')
+
+    # MTU inheritance is local to the DUT. It needs neither a PTF link nor an IP address.
+    neighbors = set(duthost.get_extended_minigraph_facts(tbinfo)['minigraph_neighbors'])
+    subports = []
+    py_assert(len(duthost.frontend_asics) >= 2, 'Expected at least two frontend ASICs on four-ASIC VS')
+    with ExitStack() as cleanup:
+        for asic in duthost.frontend_asics:
+            cfg = asic.config_facts(source='running')['ansible_facts']
+            used = neighbors.union(cfg.get('INTERFACE', {}))
+            used.update(child.split('.')[0] for child in cfg.get('VLAN_SUB_INTERFACE', {}))
+            for table in ('PORTCHANNEL_MEMBER', 'VLAN_MEMBER'):
+                for members in cfg.get(table, {}).values():
+                    used.update(members)
+            links = _namespace_links(asic)
+            ports = sorted(port for port, attrs in cfg['PORT'].items() if re.fullmatch(r'Ethernet\d+', port)
+                           and attrs.get('role', 'Ext') == 'Ext' and port not in used and port in links)
+            py_assert(ports, 'No unused front-panel port in {} (ports={}, in use={})'.format(
+                asic.namespace, sorted(cfg['PORT']), sorted(used)))
+            child = '{}.20'.format(ports[0])
+            py_assert(child not in links, '{} already exists in {}'.format(child, asic.namespace))
+            # Register before add so a partially successful setup is cleaned up as well.
+            cleanup.callback(_remove_mtu_subport, duthost, asic, child)
+            duthost.command('sudo config subinterface {} add {} 20'.format(asic.cli_ns_option, child))
+            py_assert(wait_until(30, 2, 0, lambda a=asic, c=child: c in _namespace_links(a)),
+                      '{} did not appear in {}'.format(child, asic.namespace))
+            subports.append((child, asic.namespace))
+
+        yield subports
 
 
 @pytest.fixture(params=['same', 'different'])
